@@ -1,18 +1,32 @@
 import tailwindcss from "@tailwindcss/vite";
 import react from "@vitejs/plugin-react";
 import { resolve } from "node:path";
-import { defineConfig } from "vite";
+import { defineConfig, loadEnv } from "vite";
 
-export default defineConfig({
-    plugins: [react(), tailwindcss()],
-    resolve: {
-        alias: {
-            "@": resolve(__dirname, "src"),
+export default defineConfig(({ mode }) => {
+    const env = loadEnv(mode, process.cwd(), "");
+
+    return {
+        plugins: [react(), tailwindcss()],
+        resolve: {
+            alias: {
+                "@": resolve(__dirname, "src"),
+            },
         },
-    },
-    server: {
-        host: "localhost",
-        port: 5173,
-        strictPort: true,
-    },
+        server: {
+            host: "localhost",
+            port: 5173,
+            strictPort: true,
+            ...(env.VITE_API_URL
+                ? {
+                      proxy: {
+                          "/api": {
+                              target: env.VITE_API_URL,
+                              changeOrigin: true,
+                          },
+                      },
+                  }
+                : {}),
+        },
+    };
 });

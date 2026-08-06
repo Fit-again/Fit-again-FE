@@ -9,10 +9,13 @@ Fit Again Front-end 레포지토리입니다. Vite 기반의 React + TypeScript 
 - React + Vite + TypeScript 개발 환경
 - React Hook Form + Zod 폼 검증 환경
 - Zustand 전역 상태 관리 환경
+- React Router 기반 라우팅 환경
+- Axios 기반 API 통신 환경
 - Tailwind CSS 스타일링 환경
 - ESLint + Prettier 코드 품질 관리
 - Husky + lint-staged 커밋 전 자동 검사
 - `@/` 절대 경로 별칭
+- 환경변수 기반 로컬 API 프록시
 
 라우팅과 상세 페이지 구성은 Fit Again 서비스 기획에 맞춰 추후 확정합니다.
 
@@ -20,11 +23,14 @@ Fit Again Front-end 레포지토리입니다. Vite 기반의 React + TypeScript 
 
 - **Main**: React + Vite (TypeScript)
 - **State Management**: Zustand
+- **Routing**: react-router-dom
 - **Styling**: Tailwind CSS
 - **Forms**: react-hook-form, Zod, @hookform/resolvers
+- **HTTP Client**: axios
+- **Cookie**: js-cookie
 - **Linting & Formatting**: ESLint, Prettier, Husky, lint-staged
 
-라우팅, HTTP Client, 인증 및 추가 UI 라이브러리는 실제 기능 구현 시 프로젝트 요구사항에 맞춰 도입합니다.
+인증 방식과 추가 UI 라이브러리는 실제 기능 구현 시 프로젝트 요구사항에 맞춰 도입합니다.
 
 ## 🏃 빠른 시작
 
@@ -60,11 +66,12 @@ npm run preview
 
 ## 🔐 환경변수 설정
 
-환경변수가 필요한 기능을 추가할 때 루트에 `.env.example`을 만들고, 이를 복사한 `.env`에 로컬 값을 설정합니다.
+루트의 `.env.example`을 복사해 `.env`를 만들고 로컬 값을 설정합니다.
 
 - 클라이언트에서 사용할 환경변수 이름은 `VITE_`로 시작합니다.
 - `.env`와 실제 비밀 값은 Git에 커밋하지 않습니다.
-- 필요한 환경변수와 예시는 기능이 확정될 때 이 문서에 추가합니다.
+- `VITE_API_URL`에는 `/api` 경로를 제외한 백엔드 서버 Origin을 입력합니다.
+- `VITE_API_URL`이 설정되면 개발 서버의 `/api` 요청이 해당 백엔드 서버로 전달됩니다.
 
 ## 💻 개발 환경 설정 (필수!)
 
@@ -82,6 +89,8 @@ npm run preview
     - `.prettierrc`: 들여쓰기, 따옴표 등 팀 코드 스타일 규칙
     - `eslint.config.js`: TypeScript, React Hooks, 접근성 등 코드 품질 규칙
     - `.husky/pre-commit`: 커밋 전 lint-staged 실행
+    - `.vscode/settings.json`: 저장 시 Prettier 포맷과 ESLint 수정 적용
+    - `.vscode/extensions.json`: 팀 공통 VS Code 확장 프로그램 추천
 
 ## 📜 프로젝트 규약 (Conventions)
 
@@ -147,12 +156,15 @@ src/
 ├── constants/    # 공통 상수 (API URL, 키 값 등)
 ├── hooks/        # 공통 커스텀 훅 (useToggle, useDebounce 등)
 ├── pages/        # 라우팅되는 페이지 컴포넌트
+├── routes/       # React Router 라우팅 설정
+├── schema/       # Zod 검증 스키마
 ├── stores/       # Zustand 스토어
 ├── styles/       # 전역 CSS와 Tailwind CSS 설정
+├── types/        # 공통 TypeScript 타입
 └── utils/        # 순수 유틸 함수 (formatDate, validators 등)
 ```
 
-필요하지 않은 디렉토리는 미리 만들지 않고, 관련 기능을 구현할 때 추가합니다.
+각 디렉토리의 실제 구현 파일은 관련 기능을 개발할 때 추가합니다.
 
 ### 네이밍 컨벤션
 
