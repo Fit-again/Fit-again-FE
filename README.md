@@ -14,6 +14,8 @@ Fit Again Front-end 레포지토리입니다. Vite 기반의 React + TypeScript 
 - Tailwind CSS 스타일링 환경
 - ESLint + Prettier 코드 품질 관리
 - Husky + lint-staged 커밋 전 자동 검사
+- Vitest + React Testing Library 테스트 환경
+- GitHub Actions CI 자동 검증
 - `@/` 절대 경로 별칭
 - 환경변수 기반 로컬 API 프록시
 
@@ -28,6 +30,8 @@ Fit Again Front-end 레포지토리입니다. Vite 기반의 React + TypeScript 
 - **Forms**: react-hook-form, Zod, @hookform/resolvers
 - **HTTP Client**: axios
 - **Cookie**: js-cookie
+- **Testing**: Vitest, React Testing Library
+- **CI**: GitHub Actions
 - **Linting & Formatting**: ESLint, Prettier, Husky, lint-staged
 
 인증 방식과 추가 UI 라이브러리는 실제 기능 구현 시 프로젝트 요구사항에 맞춰 도입합니다.
@@ -36,7 +40,7 @@ Fit Again Front-end 레포지토리입니다. Vite 기반의 React + TypeScript 
 
 **사전 요구사항**
 
-- Node.js 20.19 이상 또는 22.12 이상
+- Node.js 24 (`.nvmrc`, `.node-version` 기준)
 - npm 설치 및 실행
 
 ```bash
@@ -49,6 +53,9 @@ npm run dev
 # TypeScript 타입 체크 + 프로덕션 빌드
 npm run build
 
+# TypeScript 타입 검사
+npm run typecheck
+
 # ESLint로 코드 검사
 npm run lint
 
@@ -57,6 +64,12 @@ npm run format
 
 # Prettier 포맷 검사
 npm run format:check
+
+# 테스트 실행
+npm test
+
+# 테스트 감시 모드
+npm run test:watch
 
 # 프로덕션 빌드 미리보기
 npm run preview
@@ -91,6 +104,21 @@ npm run preview
     - `.husky/pre-commit`: 커밋 전 lint-staged 실행
     - `.vscode/settings.json`: 저장 시 Prettier 포맷과 ESLint 수정 적용
     - `.vscode/extensions.json`: 팀 공통 VS Code 확장 프로그램 추천
+    - `.editorconfig`: 에디터 공통 인코딩, 줄바꿈과 들여쓰기 설정
+    - `.nvmrc`, `.node-version`: 팀 공통 Node.js 버전
+
+## ✅ 자동 검증
+
+`main` 또는 `develop` 브랜치로 push하거나 해당 브랜치를 대상으로 Pull Request를 생성하면 GitHub Actions CI가 실행됩니다.
+
+CI는 다음 항목을 순서대로 검사합니다.
+
+1. 의존성 설치
+2. ESLint
+3. Prettier
+4. Vitest 단위 테스트
+5. TypeScript 타입 검사
+6. 프로덕션 빌드
 
 ## 📜 프로젝트 규약 (Conventions)
 
