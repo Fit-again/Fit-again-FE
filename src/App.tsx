@@ -1,6 +1,4 @@
 function App() {
-    const apple: string = 123;
-
     return (
         <main className="flex min-h-screen items-center justify-center bg-slate-950 px-6 text-white">
             <section className="text-center">
