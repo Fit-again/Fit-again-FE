@@ -102,6 +102,7 @@ npm run preview
     - `.prettierrc`: 들여쓰기, 따옴표 등 팀 코드 스타일 규칙
     - `eslint.config.js`: TypeScript, React Hooks, 접근성 등 코드 품질 규칙
     - `.husky/pre-commit`: 커밋 전 lint-staged 실행
+    - `.husky/pre-push`: push 전 테스트, 타입 검사와 ESLint 실행
     - `.vscode/settings.json`: 저장 시 Prettier 포맷과 ESLint 수정 적용
     - `.vscode/extensions.json`: 팀 공통 VS Code 확장 프로그램 추천
     - `.editorconfig`: 에디터 공통 인코딩, 줄바꿈과 들여쓰기 설정
@@ -217,6 +218,13 @@ src/
 2. Prettier로 코드 포맷팅
 3. 에러가 있으면 커밋 중단
 
+`git push` 실행 시 자동으로 다음 작업을 수행합니다.
+
+1. Vitest 단위 테스트
+2. TypeScript 타입 검사
+3. ESLint 전체 검사
+4. 하나라도 실패하면 push 중단
+
 ### 커밋이 실패한다면
 
 1. 출력된 에러 메시지를 확인하고 수정합니다.
@@ -226,4 +234,4 @@ src/
 ### 주의사항
 
 - 처음 clone한 후 `npm install`을 실행하면 Husky가 자동 설치됩니다.
-- 커밋 전 자동 검사는 코드 품질 유지를 위한 필수 과정입니다.
+- 커밋 및 push 전 자동 검사는 코드 품질 유지를 위한 필수 과정입니다.
