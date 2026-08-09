@@ -1,22 +1,67 @@
+@import url("https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard-dynamic-subset.min.css");
+@import url("https://fonts.googleapis.com/css2?family=Scada:wght@400;700&display=swap");
 @import "tailwindcss";
 
 :root {
-    font-family:
-        Inter,
-        Pretendard,
-        system-ui,
-        -apple-system,
-        BlinkMacSystemFont,
-        "Segoe UI",
-        sans-serif;
-    color: #0f172a;
-    background: #ffffff;
+    font-family: Pretendard, "Noto Sans KR", "Apple SD Gothic Neo", sans-serif;
+    color: #222222;
+    background: #faf8f3;
     font-synthesis: none;
     text-rendering: optimizeLegibility;
+}
+
+@theme {
+    /* 폰트 */
+    --font-sans:
+        "Pretendard", "Noto Sans KR", "Apple SD Gothic Neo", sans-serif;
+    --font-logo: "Scada", sans-serif;
+
+    /* Fit Again 메인 팔레트 */
+    --color-primary: #5b3a29;
+    --color-secondary: #eee8e0;
+    --color-ground: #faf8f3;
+    --color-danger: #c85a54;
+    --color-after: #1b4332;
+
+    /* 텍스트 */
+    --color-text-strong: #222222;
+    --color-text-body: #222222;
+    --color-text-secondary: #666666;
+
+    /* 서피스와 구분선 */
+    --color-line: #e7e2d8;
+    --color-placeholder: #dddddd;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+html {
+    min-width: 320px;
+    background: #faf8f3;
 }
 
 body {
     margin: 0;
     min-width: 320px;
     min-height: 100vh;
+    background: #faf8f3;
+}
+
+button,
+input,
+textarea,
+select {
+    font: inherit;
+}
+
+button,
+a {
+    -webkit-tap-highlight-color: transparent;
+}
+
+::selection {
+    color: #ffffff;
+    background: #5b3a29;
 }
