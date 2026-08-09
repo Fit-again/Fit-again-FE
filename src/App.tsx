@@ -1,46 +1,30 @@
-import crossBagIcon from "@/assets/product-types/cross-bag.png";
-import pouchIcon from "@/assets/product-types/pouch.png";
-import shoulderBagIcon from "@/assets/product-types/shoulder-bag.png";
-import toteBagIcon from "@/assets/product-types/tote-bag.png";
-import Button from "@/components/common/Button";
 import Card from "@/components/common/Card";
-import Modal from "@/components/common/Modal";
 import PageActions from "@/components/common/PageActions";
 import PageLayout from "@/components/common/PageLayout";
 import SelectionCard from "@/components/common/SelectionCard";
-import Tag from "@/components/common/Tag";
 import UploadArea from "@/components/common/UploadArea";
-import { Field, Input, Textarea } from "@/components/common/form/FormControls";
-import { useState, type ReactNode } from "react";
+import ProductTypeIcon, {
+    type ProductType,
+} from "@/components/product/ProductTypeIcon";
+import { useState } from "react";
 
-type ProductType = {
-    id: string;
+type ProductTypeOption = {
+    id: ProductType;
     label: string;
-    icon: ReactNode;
 };
 
-const imageIcon = (src: string, alt: string) => (
-    <img className="h-16 w-20 object-contain" src={src} alt={alt} />
-);
-
-const productTypes: ProductType[] = [
-    { id: "tote", label: "토트백", icon: imageIcon(toteBagIcon, "") },
-    {
-        id: "shoulder",
-        label: "숄더백",
-        icon: imageIcon(shoulderBagIcon, ""),
-    },
-    { id: "cross", label: "크로스백", icon: imageIcon(crossBagIcon, "") },
-    { id: "backpack", label: "백팩", icon: <BackpackPlaceholderIcon /> },
-    { id: "pouch", label: "파우치", icon: imageIcon(pouchIcon, "") },
-    { id: "other", label: "기타", icon: <MoreIcon /> },
+const productTypes: ProductTypeOption[] = [
+    { id: "tote", label: "토트백" },
+    { id: "shoulder", label: "숄더백" },
+    { id: "cross", label: "크로스백" },
+    { id: "backpack", label: "백팩" },
+    { id: "pouch", label: "파우치" },
+    { id: "other", label: "기타" },
 ];
 
 function App() {
-    const [selectedType, setSelectedType] = useState("tote");
-    const [description, setDescription] = useState("");
+    const [selectedType, setSelectedType] = useState<ProductType>("tote");
     const [fileCount, setFileCount] = useState(0);
-    const [modalOpen, setModalOpen] = useState(false);
 
     return (
         <PageLayout
@@ -48,10 +32,7 @@ function App() {
             title="제품 등록"
             description="분석에 필요한 제품 정보와 사진을 등록해주세요."
             actions={
-                <PageActions
-                    nextLabel="다음 단계"
-                    onNext={() => setModalOpen(true)}
-                />
+                <PageActions nextLabel="다음 단계" onNext={() => undefined} />
             }
         >
             <div className="grid gap-10 lg:grid-cols-[minmax(420px,1fr)_minmax(0,1.45fr)] lg:gap-7">
@@ -61,11 +42,11 @@ function App() {
                         제품 유형을 선택해주세요.
                     </p>
                     <div className="mt-5 grid grid-cols-2 gap-4 sm:grid-cols-3">
-                        {productTypes.map(({ id, label, icon }) => (
+                        {productTypes.map(({ id, label }) => (
                             <SelectionCard
                                 key={id}
                                 label={label}
-                                icon={icon}
+                                icon={<ProductTypeIcon type={id} />}
                                 selected={selectedType === id}
                                 onClick={() => setSelectedType(id)}
                             />
@@ -128,77 +109,6 @@ function App() {
                     </div>
                 </section>
             </div>
-
-            <Card as="section" className="mt-12">
-                <div className="border-line flex flex-col justify-between gap-4 border-b pb-[15px] sm:flex-row sm:items-center">
-                    <div>
-                        <h2 className="text-primary text-[25px] font-bold">
-                            공통 컴포넌트 확인
-                        </h2>
-                        <p className="text-text-secondary mt-1 text-[15px]">
-                            폼, 태그, 버튼과 모달의 기본 상태입니다.
-                        </p>
-                    </div>
-                    <div className="flex flex-wrap gap-2">
-                        <Tag>기본 태그</Tag>
-                        <Tag tone="primary">선택됨</Tag>
-                        <Tag tone="danger">오류</Tag>
-                        <Tag tone="after">After</Tag>
-                    </div>
-                </div>
-
-                <div className="mt-5 grid gap-5 lg:grid-cols-2">
-                    <Field label="제품 이름" htmlFor="product-name" required>
-                        <Input
-                            id="product-name"
-                            placeholder="제품 이름을 입력해주세요"
-                        />
-                    </Field>
-                    <Field
-                        label="추가 설명"
-                        htmlFor="product-description"
-                        optional
-                    >
-                        <Textarea
-                            id="product-description"
-                            className="min-h-28"
-                            placeholder="제품 상태를 입력해주세요"
-                            value={description}
-                            maxLength={1000}
-                            showCount
-                            onChange={(event) =>
-                                setDescription(event.target.value)
-                            }
-                        />
-                    </Field>
-                </div>
-
-                <div className="mt-5 flex flex-wrap gap-3">
-                    <Button size="sm" onClick={() => setModalOpen(true)}>
-                        모달 열기
-                    </Button>
-                    <Button size="sm" variant="outline">
-                        보조 버튼
-                    </Button>
-                    <Button size="sm" variant="soft">
-                        연한 버튼
-                    </Button>
-                    <Button size="sm" disabled>
-                        비활성 버튼
-                    </Button>
-                </div>
-            </Card>
-
-            <Modal
-                open={modalOpen}
-                title="기본 컴포넌트 준비 완료"
-                onClose={() => setModalOpen(false)}
-            >
-                <p>
-                    Fit Again의 공통 레이아웃과 기본 UI를 각 화면에서 재사용할
-                    수 있도록 구성했습니다.
-                </p>
-            </Modal>
         </PageLayout>
     );
 }
@@ -223,43 +133,5 @@ const SectionHeading = ({
         )}
     </h2>
 );
-
-function BackpackPlaceholderIcon() {
-    return (
-        <svg
-            className="text-text-secondary h-16 w-16"
-            viewBox="0 0 64 64"
-            fill="none"
-            aria-hidden="true"
-        >
-            <path
-                d="M20 19c0-8 4-13 12-13s12 5 12 13M15 27c0-6 5-11 11-11h12c6 0 11 5 11 11v27H15V27Z"
-                stroke="currentColor"
-                strokeWidth="3"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-            />
-            <rect
-                x="22"
-                y="31"
-                width="20"
-                height="14"
-                rx="4"
-                stroke="currentColor"
-                strokeWidth="3"
-            />
-        </svg>
-    );
-}
-
-function MoreIcon() {
-    return (
-        <span className="text-text-secondary flex gap-2" aria-hidden="true">
-            <span className="size-3 rounded-full bg-current" />
-            <span className="size-3 rounded-full bg-current" />
-            <span className="size-3 rounded-full bg-current" />
-        </span>
-    );
-}
 
 export default App;

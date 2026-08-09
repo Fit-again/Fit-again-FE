@@ -29,16 +29,11 @@ describe("App", () => {
         expect(shoulderBag).toHaveAttribute("aria-pressed", "true");
     });
 
-    it("다음 단계 버튼으로 안내 모달을 열고 닫는다", async () => {
-        const user = userEvent.setup();
+    it("테스트용 컴포넌트 확인 영역을 노출하지 않는다", () => {
         render(<App />);
 
-        await user.click(screen.getByRole("button", { name: "다음 단계" }));
         expect(
-            screen.getByRole("dialog", { name: "기본 컴포넌트 준비 완료" })
-        ).toBeInTheDocument();
-
-        await user.click(screen.getByText("닫기", { selector: "button" }));
-        expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+            screen.queryByText("공통 컴포넌트 확인")
+        ).not.toBeInTheDocument();
     });
 });
