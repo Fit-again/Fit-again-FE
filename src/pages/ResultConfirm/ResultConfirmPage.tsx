@@ -268,7 +268,7 @@ function ResultConfirmPage() {
                             </p>
                         </div>
 
-                        <div className="mt-6 grid flex-1 gap-6 sm:grid-cols-[minmax(260px,340px)_1fr]">
+                        <div className="mt-6 grid flex-1 gap-6 sm:grid-cols-[minmax(220px,1fr)_1.1fr]">
                             <div className="flex flex-col items-start justify-center">
                                 <h3 className="text-primary text-[16px] font-bold">
                                     최종 리폼 결과
