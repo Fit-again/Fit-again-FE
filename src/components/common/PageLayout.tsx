@@ -17,12 +17,12 @@ const PageLayout = ({
     children,
     actions,
 }: PageLayoutProps) => (
-    <div className="bg-ground min-h-screen">
+    <div className="bg-ground mx-auto flex min-h-[1024px] w-full max-w-[1440px] flex-col">
         <ProgressHeader currentStep={currentStep} />
         <PageIntro title={title} description={description} />
-        <main className="mx-auto w-full max-w-[1240px] px-5 py-8 sm:px-8 lg:py-12 xl:px-0">
+        <main className="mx-auto flex w-full max-w-[1240px] flex-1 flex-col px-5 py-8 sm:px-8 lg:py-12 xl:px-0">
             {children}
-            {actions && <div className="mt-12">{actions}</div>}
+            {actions && <div className="mt-auto pt-12">{actions}</div>}
         </main>
     </div>
 );

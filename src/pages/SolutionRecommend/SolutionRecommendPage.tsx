@@ -113,54 +113,56 @@ function SolutionRecommendPage() {
                 title="AI 추천"
                 description="AI가 제품에 가장 적합한 리폼 방향을 분석하고 있어요."
             >
-                <Card className="mx-auto max-w-140">
-                    <div
-                        className="bg-line h-2 w-full overflow-hidden rounded-full"
-                        role="progressbar"
-                        aria-label="AI 추천 진행률"
-                        aria-valuemin={0}
-                        aria-valuemax={100}
-                        aria-valuenow={progress}
-                    >
+                <div className="flex flex-1 items-center justify-center pt-16">
+                    <Card className="w-full max-w-160 p-8">
                         <div
-                            className="bg-primary h-full rounded-full transition-[width] duration-500"
-                            style={{ width: `${progress}%` }}
-                        />
-                    </div>
+                            className="bg-line h-2 w-full overflow-hidden rounded-full"
+                            role="progressbar"
+                            aria-label="AI 추천 진행률"
+                            aria-valuemin={0}
+                            aria-valuemax={100}
+                            aria-valuenow={progress}
+                        >
+                            <div
+                                className="bg-primary h-full rounded-full transition-[width] duration-500"
+                                style={{ width: `${progress}%` }}
+                            />
+                        </div>
 
-                    <ul className="mt-8 flex flex-col gap-5">
-                        {RECOMMEND_STEPS.map((step, index) => {
-                            const status: StepStatus =
-                                index < completedCount
-                                    ? "done"
-                                    : index === completedCount
-                                      ? "active"
-                                      : "pending";
+                        <ul className="mt-8 flex flex-col gap-5">
+                            {RECOMMEND_STEPS.map((step, index) => {
+                                const status: StepStatus =
+                                    index < completedCount
+                                        ? "done"
+                                        : index === completedCount
+                                          ? "active"
+                                          : "pending";
 
-                            return (
-                                <li
-                                    key={step.id}
-                                    className="flex items-center gap-3"
-                                >
-                                    <StepIcon status={status} />
-                                    <span
-                                        className={`text-[18px] ${status === "pending" ? "text-text-secondary" : "text-primary font-medium"}`}
+                                return (
+                                    <li
+                                        key={step.id}
+                                        className="flex items-center gap-3"
                                     >
-                                        {step.label}
-                                    </span>
-                                </li>
-                            );
-                        })}
-                    </ul>
+                                        <StepIcon status={status} />
+                                        <span
+                                            className={`text-[18px] ${status === "pending" ? "text-text-secondary" : "text-primary font-medium"}`}
+                                        >
+                                            {step.label}
+                                        </span>
+                                    </li>
+                                );
+                            })}
+                        </ul>
 
-                    <p
-                        className="text-text-secondary mt-8 text-center text-[16px]"
-                        role="status"
-                        aria-live="polite"
-                    >
-                        {`${RECOMMEND_STEPS[completedCount].label}...`}
-                    </p>
-                </Card>
+                        <p
+                            className="text-text-secondary mt-8 text-center text-[16px]"
+                            role="status"
+                            aria-live="polite"
+                        >
+                            {`${RECOMMEND_STEPS[completedCount].label}...`}
+                        </p>
+                    </Card>
+                </div>
             </PageLayout>
         );
     }
@@ -186,7 +188,7 @@ function SolutionRecommendPage() {
                         <Tag tone="primary" icon={<PawIcon />}>
                             AI 추천
                         </Tag>
-                        <h2 className="text-text-strong mt-4 text-[24px] font-bold sm:text-[26px]">
+                        <h2 className="text-primary mt-4 text-[24px] font-bold sm:text-[26px]">
                             {MOCK_RECOMMENDATION.title}
                         </h2>
                         <p className="text-text-secondary mt-4 text-[17px] leading-relaxed">
@@ -194,7 +196,7 @@ function SolutionRecommendPage() {
                         </p>
 
                         <div className="border-line mt-6 rounded-[5px] border p-5">
-                            <h3 className="text-text-strong text-[17px] font-bold">
+                            <h3 className="text-primary text-[17px] font-bold">
                                 추천 이유
                             </h3>
                             <ul className="mt-3 flex flex-col gap-2.5">
@@ -214,7 +216,7 @@ function SolutionRecommendPage() {
                     </div>
 
                     <div className="lg:border-line lg:border-l lg:pl-7">
-                        <h3 className="text-text-strong text-[17px] font-bold">
+                        <h3 className="text-primary text-[17px] font-bold">
                             추천 리폼 작업
                         </h3>
                         <ul className="mt-4 flex flex-col gap-3">
@@ -237,7 +239,7 @@ function SolutionRecommendPage() {
             </Card>
 
             <section className="mt-10">
-                <h2 className="text-text-strong text-[23px] font-bold sm:text-[25px]">
+                <h2 className="text-primary text-[23px] font-bold sm:text-[25px]">
                     다른 활용 방법
                 </h2>
                 <div className="mt-4 grid gap-4 sm:grid-cols-2">
