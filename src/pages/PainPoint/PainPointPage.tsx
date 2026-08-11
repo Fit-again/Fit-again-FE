@@ -2,31 +2,17 @@ import { Textarea } from "@/components/common/form/FormControls";
 import PageActions from "@/components/common/PageActions";
 import PageLayout from "@/components/common/PageLayout";
 import SectionHeading from "@/components/common/SectionHeading";
+import { PAIN_POINT_KEYWORDS } from "@/constants/painPointKeywords";
 import { ROUTES } from "@/routes/paths";
+import { useReformFlowStore } from "@/stores/useReformFlowStore";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-
-type PainPointKeyword = {
-    id: string;
-    label: string;
-};
-
-const painPointKeywords: PainPointKeyword[] = [
-    { id: "heavy", label: "무거움" },
-    { id: "strap-slip", label: "스트랩이 흘러내림" },
-    { id: "shoulder-pain", label: "어깨가 아픔" },
-    { id: "lack-storage", label: "수납 공간 부족" },
-    { id: "wear", label: "마모가 신경 쓰임" },
-    { id: "style-mismatch", label: "현재 스타일과 맞지 않음" },
-    { id: "rarely-used", label: "특별한 날에만 사용함" },
-    { id: "outdated-design", label: "디자인이 올드함" },
-    { id: "lock-zipper", label: "잠금/지퍼 불편" },
-];
 
 const DESCRIPTION_MAX = 1000;
 
 function PainPointPage() {
     const navigate = useNavigate();
+    const setPainPoint = useReformFlowStore((state) => state.setPainPoint);
     const [selectedKeywords, setSelectedKeywords] = useState<string[]>([]);
     const [description, setDescription] = useState("");
     const [submitted, setSubmitted] = useState(false);
@@ -47,6 +33,10 @@ function PainPointPage() {
     const handleNext = () => {
         setSubmitted(true);
         if (!keywordError) {
+            setPainPoint({
+                painPointKeywordIds: selectedKeywords,
+                description,
+            });
             navigate(ROUTES.aiAnalysis);
         }
     };
@@ -77,7 +67,7 @@ function PainPointPage() {
                         현재 느끼는 불편함을 선택해주세요.
                     </p>
                     <div className="mt-5 flex flex-wrap gap-4">
-                        {painPointKeywords.map(({ id, label }) => (
+                        {PAIN_POINT_KEYWORDS.map(({ id, label }) => (
                             <KeywordToggle
                                 key={id}
                                 label={label}
