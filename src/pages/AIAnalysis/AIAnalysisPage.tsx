@@ -18,6 +18,11 @@ type StepStatus = "done" | "active" | "pending";
 
 type TagTone = "primary" | "danger" | "soft";
 
+type AnalysisPhoto = {
+    file: File;
+    label: string;
+};
+
 const ANALYSIS_STEPS: AnalysisStep[] = [
     { id: "product", label: "제품 정보 확인 중" },
     { id: "pain-point", label: "불편 사항 분석 중" },
@@ -132,6 +137,14 @@ function AIAnalysisPage() {
         (id) => PAIN_POINT_CAUSE_TEXT[id] ?? id
     );
 
+    const analysisPhotos: AnalysisPhoto[] = [
+        ...(frontPhoto ? [{ file: frontPhoto, label: "정면 사진" }] : []),
+        ...wearPhotos.map((file, index) => ({
+            file,
+            label: `마모 부위 사진 ${index + 1}`,
+        })),
+    ];
+
     return (
         <PageLayout
             currentStep={3}
@@ -147,25 +160,7 @@ function AIAnalysisPage() {
         >
             <div className="grid gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.3fr)]">
                 <section>
-                    <div className="grid gap-3">
-                        <PhotoFrame
-                            file={frontPhoto}
-                            label="정면 사진"
-                            className="aspect-4/3"
-                        />
-                        {wearPhotos.length > 0 && (
-                            <div className="grid grid-cols-2 gap-3">
-                                {wearPhotos.slice(0, 2).map((file, index) => (
-                                    <PhotoFrame
-                                        key={index}
-                                        file={file}
-                                        label={`마모 부위 사진 ${index + 1}`}
-                                        className="aspect-square"
-                                    />
-                                ))}
-                            </div>
-                        )}
-                    </div>
+                    <PhotoCarousel photos={analysisPhotos} />
                     <p className="text-text-secondary mt-4 text-[15px]">
                         ※ 사진을 기반으로 분석한 결과이며 실제 제품 정보와
                         차이가 있을 수 있습니다.
@@ -300,41 +295,100 @@ const TagList = ({ tone, items }: { tone: TagTone; items: string[] }) => (
     </div>
 );
 
-const PhotoFrame = ({
-    file,
-    label,
-    className = "",
-}: {
-    file: File | null;
-    label: string;
-    className?: string;
-}) => {
-    const url = useMemo(
-        () => (file ? URL.createObjectURL(file) : null),
-        [file]
+const PhotoCarousel = ({ photos }: { photos: AnalysisPhoto[] }) => {
+    const [index, setIndex] = useState(0);
+
+    const urls = useMemo(
+        () => photos.map(({ file }) => URL.createObjectURL(file)),
+        [photos]
     );
 
     useEffect(() => {
         return () => {
-            if (url) URL.revokeObjectURL(url);
+            urls.forEach((url) => URL.revokeObjectURL(url));
         };
-    }, [url]);
+    }, [urls]);
+
+    const currentIndex = Math.min(index, Math.max(photos.length - 1, 0));
+
+    if (photos.length === 0) {
+        return (
+            <div className="border-line bg-placeholder text-text-secondary flex aspect-4/3 items-center justify-center rounded-[5px] border">
+                <span className="text-[14px]">사진 없음</span>
+            </div>
+        );
+    }
+
+    const current = photos[currentIndex];
+    const goPrev = () =>
+        setIndex((prev) => (prev - 1 + photos.length) % photos.length);
+    const goNext = () => setIndex((prev) => (prev + 1) % photos.length);
 
     return (
-        <div
-            className={`border-line bg-placeholder text-text-secondary flex items-center justify-center overflow-hidden rounded-[5px] border ${className}`}
-        >
-            {url ? (
+        <div>
+            <div className="border-line bg-placeholder relative aspect-4/3 overflow-hidden rounded-[5px] border">
                 <img
-                    src={url}
-                    alt={label}
+                    src={urls[currentIndex]}
+                    alt={current.label}
                     className="h-full w-full object-cover"
                 />
-            ) : (
-                <span className="text-[14px]">사진 없음</span>
+                {photos.length > 1 && (
+                    <>
+                        <button
+                            type="button"
+                            onClick={goPrev}
+                            aria-label="이전 사진"
+                            className="text-text-strong focus-visible:outline-primary absolute top-1/2 left-3 flex size-9 -translate-y-1/2 cursor-pointer items-center justify-center rounded-full bg-white/85 shadow hover:bg-white focus-visible:outline-3 focus-visible:outline-offset-2"
+                        >
+                            <ChevronIcon direction="left" />
+                        </button>
+                        <button
+                            type="button"
+                            onClick={goNext}
+                            aria-label="다음 사진"
+                            className="text-text-strong focus-visible:outline-primary absolute top-1/2 right-3 flex size-9 -translate-y-1/2 cursor-pointer items-center justify-center rounded-full bg-white/85 shadow hover:bg-white focus-visible:outline-3 focus-visible:outline-offset-2"
+                        >
+                            <ChevronIcon direction="right" />
+                        </button>
+                        <span className="bg-primary/80 absolute right-3 bottom-3 rounded-full px-3 py-1 text-[13px] text-white">
+                            {currentIndex + 1} / {photos.length}
+                        </span>
+                    </>
+                )}
+            </div>
+
+            <p className="text-text-secondary mt-2 text-center text-[15px]">
+                {current.label}
+            </p>
+
+            {photos.length > 1 && (
+                <div className="mt-3 flex justify-center gap-2">
+                    {photos.map((photo, photoIndex) => (
+                        <button
+                            key={photo.label}
+                            type="button"
+                            aria-label={`${photo.label} 보기`}
+                            aria-current={photoIndex === currentIndex}
+                            onClick={() => setIndex(photoIndex)}
+                            className={`size-2.5 cursor-pointer rounded-full transition-colors ${photoIndex === currentIndex ? "bg-primary" : "bg-line"}`}
+                        />
+                    ))}
+                </div>
             )}
         </div>
     );
 };
+
+const ChevronIcon = ({ direction }: { direction: "left" | "right" }) => (
+    <svg className="size-4" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+        <path
+            d={direction === "left" ? "M10 3 5 8l5 5" : "M6 3l5 5-5 5"}
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+        />
+    </svg>
+);
 
 export default AIAnalysisPage;
