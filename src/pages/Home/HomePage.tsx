@@ -1,4 +1,5 @@
 import Button from "@/components/common/Button";
+import heroBeforeAfter from "@/assets/home/hero-before-after.png";
 import { ROUTES } from "@/routes/paths";
 import { useNavigate } from "react-router-dom";
 
@@ -41,11 +42,11 @@ const HomePage = () => {
                     </Button>
                 </div>
 
-                <div className="border-line bg-secondary/40 flex aspect-[4/3] w-full max-w-[560px] items-center justify-center rounded-[5px] border">
-                    <span className="text-text-secondary px-6 text-center text-[15px]">
-                        Before / After 제품 이미지 영역
-                    </span>
-                </div>
+                <img
+                    className="w-full max-w-[560px] rounded-[5px]"
+                    src={heroBeforeAfter}
+                    alt="리폼 전후 비교, 낡은 갈색 가방이 깨끗한 아이보리색 가방으로 리폼된 모습"
+                />
             </section>
 
             <section className="bg-primary px-5 py-16 sm:px-8 lg:py-20">
@@ -60,7 +61,7 @@ const HomePage = () => {
                         {painPoints.map((point) => (
                             <span
                                 key={point}
-                                className="inline-flex min-h-9 items-center rounded-[50px] border border-white/25 bg-white/10 px-5 py-1.5 text-[15px] text-white/90"
+                                className="inline-flex min-h-9 items-center rounded-[50px] border border-white/25 bg-white/10 px-5 py-1.5 text-[15px] text-white/90 shadow-[0_0_24px_8px_rgba(238,232,224,0.18)]"
                             >
                                 {point}
                             </span>
