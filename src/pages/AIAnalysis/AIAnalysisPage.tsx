@@ -335,7 +335,7 @@ const PhotoCarousel = ({ photos }: { photos: AnalysisPhoto[] }) => {
                 <img
                     ref={imgRef}
                     alt={current.label}
-                    className="h-full w-full object-cover"
+                    className="h-full w-full object-contain"
                 />
                 {photos.length > 1 && (
                     <>
