@@ -1,13 +1,7 @@
 import Button from "@/components/common/Button";
 import Card from "@/components/common/Card";
 import Checkbox from "@/components/common/Checkbox";
-import {
-    ErrorMessage,
-    Field,
-    Input,
-    Textarea,
-} from "@/components/common/form/FormControls";
-import Modal from "@/components/common/Modal";
+import { Field, Input, Textarea } from "@/components/common/form/FormControls";
 import PageActions from "@/components/common/PageActions";
 import PageLayout from "@/components/common/PageLayout";
 import Tag from "@/components/common/Tag";
@@ -75,7 +69,6 @@ function ResultConfirmPage() {
     const [agreed, setAgreed] = useState(false);
     const [submitted, setSubmitted] = useState(false);
     const [submitSuccess, setSubmitSuccess] = useState(false);
-    const [policyOpen, setPolicyOpen] = useState(false);
 
     const isComplete = completedCount === RESULT_STEPS.length;
     const progress = Math.round((completedCount / RESULT_STEPS.length) * 100);
@@ -193,7 +186,7 @@ function ResultConfirmPage() {
                 />
             }
         >
-            <div className="grid gap-6 lg:grid-cols-[minmax(0,1.65fr)_minmax(320px,1fr)] lg:items-start">
+            <div className="grid gap-6 lg:grid-cols-[minmax(0,1.65fr)_minmax(320px,1fr)]">
                 <Card className="p-6 sm:p-8">
                     <div className="border-line flex flex-wrap items-baseline justify-between gap-x-4 gap-y-2 border-b pb-4">
                         <h2 className="text-text-strong text-[22px] font-bold sm:text-[23px]">
@@ -289,30 +282,33 @@ function ResultConfirmPage() {
                     )}
                 </Card>
 
-                <Card className="p-6 sm:p-8">
-                    <h2 className="text-text-strong text-[22px] font-bold sm:text-[23px]">
-                        공식 상담 신청
-                    </h2>
+                <Card className="flex h-full flex-col p-6 sm:p-8">
+                    <div className="border-line border-b pb-4">
+                        <h2 className="text-text-strong text-[22px] font-bold sm:text-[23px]">
+                            공식 상담 신청
+                        </h2>
+                    </div>
 
                     <form
-                        className="mt-6 flex flex-col gap-6"
+                        className="mt-6 flex flex-1 flex-col gap-6"
                         onSubmit={handleSubmit}
                         noValidate
                     >
-                        <Field
-                            label="성명"
-                            htmlFor="consult-name"
-                            required
-                            error={submitted ? nameError : undefined}
-                        >
+                        <Field label="성명" htmlFor="consult-name" required>
                             <Input
                                 id="consult-name"
                                 placeholder="성명을 입력해주세요"
                                 invalid={submitted && !!nameError}
+                                aria-describedby="consult-name-error"
                                 value={name}
                                 onChange={(event) =>
                                     setName(event.target.value)
                                 }
+                            />
+                            <ReservedError
+                                id="consult-name-error"
+                                show={submitted && !!nameError}
+                                message={nameError}
                             />
                         </Field>
 
@@ -320,16 +316,21 @@ function ResultConfirmPage() {
                             label="연락처"
                             htmlFor="consult-contact"
                             required
-                            error={submitted ? contactError : undefined}
                         >
                             <Input
                                 id="consult-contact"
                                 placeholder="연락처를 입력해주세요. (예: 010-1234-5678)"
                                 invalid={submitted && !!contactError}
+                                aria-describedby="consult-contact-error"
                                 value={contact}
                                 onChange={(event) =>
                                     setContact(event.target.value)
                                 }
+                            />
+                            <ReservedError
+                                id="consult-contact-error"
+                                show={submitted && !!contactError}
+                                message={contactError}
                             />
                         </Field>
 
@@ -356,11 +357,7 @@ function ResultConfirmPage() {
                                 id="consult-agree"
                                 checked={agreed}
                                 invalid={submitted && !!agreeError}
-                                aria-describedby={
-                                    submitted && agreeError
-                                        ? "consult-agree-error"
-                                        : undefined
-                                }
+                                aria-describedby="consult-agree-error"
                                 onChange={(event) =>
                                     setAgreed(event.target.checked)
                                 }
@@ -370,60 +367,41 @@ function ResultConfirmPage() {
                                         <button
                                             type="button"
                                             className="text-primary underline underline-offset-2"
-                                            onClick={() => setPolicyOpen(true)}
+                                            onClick={() => {
+                                                // TODO: 개인정보 처리방침 모달은 추후 별도 작업에서 연동
+                                            }}
                                         >
                                             (보기)
                                         </button>
                                     </>
                                 }
                             />
-                            {submitted && agreeError && (
-                                <div className="mt-1.5">
-                                    <ErrorMessage id="consult-agree-error">
-                                        {agreeError}
-                                    </ErrorMessage>
-                                </div>
-                            )}
+                            <ReservedError
+                                id="consult-agree-error"
+                                show={submitted && !!agreeError}
+                                message={agreeError}
+                                className="mt-1.5"
+                            />
                         </div>
 
-                        <Button type="submit" variant="soft" fullWidth>
-                            상담 신청하기
-                        </Button>
-                        {submitSuccess && (
-                            <p
-                                className="text-primary text-center text-[15px]"
-                                role="status"
-                                aria-live="polite"
-                            >
-                                상담 신청이 접수되었습니다. 담당자가 곧
-                                연락드릴게요.
-                            </p>
-                        )}
+                        <div className="mt-auto flex flex-col gap-2">
+                            <Button type="submit" variant="soft" fullWidth>
+                                상담 신청하기
+                            </Button>
+                            {submitSuccess && (
+                                <p
+                                    className="text-primary text-center text-[15px]"
+                                    role="status"
+                                    aria-live="polite"
+                                >
+                                    상담 신청이 접수되었습니다. 담당자가 곧
+                                    연락드릴게요.
+                                </p>
+                            )}
+                        </div>
                     </form>
                 </Card>
             </div>
-
-            <Modal
-                open={policyOpen}
-                title="개인정보 수집 및 이용 안내"
-                onClose={() => setPolicyOpen(false)}
-            >
-                <div className="flex flex-col gap-3 text-[16px] leading-relaxed">
-                    <p>
-                        Fit Again은 공식 상담 신청을 위해 아래와 같이 개인정보를
-                        수집·이용합니다.
-                    </p>
-                    <ul className="list-disc space-y-1 pl-5">
-                        <li>수집 항목: 성명, 연락처, 추가 요청사항</li>
-                        <li>이용 목적: 리폼 상담 예약 및 안내</li>
-                        <li>보유 기간: 상담 완료 후 1년</li>
-                    </ul>
-                    <p className="text-text-secondary text-[14px]">
-                        동의를 거부할 수 있으나, 동의하지 않을 경우 상담 신청이
-                        제한될 수 있습니다.
-                    </p>
-                </div>
-            </Modal>
         </PageLayout>
     );
 }
@@ -458,6 +436,27 @@ const StepIcon = ({ status }: { status: StepStatus }) => {
         />
     );
 };
+
+const ReservedError = ({
+    id,
+    show,
+    message,
+    className = "",
+}: {
+    id?: string;
+    show: boolean;
+    message?: string;
+    className?: string;
+}) => (
+    <p
+        id={id}
+        role={show ? "alert" : undefined}
+        className={`text-danger flex items-center gap-1 text-[15px] ${show ? "visible" : "invisible"} ${className}`}
+    >
+        <span aria-hidden="true">▲</span>
+        {message ?? " "}
+    </p>
+);
 
 const CheckBadge = () => (
     <span
