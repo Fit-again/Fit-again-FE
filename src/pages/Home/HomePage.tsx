@@ -51,7 +51,7 @@ const HomePage = () => {
 
             <section className="bg-primary flex flex-1 flex-col items-center justify-center px-5 py-16 sm:px-8 lg:py-20">
                 <div className="mx-auto flex w-full max-w-[1160px] flex-col items-center text-center">
-                    <h2 className="text-[24px] leading-snug font-bold text-white sm:text-[28px]">
+                    <h2 className="text-[25px] leading-snug font-bold text-white">
                         아직 사용할 수 있지만,
                         <br />
                         지금은 손이 가지 않는 럭셔리 제품이 있으신가요?

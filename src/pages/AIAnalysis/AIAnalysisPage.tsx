@@ -239,7 +239,6 @@ function AIAnalysisPage() {
                                         items={
                                             MOCK_ANALYSIS.improvementSuggestions
                                         }
-                                        tagClassName="min-h-9 px-5 py-1.5 text-[16px]"
                                     />
                                 </InfoRow>
                             </dl>
@@ -291,9 +290,9 @@ const InfoRow = ({
     labelWidthClassName?: string;
     children: ReactNode;
 }) => (
-    <div className="flex gap-6 py-4 first:pt-0 last:pb-0">
+    <div className="flex gap-4 py-4 first:pt-0 last:pb-0">
         <dt
-            className={`border-line text-text-strong shrink-0 border-r pr-4 text-[18px] font-medium ${labelWidthClassName}`}
+            className={`border-line text-text-strong shrink-0 border-r pr-3 text-[18px] font-medium ${labelWidthClassName}`}
         >
             {label}
         </dt>
@@ -301,18 +300,10 @@ const InfoRow = ({
     </div>
 );
 
-const TagList = ({
-    tone,
-    items,
-    tagClassName = "",
-}: {
-    tone: TagTone;
-    items: string[];
-    tagClassName?: string;
-}) => (
+const TagList = ({ tone, items }: { tone: TagTone; items: string[] }) => (
     <div className="flex flex-wrap gap-2">
         {items.map((item) => (
-            <Tag key={item} tone={tone} className={tagClassName}>
+            <Tag key={item} tone={tone}>
                 {item}
             </Tag>
         ))}
