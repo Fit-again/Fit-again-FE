@@ -6,7 +6,7 @@ import { PAIN_POINT_CAUSE_TEXT } from "@/constants/painPointKeywords";
 import { PRODUCT_TYPES } from "@/constants/productTypes";
 import { ROUTES } from "@/routes/paths";
 import { useReformFlowStore } from "@/stores/useReformFlowStore";
-import { useEffect, useMemo, useState, type ReactNode } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 import { useNavigate } from "react-router-dom";
 
 type AnalysisStep = {
@@ -297,19 +297,24 @@ const TagList = ({ tone, items }: { tone: TagTone; items: string[] }) => (
 
 const PhotoCarousel = ({ photos }: { photos: AnalysisPhoto[] }) => {
     const [index, setIndex] = useState(0);
-
-    const urls = useMemo(
-        () => photos.map(({ file }) => URL.createObjectURL(file)),
-        [photos]
-    );
-
-    useEffect(() => {
-        return () => {
-            urls.forEach((url) => URL.revokeObjectURL(url));
-        };
-    }, [urls]);
-
     const currentIndex = Math.min(index, Math.max(photos.length - 1, 0));
+    const currentFile = photos[currentIndex]?.file ?? null;
+    const imgRef = useRef<HTMLImageElement>(null);
+
+    /*
+     * blob URL은 img 엘리먼트에 직접(ref로) 반영합니다.
+     * React state로 다루면 StrictMode의 effect 이중 실행 시
+     * "생성 → 정리(해제) → 재실행"이 같은 커밋 안에서 렌더 없이 발생해,
+     * 방금 해제된 URL이 화면에 남는 문제가 생깁니다.
+     */
+    useEffect(() => {
+        if (!currentFile || !imgRef.current) return;
+
+        const url = URL.createObjectURL(currentFile);
+        imgRef.current.src = url;
+
+        return () => URL.revokeObjectURL(url);
+    }, [currentFile]);
 
     if (photos.length === 0) {
         return (
@@ -328,7 +333,7 @@ const PhotoCarousel = ({ photos }: { photos: AnalysisPhoto[] }) => {
         <div>
             <div className="border-line bg-placeholder relative aspect-4/3 overflow-hidden rounded-[5px] border">
                 <img
-                    src={urls[currentIndex]}
+                    ref={imgRef}
                     alt={current.label}
                     className="h-full w-full object-cover"
                 />
