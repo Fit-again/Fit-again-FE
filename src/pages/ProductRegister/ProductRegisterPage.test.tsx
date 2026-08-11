@@ -69,11 +69,27 @@ describe("ProductRegisterPage", () => {
             screen.getByText("정면 사진을 업로드해주세요")
         ).toBeInTheDocument();
         expect(
-            screen.getByText("마모 부위 사진을 업로드해주세요")
-        ).toBeInTheDocument();
+            screen.queryByText("마모 부위 사진을 업로드해주세요")
+        ).not.toBeInTheDocument();
         expect(
             screen.queryByRole("heading", { name: "불편 입력" })
         ).not.toBeInTheDocument();
+    });
+
+    it("마모 부위 사진 없이도 다음 단계로 이동할 수 있다", async () => {
+        const user = userEvent.setup();
+        renderPage();
+
+        await user.click(screen.getByRole("button", { name: "토트백" }));
+        await user.upload(
+            screen.getByLabelText(/정면 사진을 선택해주세요/),
+            createImageFile("front.png")
+        );
+        await user.click(screen.getByRole("button", { name: "다음 단계" }));
+
+        expect(
+            screen.getByRole("heading", { name: "불편 입력" })
+        ).toBeInTheDocument();
     });
 
     it("정면 사진을 업로드하면 파일명을 보여준다", async () => {
