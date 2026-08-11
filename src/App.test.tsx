@@ -1,39 +1,42 @@
 import { render, screen } from "@testing-library/react";
-import userEvent from "@testing-library/user-event";
+import { MemoryRouter } from "react-router-dom";
 import { describe, expect, it } from "vitest";
 import App from "@/App";
 
-describe("App", () => {
-    it("제품 등록 공통 레이아웃을 보여준다", () => {
-        render(<App />);
+describe("App 라우팅", () => {
+    it("루트 경로에서 홈 화면을 보여준다", () => {
+        render(
+            <MemoryRouter initialEntries={["/"]}>
+                <App />
+            </MemoryRouter>
+        );
+
+        expect(
+            screen.getByRole("heading", { name: "Fit:again" })
+        ).toBeInTheDocument();
+    });
+
+    it("/product-register 경로에서 제품 등록 화면을 보여준다", () => {
+        render(
+            <MemoryRouter initialEntries={["/product-register"]}>
+                <App />
+            </MemoryRouter>
+        );
 
         expect(
             screen.getByRole("heading", { name: "제품 등록", level: 1 })
         ).toBeInTheDocument();
-        expect(
-            screen.getByRole("navigation", { name: "서비스 진행 단계" })
-        ).toBeInTheDocument();
-        expect(screen.getByRole("button", { name: "토트백" })).toHaveAttribute(
-            "aria-pressed",
-            "true"
+    });
+
+    it("정의되지 않은 경로에서 404 화면을 보여준다", () => {
+        render(
+            <MemoryRouter initialEntries={["/unknown"]}>
+                <App />
+            </MemoryRouter>
         );
-    });
-
-    it("제품 유형을 선택할 수 있다", async () => {
-        const user = userEvent.setup();
-        render(<App />);
-
-        const shoulderBag = screen.getByRole("button", { name: "숄더백" });
-        await user.click(shoulderBag);
-
-        expect(shoulderBag).toHaveAttribute("aria-pressed", "true");
-    });
-
-    it("테스트용 컴포넌트 확인 영역을 노출하지 않는다", () => {
-        render(<App />);
 
         expect(
-            screen.queryByText("공통 컴포넌트 확인")
-        ).not.toBeInTheDocument();
+            screen.getByRole("heading", { name: "404" })
+        ).toBeInTheDocument();
     });
 });
