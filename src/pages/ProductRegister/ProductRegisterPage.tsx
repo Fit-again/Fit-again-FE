@@ -8,23 +8,11 @@ import UploadArea from "@/components/common/UploadArea";
 import ProductTypeIcon, {
     type ProductType,
 } from "@/components/product/ProductTypeIcon";
+import { PRODUCT_TYPES } from "@/constants/productTypes";
 import { ROUTES } from "@/routes/paths";
+import { useReformFlowStore } from "@/stores/useReformFlowStore";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-
-type ProductTypeOption = {
-    id: ProductType;
-    label: string;
-};
-
-const productTypes: ProductTypeOption[] = [
-    { id: "tote", label: "토트백" },
-    { id: "shoulder", label: "숄더백" },
-    { id: "cross", label: "크로스백" },
-    { id: "backpack", label: "백팩" },
-    { id: "pouch", label: "파우치" },
-    { id: "other", label: "기타" },
-];
 
 const WEAR_PHOTO_MAX = 5;
 
@@ -33,6 +21,7 @@ const isValidProductPhoto = (file: File) => file.type.startsWith("image/");
 
 function ProductRegisterPage() {
     const navigate = useNavigate();
+    const setProductInfo = useReformFlowStore((state) => state.setProductInfo);
     const [selectedType, setSelectedType] = useState<ProductType | null>(null);
     const [frontPhoto, setFrontPhoto] = useState<File | null>(null);
     const [wearPhotos, setWearPhotos] = useState<File[]>([]);
@@ -50,6 +39,11 @@ function ProductRegisterPage() {
     const handleNext = () => {
         setSubmitted(true);
         if (!typeError && !frontPhotoError && !wearPhotoError) {
+            setProductInfo({
+                productType: selectedType!,
+                frontPhoto: frontPhoto!,
+                wearPhotos,
+            });
             navigate(ROUTES.painPoint);
         }
     };
@@ -73,7 +67,7 @@ function ProductRegisterPage() {
                         제품 유형을 선택해주세요.
                     </p>
                     <div className="mt-5 grid grid-cols-2 gap-4 sm:grid-cols-3">
-                        {productTypes.map(({ id, label }) => (
+                        {PRODUCT_TYPES.map(({ id, label }) => (
                             <SelectionCard
                                 key={id}
                                 label={label}
