@@ -107,6 +107,7 @@ function ProductRegisterPage() {
                                         : "정면 사진을 선택해주세요"
                                 }
                                 description="PNG, JPG 파일을 업로드할 수 있습니다."
+                                file={frontPhoto}
                                 onFilesSelected={(files) =>
                                     setFrontPhoto(files[0] ?? null)
                                 }
