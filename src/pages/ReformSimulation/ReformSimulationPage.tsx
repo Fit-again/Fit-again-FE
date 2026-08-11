@@ -257,7 +257,7 @@ function ReformSimulationPage() {
                     <Card className="p-6">
                         <h3 className="flex items-center gap-2 text-[19px] font-bold">
                             <span className="text-danger">Before</span>
-                            <span className="text-text-secondary text-[15px] font-normal">
+                            <span className="text-danger text-[15px] font-normal">
                                 현재 상태
                             </span>
                         </h3>
@@ -270,7 +270,7 @@ function ReformSimulationPage() {
                                         className="flex items-start gap-2.5"
                                     >
                                         <SignBadge tone="danger" />
-                                        <span className="text-[15px] leading-relaxed">
+                                        <span className="text-danger text-[15px] leading-relaxed">
                                             {bullet}
                                         </span>
                                     </li>
@@ -289,7 +289,7 @@ function ReformSimulationPage() {
                     <Card className="p-6">
                         <h3 className="flex items-center gap-2 text-[19px] font-bold">
                             <span className="text-after">After</span>
-                            <span className="text-text-secondary text-[15px] font-normal">
+                            <span className="text-after text-[15px] font-normal">
                                 리폼 후 기대효과
                             </span>
                         </h3>
@@ -305,7 +305,7 @@ function ReformSimulationPage() {
                                         className="flex items-start gap-2.5"
                                     >
                                         <SignBadge tone="after" />
-                                        <span className="text-[15px] leading-relaxed">
+                                        <span className="text-after text-[15px] leading-relaxed">
                                             {bullet}
                                         </span>
                                     </li>
@@ -362,7 +362,7 @@ const StepCardShell = ({
     <Card as="article" className="flex flex-1 flex-col p-5">
         <div className="flex items-center justify-between gap-2">
             <div className="flex items-center gap-2">
-                <span className="border-primary text-primary inline-flex h-7 shrink-0 items-center rounded-full border px-3 text-[13px] font-medium">
+                <span className="border-primary bg-secondary text-primary inline-flex h-7 shrink-0 items-center rounded-full border px-3 text-[13px] font-medium">
                     {`STEP ${step.stepNumber}`}
                 </span>
                 <h3 className="text-text-strong text-[18px] font-bold">
