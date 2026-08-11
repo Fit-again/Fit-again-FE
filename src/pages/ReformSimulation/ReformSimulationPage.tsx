@@ -17,12 +17,6 @@ type SimulationStep = {
 
 type StepStatus = "done" | "active" | "pending";
 
-type PhotoMarker = {
-    x: number;
-    y: number;
-    label: string;
-};
-
 const STEP_DURATION_MS = 1200;
 
 const SIMULATION_STEPS: SimulationStep[] = [
@@ -54,11 +48,6 @@ const SIMULATION_STEPS: SimulationStep[] = [
         progressLabel: "완성 이미지 생성 중",
         bullets: ["최종 리폼 결과 확인", "개선된 사용 모습 미리보기"],
     },
-];
-
-const REPLACE_MARKERS: PhotoMarker[] = [
-    { x: 18, y: 82, label: "1" },
-    { x: 85, y: 28, label: "2" },
 ];
 
 const DEFAULT_BEFORE_BULLETS = [
@@ -210,12 +199,9 @@ function ReformSimulationPage() {
                 </h2>
 
                 <div className="mt-5 flex flex-col gap-4 lg:flex-row lg:items-stretch">
+                    {/* TODO: 백엔드 부위 인식 API 연동 시 교체 대상 부위 마커 재구현 */}
                     <StepCardShell step={SIMULATION_STEPS[0]}>
-                        <StepPhoto
-                            file={frontPhoto}
-                            alt="교체 대상 부위를 표시한 정면 사진"
-                            markers={REPLACE_MARKERS}
-                        />
+                        <StepPhoto file={frontPhoto} alt="해체 전 정면 사진" />
                     </StepCardShell>
                     <StepArrow />
 
@@ -405,15 +391,7 @@ const StepArrow = ({ size = "sm" }: { size?: "sm" | "lg" }) => (
     </div>
 );
 
-const StepPhoto = ({
-    file,
-    alt,
-    markers,
-}: {
-    file: File | null;
-    alt: string;
-    markers?: PhotoMarker[];
-}) => {
+const StepPhoto = ({ file, alt }: { file: File | null; alt: string }) => {
     const imgRef = useRef<HTMLImageElement>(null);
 
     /*
@@ -440,22 +418,12 @@ const StepPhoto = ({
     }
 
     return (
-        <div className="border-line bg-ground relative aspect-4/3 overflow-hidden rounded-[5px] border">
+        <div className="border-line bg-ground aspect-4/3 overflow-hidden rounded-[5px] border">
             <img
                 ref={imgRef}
                 alt={alt}
                 className="h-full w-full object-cover"
             />
-            {markers?.map((marker) => (
-                <span
-                    key={marker.label}
-                    className="bg-danger absolute flex size-6 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full text-[12px] font-bold text-white shadow"
-                    style={{ left: `${marker.x}%`, top: `${marker.y}%` }}
-                    aria-hidden="true"
-                >
-                    {marker.label}
-                </span>
-            ))}
         </div>
     );
 };
