@@ -16,7 +16,7 @@ type RecommendedTask = {
 type AlternativeOption = {
     id: "resell" | "upcycle";
     label: string;
-    description: string;
+    description: string[];
 };
 
 /*
@@ -56,14 +56,18 @@ const ALTERNATIVE_OPTIONS: AlternativeOption[] = [
     {
         id: "resell",
         label: "리셀",
-        description:
-            "판매를 원한다면 리셀을 고려해보세요. 중고 명품 플랫폼이나 개인 거래를 통해 새로운 가치를 만들 수 있어요.",
+        description: [
+            "판매를 원한다면 리셀을 고려해보세요.",
+            "중고 명품 플랫폼이나 개인 거래를 통해 새로운 가치를 만들 수 있어요.",
+        ],
     },
     {
         id: "upcycle",
         label: "업사이클링",
-        description:
-            "새로운 디자인으로 재탄생시켜 다른 형태의 제품으로 활용할 수 있어요. 환경도 지키고 특별한 제품을 만들어보세요.",
+        description: [
+            "새로운 디자인으로 재탄생시켜 다른 형태의 제품으로 활용할 수 있어요.",
+            "환경도 지키고 특별한 제품을 만들어보세요.",
+        ],
     },
 ];
 
@@ -148,35 +152,40 @@ function SolutionRecommendPage() {
                 </h2>
                 <div className="mt-4 grid gap-4 sm:grid-cols-2">
                     {ALTERNATIVE_OPTIONS.map((option) => (
-                        <Card
-                            key={option.id}
-                            className="flex items-start justify-between gap-4"
-                        >
-                            <div>
-                                <Tag
-                                    tone="soft"
-                                    icon={
-                                        option.id === "resell" ? (
-                                            <TagIcon />
-                                        ) : (
-                                            <RecycleIcon />
-                                        )
-                                    }
-                                >
-                                    {option.label}
-                                </Tag>
-                                <p className="text-text-secondary mt-3 text-[16px] leading-relaxed">
-                                    {option.description}
-                                </p>
-                            </div>
-                            <ChevronRightIcon />
-                        </Card>
+                        <AlternativeCard key={option.id} option={option} />
                     ))}
                 </div>
             </section>
         </PageLayout>
     );
 }
+
+const AlternativeCard = ({ option }: { option: AlternativeOption }) => (
+    <button
+        type="button"
+        className="group border-line focus-visible:outline-primary hover:border-primary flex w-full cursor-pointer items-center justify-between gap-4 rounded-[5px] border bg-white p-6 text-left transition-[border-color,box-shadow] hover:shadow-[0_4px_8px_rgba(91,58,41,0.28)] focus-visible:outline-3 focus-visible:outline-offset-2"
+    >
+        <div>
+            <Tag
+                tone="soft"
+                icon={option.id === "resell" ? <TagIcon /> : <RecycleIcon />}
+            >
+                {option.label}
+            </Tag>
+            <div className="mt-4 flex flex-col gap-1">
+                {option.description.map((line) => (
+                    <p
+                        key={line}
+                        className="text-text-secondary text-[16px] leading-relaxed"
+                    >
+                        {line}
+                    </p>
+                ))}
+            </div>
+        </div>
+        <ChevronRightIcon />
+    </button>
+);
 
 const ProductPhoto = ({ file }: { file: File | null }) => {
     const imgRef = useRef<HTMLImageElement>(null);
@@ -285,17 +294,16 @@ const RecycleIcon = () => (
 
 const ChevronRightIcon = () => (
     <svg
-        className="text-text-secondary/50 mt-1 size-5 shrink-0"
-        viewBox="0 0 16 16"
+        className="text-line group-hover:text-primary size-11 shrink-0 transition-colors"
+        viewBox="0 0 49 57"
         fill="none"
         aria-hidden="true"
     >
         <path
-            d="M6 3l5 5-5 5"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
+            fillRule="evenodd"
+            clipRule="evenodd"
+            d="M18.5951 10.5794C19.6385 9.53602 21.3302 9.53602 22.3737 10.5794L38.4049 26.6107C39.4484 27.6541 39.4484 29.3459 38.4049 30.3893L22.3737 46.4206C21.3302 47.464 19.6385 47.464 18.5951 46.4206C17.5516 45.3771 17.5516 43.6854 18.5951 42.6419L32.737 28.5L18.5951 14.3581C17.5516 13.3146 17.5516 11.6229 18.5951 10.5794Z"
+            fill="currentColor"
         />
     </svg>
 );

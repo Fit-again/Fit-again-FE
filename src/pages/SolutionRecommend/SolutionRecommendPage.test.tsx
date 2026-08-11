@@ -38,8 +38,12 @@ describe("SolutionRecommendPage", () => {
         ).toBeInTheDocument();
         expect(screen.getByText("리폼 (Reform)")).toBeInTheDocument();
         expect(screen.getByText("경량 스트랩 교체")).toBeInTheDocument();
-        expect(screen.getByText("리셀")).toBeInTheDocument();
-        expect(screen.getByText("업사이클링")).toBeInTheDocument();
+        expect(
+            screen.getByRole("button", { name: /리셀/ })
+        ).toBeInTheDocument();
+        expect(
+            screen.getByRole("button", { name: /업사이클링/ })
+        ).toBeInTheDocument();
         expect(screen.getByAltText("추천 제품 사진")).toBeInTheDocument();
     });
 
