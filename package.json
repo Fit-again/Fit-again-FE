@@ -18,7 +18,9 @@
     "dependencies": {
         "@hookform/resolvers": "^5.4.0",
         "axios": "^1.19.0",
+        "html2canvas-pro": "^2.3.3",
         "js-cookie": "^3.0.8",
+        "jspdf": "^4.2.1",
         "react": "^19.2.0",
         "react-dom": "^19.2.0",
         "react-hook-form": "^7.71.0",

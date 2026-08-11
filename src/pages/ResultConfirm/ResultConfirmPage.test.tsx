@@ -7,6 +7,27 @@ import ReformSimulationPage from "@/pages/ReformSimulation/ReformSimulationPage"
 import ResultConfirmPage from "@/pages/ResultConfirm/ResultConfirmPage";
 import { ROUTES } from "@/routes/paths";
 
+vi.mock("html2canvas-pro", () => ({
+    default: vi.fn().mockResolvedValue({
+        width: 800,
+        height: 600,
+        toDataURL: () => "data:image/png;base64,mock",
+    }),
+}));
+
+vi.mock("jspdf", () => ({
+    default: vi.fn().mockImplementation(function MockJsPDF() {
+        return {
+            internal: {
+                pageSize: { getWidth: () => 595, getHeight: () => 842 },
+            },
+            addImage: vi.fn(),
+            addPage: vi.fn(),
+            save: vi.fn(),
+        };
+    }),
+}));
+
 const renderPage = () =>
     render(
         <MemoryRouter initialEntries={[ROUTES.resultConfirm]}>
@@ -110,7 +131,7 @@ describe("ResultConfirmPage", () => {
         ).toBeInTheDocument();
     });
 
-    it("리포트 저장 버튼을 누르면 저장 완료 메시지를 보여준다", async () => {
+    it("리포트 저장 버튼을 누르면 PDF를 생성하고 저장 완료 메시지를 보여준다", async () => {
         const user = userEvent.setup();
         renderPage();
         await finishResultGeneration();
@@ -120,7 +141,7 @@ describe("ResultConfirmPage", () => {
         );
 
         expect(
-            screen.getByText("리포트가 저장되었습니다.")
+            await screen.findByText("PDF로 저장되었습니다.")
         ).toBeInTheDocument();
     });
 

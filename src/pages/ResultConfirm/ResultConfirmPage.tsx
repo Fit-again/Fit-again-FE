@@ -60,8 +60,11 @@ function ResultConfirmPage() {
         (state) => state.painPointKeywordIds
     );
     const [completedCount, setCompletedCount] = useState(0);
+    const reportRef = useRef<HTMLDivElement>(null);
 
+    const [isSavingReport, setIsSavingReport] = useState(false);
     const [reportSaved, setReportSaved] = useState(false);
+    const [reportSaveError, setReportSaveError] = useState(false);
 
     const [name, setName] = useState("");
     const [contact, setContact] = useState("");
@@ -158,9 +161,68 @@ function ResultConfirmPage() {
         ? "개인정보 수집 및 이용에 동의해주세요"
         : undefined;
 
-    const handleSaveReport = () => {
-        // TODO: 실제 리포트 저장/다운로드 API 연동 전까지 사용하는 목업 동작
-        setReportSaved(true);
+    const handleSaveReport = async () => {
+        if (!reportRef.current) return;
+
+        setIsSavingReport(true);
+        setReportSaved(false);
+        setReportSaveError(false);
+
+        try {
+            const [{ default: html2canvas }, { default: jsPDF }] =
+                await Promise.all([import("html2canvas-pro"), import("jspdf")]);
+
+            const canvas = await html2canvas(reportRef.current, {
+                backgroundColor: "#ffffff",
+                scale: 2,
+            });
+            const imageData = canvas.toDataURL("image/png");
+
+            const pdf = new jsPDF({
+                orientation: "portrait",
+                unit: "pt",
+                format: "a4",
+            });
+            const pageWidth = pdf.internal.pageSize.getWidth();
+            const pageHeight = pdf.internal.pageSize.getHeight();
+            const imageWidth = pageWidth;
+            const imageHeight = (canvas.height * imageWidth) / canvas.width;
+
+            let heightLeft = imageHeight;
+            let position = 0;
+
+            pdf.addImage(
+                imageData,
+                "PNG",
+                0,
+                position,
+                imageWidth,
+                imageHeight
+            );
+            heightLeft -= pageHeight;
+
+            while (heightLeft > 0) {
+                position -= pageHeight;
+                pdf.addPage();
+                pdf.addImage(
+                    imageData,
+                    "PNG",
+                    0,
+                    position,
+                    imageWidth,
+                    imageHeight
+                );
+                heightLeft -= pageHeight;
+            }
+
+            pdf.save("AI-리폼-리포트.pdf");
+            setReportSaved(true);
+        } catch (error) {
+            console.error(error);
+            setReportSaveError(true);
+        } finally {
+            setIsSavingReport(false);
+        }
     };
 
     const handleSubmit = (event: SyntheticEvent<HTMLFormElement>) => {
@@ -188,78 +250,80 @@ function ResultConfirmPage() {
         >
             <div className="grid gap-6 lg:grid-cols-[minmax(0,1.65fr)_minmax(320px,1fr)]">
                 <Card className="p-6 sm:p-8">
-                    <div className="border-line flex flex-wrap items-baseline justify-between gap-x-4 gap-y-2 border-b pb-4">
-                        <h2 className="text-text-strong text-[22px] font-bold sm:text-[23px]">
-                            AI 리폼 리포트
-                        </h2>
-                        <p className="text-text-secondary text-[13px] sm:text-[14px]">
-                            위 내용은 AI 분석 기반의 추천 사항으로, 실제 상담 및
-                            작업 과정에서 변경될 수 있습니다.
-                        </p>
-                    </div>
-
-                    <div className="mt-6 grid gap-6 sm:grid-cols-[minmax(180px,220px)_1fr]">
-                        <div>
-                            <h3 className="text-text-strong text-[16px] font-bold">
-                                최종 리폼 결과
-                            </h3>
-                            <div className="mt-3">
-                                <ReportPhoto file={frontPhoto} />
-                            </div>
+                    <div ref={reportRef} className="bg-white">
+                        <div className="border-line flex flex-wrap items-baseline justify-between gap-x-4 gap-y-2 border-b pb-4">
+                            <h2 className="text-text-strong text-[22px] font-bold sm:text-[23px]">
+                                AI 리폼 리포트
+                            </h2>
+                            <p className="text-text-secondary text-[13px] sm:text-[14px]">
+                                위 내용은 AI 분석 기반의 추천 사항으로, 실제
+                                상담 및 작업 과정에서 변경될 수 있습니다.
+                            </p>
                         </div>
 
-                        <div className="flex flex-col gap-6">
-                            <section>
-                                <h3 className="border-line text-text-strong border-b pb-2 text-[17px] font-bold">
-                                    AI 추천
+                        <div className="mt-6 grid gap-6 sm:grid-cols-[minmax(180px,220px)_1fr]">
+                            <div>
+                                <h3 className="text-text-strong text-[16px] font-bold">
+                                    최종 리폼 결과
                                 </h3>
-                                <p className="mt-3 text-[16px] leading-relaxed">
-                                    {MOCK_REPORT.recommendation}
-                                </p>
-                            </section>
-
-                            <section>
-                                <h3 className="border-line text-text-strong border-b pb-2 text-[17px] font-bold">
-                                    해결되는 불편
-                                </h3>
-                                <ul className="mt-3 flex flex-col gap-2">
-                                    {resolvedIssues.map((issue) => (
-                                        <li
-                                            key={issue}
-                                            className="flex items-start gap-2.5"
-                                        >
-                                            <CheckBadge />
-                                            <span className="text-[15px] leading-relaxed">
-                                                {issue}
-                                            </span>
-                                        </li>
-                                    ))}
-                                </ul>
-                            </section>
-
-                            <section>
-                                <h3 className="border-line text-text-strong border-b pb-2 text-[17px] font-bold">
-                                    추천 리폼 작업
-                                </h3>
-                                <div className="mt-3 flex flex-wrap gap-2">
-                                    {MOCK_REPORT.tasks.map((task) => (
-                                        <Tag key={task} tone="primary">
-                                            {task}
-                                        </Tag>
-                                    ))}
+                                <div className="mt-3">
+                                    <ReportPhoto file={frontPhoto} />
                                 </div>
-                            </section>
+                            </div>
 
-                            <section>
-                                <h3 className="border-line text-text-strong border-b pb-2 text-[17px] font-bold">
-                                    예상 난이도
-                                </h3>
-                                <div className="mt-4">
-                                    <DifficultyGauge
-                                        level={MOCK_REPORT.difficultyIndex}
-                                    />
-                                </div>
-                            </section>
+                            <div className="flex flex-col gap-6">
+                                <section>
+                                    <h3 className="border-line text-text-strong border-b pb-2 text-[17px] font-bold">
+                                        AI 추천
+                                    </h3>
+                                    <p className="mt-3 text-[16px] leading-relaxed">
+                                        {MOCK_REPORT.recommendation}
+                                    </p>
+                                </section>
+
+                                <section>
+                                    <h3 className="border-line text-text-strong border-b pb-2 text-[17px] font-bold">
+                                        해결되는 불편
+                                    </h3>
+                                    <ul className="mt-3 flex flex-col gap-2">
+                                        {resolvedIssues.map((issue) => (
+                                            <li
+                                                key={issue}
+                                                className="flex items-start gap-2.5"
+                                            >
+                                                <CheckBadge />
+                                                <span className="text-[15px] leading-relaxed">
+                                                    {issue}
+                                                </span>
+                                            </li>
+                                        ))}
+                                    </ul>
+                                </section>
+
+                                <section>
+                                    <h3 className="border-line text-text-strong border-b pb-2 text-[17px] font-bold">
+                                        추천 리폼 작업
+                                    </h3>
+                                    <div className="mt-3 flex flex-wrap gap-2">
+                                        {MOCK_REPORT.tasks.map((task) => (
+                                            <Tag key={task} tone="primary">
+                                                {task}
+                                            </Tag>
+                                        ))}
+                                    </div>
+                                </section>
+
+                                <section>
+                                    <h3 className="border-line text-text-strong border-b pb-2 text-[17px] font-bold">
+                                        예상 난이도
+                                    </h3>
+                                    <div className="mt-4">
+                                        <DifficultyGauge
+                                            level={MOCK_REPORT.difficultyIndex}
+                                        />
+                                    </div>
+                                </section>
+                            </div>
                         </div>
                     </div>
 
@@ -268,8 +332,11 @@ function ResultConfirmPage() {
                         fullWidth
                         className="mt-8"
                         onClick={handleSaveReport}
+                        disabled={isSavingReport}
                     >
-                        AI 리폼 리포트 저장
+                        {isSavingReport
+                            ? "PDF 생성 중..."
+                            : "AI 리폼 리포트 저장"}
                     </Button>
                     {reportSaved && (
                         <p
@@ -277,7 +344,15 @@ function ResultConfirmPage() {
                             role="status"
                             aria-live="polite"
                         >
-                            리포트가 저장되었습니다.
+                            PDF로 저장되었습니다.
+                        </p>
+                    )}
+                    {reportSaveError && (
+                        <p
+                            className="text-danger mt-2 text-center text-[14px]"
+                            role="alert"
+                        >
+                            리포트를 저장하지 못했습니다. 다시 시도해주세요.
                         </p>
                     )}
                 </Card>
