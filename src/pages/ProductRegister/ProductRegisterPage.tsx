@@ -1,8 +1,8 @@
 import Card from "@/components/common/Card";
-import { ErrorMessage } from "@/components/common/form/FormControls";
 import MultiPhotoUpload from "@/components/common/MultiPhotoUpload";
 import PageActions from "@/components/common/PageActions";
 import PageLayout from "@/components/common/PageLayout";
+import SectionHeading from "@/components/common/SectionHeading";
 import SelectionCard from "@/components/common/SelectionCard";
 import UploadArea from "@/components/common/UploadArea";
 import ProductTypeIcon, {
@@ -156,36 +156,5 @@ function ProductRegisterPage() {
         </PageLayout>
     );
 }
-
-const SectionHeading = ({
-    number,
-    title,
-    detail,
-    required = false,
-    error,
-}: {
-    number: number;
-    title: string;
-    detail?: string;
-    required?: boolean;
-    error?: string;
-}) => (
-    <h2 className="text-text-strong flex flex-wrap items-baseline gap-2 text-[23px] font-bold sm:text-[25px]">
-        <span>
-            {number}. {title}
-            {required && !error && (
-                <span className="text-danger ml-1" aria-hidden="true">
-                    *
-                </span>
-            )}
-        </span>
-        {detail && (
-            <span className="text-text-secondary text-[18px] font-normal">
-                ({detail})
-            </span>
-        )}
-        {error && <ErrorMessage>{error}</ErrorMessage>}
-    </h2>
-);
 
 export default ProductRegisterPage;
