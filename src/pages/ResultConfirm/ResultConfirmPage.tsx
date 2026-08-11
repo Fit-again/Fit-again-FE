@@ -183,36 +183,38 @@ function ResultConfirmPage() {
                 unit: "pt",
                 format: "a4",
             });
+            const pageMargin = 28;
             const pageWidth = pdf.internal.pageSize.getWidth();
             const pageHeight = pdf.internal.pageSize.getHeight();
-            const imageWidth = pageWidth;
+            const contentHeight = pageHeight - pageMargin * 2;
+            const imageWidth = pageWidth - pageMargin * 2;
             const imageHeight = (canvas.height * imageWidth) / canvas.width;
 
             let heightLeft = imageHeight;
-            let position = 0;
+            let position = pageMargin;
 
             pdf.addImage(
                 imageData,
                 "PNG",
-                0,
+                pageMargin,
                 position,
                 imageWidth,
                 imageHeight
             );
-            heightLeft -= pageHeight;
+            heightLeft -= contentHeight;
 
             while (heightLeft > 0) {
-                position -= pageHeight;
+                position -= contentHeight;
                 pdf.addPage();
                 pdf.addImage(
                     imageData,
                     "PNG",
-                    0,
+                    pageMargin,
                     position,
                     imageWidth,
                     imageHeight
                 );
-                heightLeft -= pageHeight;
+                heightLeft -= contentHeight;
             }
 
             pdf.save("AI-리폼-리포트.pdf");
