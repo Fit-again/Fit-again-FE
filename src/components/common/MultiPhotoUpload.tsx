@@ -1,4 +1,4 @@
-import { useEffect, useId, useMemo } from "react";
+import { useEffect, useId, useRef } from "react";
 
 type MultiPhotoUploadProps = {
     files: File[];
@@ -65,13 +65,30 @@ const PhotoThumbnail = ({
     label: string;
     onRemove: () => void;
 }) => {
-    const url = useMemo(() => URL.createObjectURL(file), [file]);
+    const imgRef = useRef<HTMLImageElement>(null);
 
-    useEffect(() => () => URL.revokeObjectURL(url), [url]);
+    /*
+     * blob URL은 img 엘리먼트에 직접(ref로) 반영합니다.
+     * React state로 다루면 StrictMode의 effect 이중 실행 시
+     * "생성 → 정리(해제) → 재실행"이 같은 커밋 안에서 렌더 없이 발생해,
+     * 방금 해제된 URL이 화면에 남는 문제가 생깁니다.
+     */
+    useEffect(() => {
+        if (!imgRef.current) return;
+
+        const url = URL.createObjectURL(file);
+        imgRef.current.src = url;
+
+        return () => URL.revokeObjectURL(url);
+    }, [file]);
 
     return (
         <div className="border-line relative aspect-square overflow-hidden rounded-[5px] border">
-            <img src={url} alt={label} className="h-full w-full object-cover" />
+            <img
+                ref={imgRef}
+                alt={label}
+                className="h-full w-full object-cover"
+            />
             <button
                 type="button"
                 onClick={onRemove}

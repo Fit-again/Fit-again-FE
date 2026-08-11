@@ -33,12 +33,9 @@ function ProductRegisterPage() {
         : !isValidProductPhoto(frontPhoto)
           ? "올바른 제품이 아닙니다"
           : undefined;
-    const wearPhotoError =
-        wearPhotos.length === 0 ? "마모 부위 사진을 업로드해주세요" : undefined;
-
     const handleNext = () => {
         setSubmitted(true);
-        if (!typeError && !frontPhotoError && !wearPhotoError) {
+        if (!typeError && !frontPhotoError) {
             setProductInfo({
                 productType: selectedType!,
                 frontPhoto: frontPhoto!,
@@ -110,6 +107,7 @@ function ProductRegisterPage() {
                                         : "정면 사진을 선택해주세요"
                                 }
                                 description="PNG, JPG 파일을 업로드할 수 있습니다."
+                                file={frontPhoto}
                                 onFilesSelected={(files) =>
                                     setFrontPhoto(files[0] ?? null)
                                 }
@@ -122,8 +120,6 @@ function ProductRegisterPage() {
                             number={3}
                             title="마모 부위 사진 업로드"
                             detail="최대 5장"
-                            required
-                            error={submitted ? wearPhotoError : undefined}
                         />
                         <p className="text-text-secondary mt-1 text-[18px]">
                             손상·마모 부위가 잘 보이도록 다양한 각도로

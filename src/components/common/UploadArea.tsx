@@ -1,4 +1,4 @@
-import { useId } from "react";
+import { useEffect, useId, useRef } from "react";
 
 type UploadAreaProps = {
     label: string;
@@ -6,6 +6,7 @@ type UploadAreaProps = {
     accept?: string;
     multiple?: boolean;
     disabled?: boolean;
+    file?: File | null;
     onFilesSelected?: (files: File[]) => void;
 };
 
@@ -15,9 +16,26 @@ const UploadArea = ({
     accept = "image/*",
     multiple = false,
     disabled = false,
+    file,
     onFilesSelected,
 }: UploadAreaProps) => {
     const inputId = useId();
+    const imgRef = useRef<HTMLImageElement>(null);
+
+    /*
+     * blob URL은 img 엘리먼트에 직접(ref로) 반영합니다.
+     * React state로 다루면 StrictMode의 effect 이중 실행 시
+     * "생성 → 정리(해제) → 재실행"이 같은 커밋 안에서 렌더 없이 발생해,
+     * 방금 해제된 URL이 화면에 남는 문제가 생깁니다.
+     */
+    useEffect(() => {
+        if (!file || !imgRef.current) return;
+
+        const url = URL.createObjectURL(file);
+        imgRef.current.src = url;
+
+        return () => URL.revokeObjectURL(url);
+    }, [file]);
 
     return (
         <div>
@@ -34,12 +52,17 @@ const UploadArea = ({
                 }}
             />
             <label
-                className={`focus-within:outline-primary border-line bg-placeholder text-text-secondary flex min-h-[240px] w-full flex-col items-center justify-center gap-3 rounded-[5px] border text-center focus-within:outline-3 focus-within:outline-offset-2 ${disabled ? "cursor-not-allowed opacity-60" : "hover:border-primary cursor-pointer"}`}
+                className={`focus-within:outline-primary border-line text-text-secondary flex min-h-[240px] w-full flex-col items-center justify-center gap-3 rounded-[5px] border bg-white p-3 text-center focus-within:outline-3 focus-within:outline-offset-2 ${disabled ? "cursor-not-allowed opacity-60" : "hover:border-primary cursor-pointer"}`}
                 htmlFor={inputId}
             >
-                <UploadIcon />
+                <img
+                    ref={imgRef}
+                    alt={label}
+                    className={`max-h-[180px] w-full rounded-[5px] object-contain ${file ? "" : "hidden"}`}
+                />
+                {!file && <UploadIcon />}
                 <span className="text-[18px] font-medium">{label}</span>
-                {description && (
+                {description && !file && (
                     <span className="max-w-sm px-5 text-[15px]">
                         {description}
                     </span>
