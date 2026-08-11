@@ -50,18 +50,18 @@ const HomePage = () => {
             </section>
 
             <section className="bg-primary px-5 py-16 sm:px-8 lg:py-20">
-                <div className="mx-auto flex w-full max-w-[900px] flex-col items-center text-center">
+                <div className="mx-auto flex w-full max-w-[1160px] flex-col items-center text-center">
                     <h2 className="text-[24px] leading-snug font-bold text-white sm:text-[28px]">
                         아직 사용할 수 있지만,
                         <br />
                         지금은 손이 가지 않는 럭셔리 제품이 있으신가요?
                     </h2>
 
-                    <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
+                    <div className="mt-8 flex flex-wrap items-center justify-center gap-5">
                         {painPoints.map((point) => (
                             <span
                                 key={point}
-                                className="inline-flex min-h-9 items-center rounded-[50px] border border-white/25 bg-white/10 px-5 py-1.5 text-[15px] text-white/90 shadow-[0_0_24px_8px_rgba(238,232,224,0.18)]"
+                                className="bg-ground/20 inline-flex min-h-9 items-center rounded-[5px] px-5 py-1.5 text-[24px] text-white/90 shadow-[0_0_12.2px_0_rgba(250,248,243,0.5)]"
                             >
                                 {point}
                             </span>
