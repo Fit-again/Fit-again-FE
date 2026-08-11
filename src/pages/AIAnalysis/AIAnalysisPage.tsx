@@ -331,7 +331,7 @@ const PhotoCarousel = ({ photos }: { photos: AnalysisPhoto[] }) => {
 
     return (
         <div>
-            <div className="border-line bg-placeholder relative aspect-4/3 overflow-hidden rounded-[5px] border">
+            <div className="border-line bg-ground relative aspect-4/3 overflow-hidden rounded-[5px] border">
                 <img
                     ref={imgRef}
                     alt={current.label}
