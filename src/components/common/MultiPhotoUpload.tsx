@@ -93,7 +93,7 @@ const PhotoThumbnail = ({
                 type="button"
                 onClick={onRemove}
                 aria-label={`${label} 삭제`}
-                className="bg-danger focus-visible:outline-primary absolute -top-1.5 -right-1.5 flex size-5 cursor-pointer items-center justify-center rounded-full text-white shadow focus-visible:outline-2 focus-visible:outline-offset-1"
+                className="focus-visible:outline-primary absolute top-1.5 right-1.5 flex size-5 cursor-pointer items-center justify-center rounded-full bg-black/60 text-white shadow focus-visible:outline-2 focus-visible:outline-offset-1"
             >
                 <svg
                     className="size-3"
