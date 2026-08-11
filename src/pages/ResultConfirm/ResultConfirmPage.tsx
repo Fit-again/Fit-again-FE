@@ -269,16 +269,16 @@ function ResultConfirmPage() {
                         </div>
 
                         <div className="mt-6 grid flex-1 gap-6 sm:grid-cols-[minmax(180px,220px)_1fr]">
-                            <div className="flex flex-col">
+                            <div className="flex flex-col items-center justify-center">
                                 <h3 className="text-primary text-[16px] font-bold">
                                     최종 리폼 결과
                                 </h3>
-                                <div className="mt-3 flex flex-1 items-center">
+                                <div className="mt-3 w-full">
                                     <ReportPhoto file={frontPhoto} />
                                 </div>
                             </div>
 
-                            <div className="flex flex-col gap-6">
+                            <div className="flex flex-col justify-between gap-6">
                                 <section>
                                     <h3 className="text-primary flex items-center gap-3 text-[17px] font-bold">
                                         AI 추천
@@ -465,7 +465,7 @@ function ResultConfirmPage() {
                                         [필수] 개인정보 수집 및 이용에 동의{" "}
                                         <button
                                             type="button"
-                                            className="text-primary underline underline-offset-2"
+                                            className="text-text-secondary"
                                             onClick={() => {
                                                 // TODO: 개인정보 처리방침 모달은 추후 별도 작업에서 연동
                                             }}

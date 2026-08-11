@@ -160,7 +160,7 @@ function AIAnalysisPage() {
                 />
             }
         >
-            <div className="grid gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.3fr)]">
+            <div className="grid gap-10 lg:grid-cols-2">
                 <section>
                     <PhotoCarousel photos={analysisPhotos} />
                     <p className="text-text-secondary mt-4 text-[15px]">
@@ -206,12 +206,18 @@ function AIAnalysisPage() {
                         </h2>
                         <Card className="mt-4">
                             <dl>
-                                <InfoRow label="현재 사용 목적">
+                                <InfoRow
+                                    label="현재 사용 목적"
+                                    labelWidthClassName="w-40"
+                                >
                                     <span className="text-[18px]">
                                         {MOCK_ANALYSIS.usagePurpose}
                                     </span>
                                 </InfoRow>
-                                <InfoRow label="주요 불편 원인">
+                                <InfoRow
+                                    label="주요 불편 원인"
+                                    labelWidthClassName="w-40"
+                                >
                                     {painPointCauses.length > 0 ? (
                                         <ul className="text-[18px]">
                                             {painPointCauses.map((cause) => (
@@ -224,7 +230,10 @@ function AIAnalysisPage() {
                                         </span>
                                     )}
                                 </InfoRow>
-                                <InfoRow label="개선 필요 부분">
+                                <InfoRow
+                                    label="개선 필요 부분"
+                                    labelWidthClassName="w-40"
+                                >
                                     <TagList
                                         tone="soft"
                                         items={
@@ -275,13 +284,17 @@ const StepIcon = ({ status }: { status: StepStatus }) => {
 
 const InfoRow = ({
     label,
+    labelWidthClassName = "w-28",
     children,
 }: {
     label: string;
+    labelWidthClassName?: string;
     children: ReactNode;
 }) => (
     <div className="flex gap-6 py-4 first:pt-0 last:pb-0">
-        <dt className="border-line text-text-strong w-28 shrink-0 border-r pr-4 text-[18px] font-medium">
+        <dt
+            className={`border-line text-text-strong shrink-0 border-r pr-4 text-[18px] font-medium ${labelWidthClassName}`}
+        >
             {label}
         </dt>
         <dd className="flex-1">{children}</dd>
