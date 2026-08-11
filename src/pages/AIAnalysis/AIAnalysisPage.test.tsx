@@ -139,7 +139,7 @@ describe("AIAnalysisPage", () => {
         );
 
         expect(
-            screen.getByRole("heading", { name: "AI 추천 결과", level: 1 })
+            screen.getByRole("heading", { name: "AI 추천", level: 1 })
         ).toBeInTheDocument();
     });
 });

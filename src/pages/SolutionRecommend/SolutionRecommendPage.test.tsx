@@ -1,7 +1,7 @@
-import { render, screen } from "@testing-library/react";
+import { act, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { MemoryRouter, Route, Routes } from "react-router-dom";
-import { describe, expect, it } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import AIAnalysisPage from "@/pages/AIAnalysis/AIAnalysisPage";
 import ReformSimulationPage from "@/pages/ReformSimulation/ReformSimulationPage";
 import SolutionRecommendPage from "@/pages/SolutionRecommend/SolutionRecommendPage";
@@ -28,10 +28,49 @@ const renderPage = () =>
         </MemoryRouter>
     );
 
+const finishRecommendation = async () => {
+    for (let i = 0; i < 3; i += 1) {
+        await act(async () => {
+            await vi.advanceTimersByTimeAsync(1200);
+        });
+    }
+    vi.useRealTimers();
+};
+
 describe("SolutionRecommendPage", () => {
-    it("AI 추천 결과 레이아웃을 보여준다", () => {
+    beforeEach(() => {
+        vi.useFakeTimers();
+    });
+
+    afterEach(() => {
+        vi.useRealTimers();
+    });
+
+    it("추천 진행 중에는 단계별 체크리스트와 진행률을 보여준다", async () => {
+        renderPage();
+
+        expect(
+            screen.getByRole("heading", { name: "AI 추천", level: 1 })
+        ).toBeInTheDocument();
+        expect(screen.getByText("분석 결과 확인 중...")).toBeInTheDocument();
+        expect(
+            screen.getByRole("progressbar", { name: "AI 추천 진행률" })
+        ).toHaveAttribute("aria-valuenow", "0");
+
+        await act(async () => {
+            await vi.advanceTimersByTimeAsync(1200);
+        });
+
+        expect(
+            screen.getByRole("progressbar", { name: "AI 추천 진행률" })
+        ).toHaveAttribute("aria-valuenow", "33");
+    });
+
+    it("추천이 끝나면 AI 추천 결과 레이아웃을 보여준다", async () => {
         useReformFlowStore.setState({ frontPhoto: createImageFile() });
         renderPage();
+
+        await finishRecommendation();
 
         expect(
             screen.getByRole("heading", { name: "AI 추천 결과", level: 1 })
@@ -48,9 +87,10 @@ describe("SolutionRecommendPage", () => {
     });
 
     it("이전 단계를 누르면 AI 분석 화면으로 이동한다", async () => {
-        const user = userEvent.setup();
         renderPage();
+        await finishRecommendation();
 
+        const user = userEvent.setup();
         await user.click(screen.getByRole("button", { name: "이전 단계" }));
 
         expect(
@@ -59,9 +99,10 @@ describe("SolutionRecommendPage", () => {
     });
 
     it("시뮬레이션 보기를 누르면 시뮬레이션 화면으로 이동한다", async () => {
-        const user = userEvent.setup();
         renderPage();
+        await finishRecommendation();
 
+        const user = userEvent.setup();
         await user.click(
             screen.getByRole("button", { name: "시뮬레이션 보기" })
         );

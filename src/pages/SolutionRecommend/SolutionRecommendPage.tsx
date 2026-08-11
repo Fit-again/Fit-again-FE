@@ -4,8 +4,15 @@ import PageLayout from "@/components/common/PageLayout";
 import Tag from "@/components/common/Tag";
 import { ROUTES } from "@/routes/paths";
 import { useReformFlowStore } from "@/stores/useReformFlowStore";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
+
+type RecommendStep = {
+    id: string;
+    label: string;
+};
+
+type StepStatus = "done" | "active" | "pending";
 
 type RecommendedTask = {
     id: string;
@@ -18,6 +25,14 @@ type AlternativeOption = {
     label: string;
     description: string[];
 };
+
+const RECOMMEND_STEPS: RecommendStep[] = [
+    { id: "context", label: "분석 결과 확인 중" },
+    { id: "score", label: "리폼 적합도 계산 중" },
+    { id: "compose", label: "맞춤 추천 구성 중" },
+];
+
+const STEP_DURATION_MS = 1200;
 
 /*
  * 실제 AI 추천 백엔드 연동 전까지 사용하는 목업 추천 결과입니다.
@@ -74,6 +89,81 @@ const ALTERNATIVE_OPTIONS: AlternativeOption[] = [
 function SolutionRecommendPage() {
     const navigate = useNavigate();
     const frontPhoto = useReformFlowStore((state) => state.frontPhoto);
+    const [completedCount, setCompletedCount] = useState(0);
+
+    const isComplete = completedCount === RECOMMEND_STEPS.length;
+    const progress = Math.round(
+        (completedCount / RECOMMEND_STEPS.length) * 100
+    );
+
+    useEffect(() => {
+        if (isComplete) return;
+
+        const timer = setTimeout(() => {
+            setCompletedCount((prev) => prev + 1);
+        }, STEP_DURATION_MS);
+
+        return () => clearTimeout(timer);
+    }, [completedCount, isComplete]);
+
+    if (!isComplete) {
+        return (
+            <PageLayout
+                currentStep={4}
+                title="AI 추천"
+                description="AI가 제품에 가장 적합한 리폼 방향을 분석하고 있어요."
+            >
+                <Card className="mx-auto max-w-140">
+                    <div
+                        className="bg-line h-2 w-full overflow-hidden rounded-full"
+                        role="progressbar"
+                        aria-label="AI 추천 진행률"
+                        aria-valuemin={0}
+                        aria-valuemax={100}
+                        aria-valuenow={progress}
+                    >
+                        <div
+                            className="bg-primary h-full rounded-full transition-[width] duration-500"
+                            style={{ width: `${progress}%` }}
+                        />
+                    </div>
+
+                    <ul className="mt-8 flex flex-col gap-5">
+                        {RECOMMEND_STEPS.map((step, index) => {
+                            const status: StepStatus =
+                                index < completedCount
+                                    ? "done"
+                                    : index === completedCount
+                                      ? "active"
+                                      : "pending";
+
+                            return (
+                                <li
+                                    key={step.id}
+                                    className="flex items-center gap-3"
+                                >
+                                    <StepIcon status={status} />
+                                    <span
+                                        className={`text-[18px] ${status === "pending" ? "text-text-secondary" : "text-primary font-medium"}`}
+                                    >
+                                        {step.label}
+                                    </span>
+                                </li>
+                            );
+                        })}
+                    </ul>
+
+                    <p
+                        className="text-text-secondary mt-8 text-center text-[16px]"
+                        role="status"
+                        aria-live="polite"
+                    >
+                        {`${RECOMMEND_STEPS[completedCount].label}...`}
+                    </p>
+                </Card>
+            </PageLayout>
+        );
+    }
 
     return (
         <PageLayout
@@ -159,6 +249,37 @@ function SolutionRecommendPage() {
         </PageLayout>
     );
 }
+
+const StepIcon = ({ status }: { status: StepStatus }) => {
+    if (status === "done") {
+        return (
+            <span
+                className="bg-primary flex size-7 shrink-0 items-center justify-center rounded-full text-[14px] text-white"
+                aria-hidden="true"
+            >
+                ✓
+            </span>
+        );
+    }
+
+    if (status === "active") {
+        return (
+            <span
+                className="border-primary flex size-7 shrink-0 items-center justify-center rounded-full border-2"
+                aria-hidden="true"
+            >
+                <span className="bg-primary size-2.5 animate-pulse rounded-full" />
+            </span>
+        );
+    }
+
+    return (
+        <span
+            className="border-line size-7 shrink-0 rounded-full border-2"
+            aria-hidden="true"
+        />
+    );
+};
 
 const AlternativeCard = ({ option }: { option: AlternativeOption }) => (
     <button
