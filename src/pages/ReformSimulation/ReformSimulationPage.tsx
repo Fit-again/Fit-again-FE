@@ -122,54 +122,56 @@ function ReformSimulationPage() {
                 title="시뮬레이션"
                 description="추천된 리폼이 적용되는 과정을 시뮬레이션하고 있어요."
             >
-                <Card className="mx-auto max-w-140">
-                    <div
-                        className="bg-line h-2 w-full overflow-hidden rounded-full"
-                        role="progressbar"
-                        aria-label="시뮬레이션 진행률"
-                        aria-valuemin={0}
-                        aria-valuemax={100}
-                        aria-valuenow={progress}
-                    >
+                <div className="flex flex-1 items-center justify-center pt-16">
+                    <Card className="w-full max-w-160 p-8">
                         <div
-                            className="bg-primary h-full rounded-full transition-[width] duration-500"
-                            style={{ width: `${progress}%` }}
-                        />
-                    </div>
+                            className="bg-line h-2 w-full overflow-hidden rounded-full"
+                            role="progressbar"
+                            aria-label="시뮬레이션 진행률"
+                            aria-valuemin={0}
+                            aria-valuemax={100}
+                            aria-valuenow={progress}
+                        >
+                            <div
+                                className="bg-primary h-full rounded-full transition-[width] duration-500"
+                                style={{ width: `${progress}%` }}
+                            />
+                        </div>
 
-                    <ul className="mt-8 flex flex-col gap-5">
-                        {SIMULATION_STEPS.map((step, index) => {
-                            const status: StepStatus =
-                                index < completedCount
-                                    ? "done"
-                                    : index === completedCount
-                                      ? "active"
-                                      : "pending";
+                        <ul className="mt-8 flex flex-col gap-5">
+                            {SIMULATION_STEPS.map((step, index) => {
+                                const status: StepStatus =
+                                    index < completedCount
+                                        ? "done"
+                                        : index === completedCount
+                                          ? "active"
+                                          : "pending";
 
-                            return (
-                                <li
-                                    key={step.id}
-                                    className="flex items-center gap-3"
-                                >
-                                    <StepIcon status={status} />
-                                    <span
-                                        className={`text-[18px] ${status === "pending" ? "text-text-secondary" : "text-primary font-medium"}`}
+                                return (
+                                    <li
+                                        key={step.id}
+                                        className="flex items-center gap-3"
                                     >
-                                        {step.progressLabel}
-                                    </span>
-                                </li>
-                            );
-                        })}
-                    </ul>
+                                        <StepIcon status={status} />
+                                        <span
+                                            className={`text-[18px] ${status === "pending" ? "text-text-secondary" : "text-primary font-medium"}`}
+                                        >
+                                            {step.progressLabel}
+                                        </span>
+                                    </li>
+                                );
+                            })}
+                        </ul>
 
-                    <p
-                        className="text-text-secondary mt-8 text-center text-[16px]"
-                        role="status"
-                        aria-live="polite"
-                    >
-                        {`${SIMULATION_STEPS[completedCount].progressLabel}...`}
-                    </p>
-                </Card>
+                        <p
+                            className="text-text-secondary mt-8 text-center text-[16px]"
+                            role="status"
+                            aria-live="polite"
+                        >
+                            {`${SIMULATION_STEPS[completedCount].progressLabel}...`}
+                        </p>
+                    </Card>
+                </div>
             </PageLayout>
         );
     }
@@ -203,7 +205,7 @@ function ReformSimulationPage() {
             }
         >
             <section>
-                <h2 className="text-text-strong text-[23px] font-bold sm:text-[25px]">
+                <h2 className="text-primary text-[23px] font-bold sm:text-[25px]">
                     리폼 추천 과정
                 </h2>
 
@@ -365,7 +367,7 @@ const StepCardShell = ({
                 <span className="border-primary bg-secondary text-primary inline-flex h-7 shrink-0 items-center rounded-full border px-3 text-[13px] font-medium">
                     {`STEP ${step.stepNumber}`}
                 </span>
-                <h3 className="text-text-strong text-[18px] font-bold">
+                <h3 className="text-primary text-[18px] font-bold">
                     {step.title}
                 </h3>
             </div>

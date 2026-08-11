@@ -13,7 +13,7 @@ const HomePage = () => {
     const navigate = useNavigate();
 
     return (
-        <div className="bg-ground min-h-screen">
+        <div className="bg-ground flex min-h-screen w-full flex-col">
             <section className="mx-auto flex w-full max-w-[1240px] flex-col items-center gap-12 px-5 py-16 sm:px-8 lg:flex-row lg:items-center lg:gap-16 lg:py-24 xl:px-0">
                 <div className="w-full max-w-[560px] text-center lg:text-left">
                     <p className="text-text-secondary text-[17px] sm:text-[18px]">
@@ -34,7 +34,7 @@ const HomePage = () => {
                         지금 바로 나의 제품을 분석해보세요.
                     </p>
                     <Button
-                        className="mt-8 w-full sm:w-auto sm:min-w-[300px]"
+                        className="mt-8 w-full sm:w-auto sm:min-w-[340px]"
                         size="lg"
                         onClick={() => navigate(ROUTES.productRegister)}
                     >
@@ -49,9 +49,9 @@ const HomePage = () => {
                 />
             </section>
 
-            <section className="bg-primary px-5 py-16 sm:px-8 lg:py-20">
+            <section className="bg-primary flex flex-1 flex-col items-center justify-center px-5 py-16 sm:px-8 lg:py-20">
                 <div className="mx-auto flex w-full max-w-[1160px] flex-col items-center text-center">
-                    <h2 className="text-[24px] leading-snug font-bold text-white sm:text-[28px]">
+                    <h2 className="text-[25px] leading-snug font-bold text-white">
                         아직 사용할 수 있지만,
                         <br />
                         지금은 손이 가지 않는 럭셔리 제품이 있으신가요?

@@ -15,7 +15,7 @@ const SectionHeading = ({
     required = false,
     error,
 }: SectionHeadingProps) => (
-    <h2 className="text-text-strong flex flex-wrap items-baseline gap-2 text-[23px] font-bold sm:text-[25px]">
+    <h2 className="text-primary flex flex-wrap items-baseline gap-2 text-[23px] font-bold sm:text-[25px]">
         <span>
             {number}. {title}
             {required && !error && (

@@ -93,54 +93,56 @@ function ResultConfirmPage() {
                 title="결과"
                 description="AI 리폼 리포트를 생성하고 있어요."
             >
-                <Card className="mx-auto max-w-140">
-                    <div
-                        className="bg-line h-2 w-full overflow-hidden rounded-full"
-                        role="progressbar"
-                        aria-label="결과 생성 진행률"
-                        aria-valuemin={0}
-                        aria-valuemax={100}
-                        aria-valuenow={progress}
-                    >
+                <div className="flex flex-1 items-center justify-center pt-16">
+                    <Card className="w-full max-w-160 p-8">
                         <div
-                            className="bg-primary h-full rounded-full transition-[width] duration-500"
-                            style={{ width: `${progress}%` }}
-                        />
-                    </div>
+                            className="bg-line h-2 w-full overflow-hidden rounded-full"
+                            role="progressbar"
+                            aria-label="결과 생성 진행률"
+                            aria-valuemin={0}
+                            aria-valuemax={100}
+                            aria-valuenow={progress}
+                        >
+                            <div
+                                className="bg-primary h-full rounded-full transition-[width] duration-500"
+                                style={{ width: `${progress}%` }}
+                            />
+                        </div>
 
-                    <ul className="mt-8 flex flex-col gap-5">
-                        {RESULT_STEPS.map((step, index) => {
-                            const status: StepStatus =
-                                index < completedCount
-                                    ? "done"
-                                    : index === completedCount
-                                      ? "active"
-                                      : "pending";
+                        <ul className="mt-8 flex flex-col gap-5">
+                            {RESULT_STEPS.map((step, index) => {
+                                const status: StepStatus =
+                                    index < completedCount
+                                        ? "done"
+                                        : index === completedCount
+                                          ? "active"
+                                          : "pending";
 
-                            return (
-                                <li
-                                    key={step.id}
-                                    className="flex items-center gap-3"
-                                >
-                                    <StepIcon status={status} />
-                                    <span
-                                        className={`text-[18px] ${status === "pending" ? "text-text-secondary" : "text-primary font-medium"}`}
+                                return (
+                                    <li
+                                        key={step.id}
+                                        className="flex items-center gap-3"
                                     >
-                                        {step.label}
-                                    </span>
-                                </li>
-                            );
-                        })}
-                    </ul>
+                                        <StepIcon status={status} />
+                                        <span
+                                            className={`text-[18px] ${status === "pending" ? "text-text-secondary" : "text-primary font-medium"}`}
+                                        >
+                                            {step.label}
+                                        </span>
+                                    </li>
+                                );
+                            })}
+                        </ul>
 
-                    <p
-                        className="text-text-secondary mt-8 text-center text-[16px]"
-                        role="status"
-                        aria-live="polite"
-                    >
-                        {`${RESULT_STEPS[completedCount].label}...`}
-                    </p>
-                </Card>
+                        <p
+                            className="text-text-secondary mt-8 text-center text-[16px]"
+                            role="status"
+                            aria-live="polite"
+                        >
+                            {`${RESULT_STEPS[completedCount].label}...`}
+                        </p>
+                    </Card>
+                </div>
             </PageLayout>
         );
     }
@@ -251,10 +253,13 @@ function ResultConfirmPage() {
             }
         >
             <div className="grid gap-6 lg:grid-cols-[minmax(0,1.65fr)_minmax(320px,1fr)]">
-                <Card className="p-6 sm:p-8">
-                    <div ref={reportRef} className="bg-white">
+                <Card className="flex h-full flex-col p-6 sm:p-8">
+                    <div
+                        ref={reportRef}
+                        className="flex flex-1 flex-col bg-white"
+                    >
                         <div className="border-line flex flex-wrap items-baseline justify-between gap-x-4 gap-y-2 border-b pb-4">
-                            <h2 className="text-text-strong text-[22px] font-bold sm:text-[23px]">
+                            <h2 className="text-primary text-[22px] font-bold sm:text-[23px]">
                                 AI 리폼 리포트
                             </h2>
                             <p className="text-text-secondary text-[13px] sm:text-[14px]">
@@ -263,20 +268,24 @@ function ResultConfirmPage() {
                             </p>
                         </div>
 
-                        <div className="mt-6 grid gap-6 sm:grid-cols-[minmax(180px,220px)_1fr]">
-                            <div>
-                                <h3 className="text-text-strong text-[16px] font-bold">
+                        <div className="mt-6 grid flex-1 gap-6 sm:grid-cols-[minmax(220px,1fr)_1.1fr]">
+                            <div className="flex flex-col items-start justify-center">
+                                <h3 className="text-primary text-[16px] font-bold">
                                     최종 리폼 결과
                                 </h3>
-                                <div className="mt-3">
+                                <div className="mt-3 w-full">
                                     <ReportPhoto file={frontPhoto} />
                                 </div>
                             </div>
 
-                            <div className="flex flex-col gap-6">
+                            <div className="flex flex-col justify-between gap-6">
                                 <section>
-                                    <h3 className="border-line text-text-strong border-b pb-2 text-[17px] font-bold">
+                                    <h3 className="text-primary flex items-center gap-3 text-[17px] font-bold">
                                         AI 추천
+                                        <span
+                                            className="bg-line h-px flex-1"
+                                            aria-hidden="true"
+                                        />
                                     </h3>
                                     <p className="mt-3 text-[16px] leading-relaxed">
                                         {MOCK_REPORT.recommendation}
@@ -284,8 +293,12 @@ function ResultConfirmPage() {
                                 </section>
 
                                 <section>
-                                    <h3 className="border-line text-text-strong border-b pb-2 text-[17px] font-bold">
+                                    <h3 className="text-primary flex items-center gap-3 text-[17px] font-bold">
                                         해결되는 불편
+                                        <span
+                                            className="bg-line h-px flex-1"
+                                            aria-hidden="true"
+                                        />
                                     </h3>
                                     <ul className="mt-3 flex flex-col gap-2">
                                         {resolvedIssues.map((issue) => (
@@ -303,8 +316,12 @@ function ResultConfirmPage() {
                                 </section>
 
                                 <section>
-                                    <h3 className="border-line text-text-strong border-b pb-2 text-[17px] font-bold">
+                                    <h3 className="text-primary flex items-center gap-3 text-[17px] font-bold">
                                         추천 리폼 작업
+                                        <span
+                                            className="bg-line h-px flex-1"
+                                            aria-hidden="true"
+                                        />
                                     </h3>
                                     <div className="mt-3 flex flex-wrap gap-2">
                                         {MOCK_REPORT.tasks.map((task) => (
@@ -316,8 +333,12 @@ function ResultConfirmPage() {
                                 </section>
 
                                 <section>
-                                    <h3 className="border-line text-text-strong border-b pb-2 text-[17px] font-bold">
+                                    <h3 className="text-primary flex items-center gap-3 text-[17px] font-bold">
                                         예상 난이도
+                                        <span
+                                            className="bg-line h-px flex-1"
+                                            aria-hidden="true"
+                                        />
                                     </h3>
                                     <div className="mt-4">
                                         <DifficultyGauge
@@ -329,39 +350,40 @@ function ResultConfirmPage() {
                         </div>
                     </div>
 
-                    <Button
-                        variant="soft"
-                        fullWidth
-                        className="mt-8"
-                        onClick={handleSaveReport}
-                        disabled={isSavingReport}
-                    >
-                        {isSavingReport
-                            ? "PDF 생성 중..."
-                            : "AI 리폼 리포트 저장"}
-                    </Button>
-                    {reportSaved && (
-                        <p
-                            className="text-primary mt-2 text-center text-[14px]"
-                            role="status"
-                            aria-live="polite"
+                    <div className="mt-auto pt-8">
+                        <Button
+                            variant="soft"
+                            fullWidth
+                            onClick={handleSaveReport}
+                            disabled={isSavingReport}
                         >
-                            PDF로 저장되었습니다.
-                        </p>
-                    )}
-                    {reportSaveError && (
-                        <p
-                            className="text-danger mt-2 text-center text-[14px]"
-                            role="alert"
-                        >
-                            리포트를 저장하지 못했습니다. 다시 시도해주세요.
-                        </p>
-                    )}
+                            {isSavingReport
+                                ? "PDF 생성 중..."
+                                : "AI 리폼 리포트 저장"}
+                        </Button>
+                        {reportSaved && (
+                            <p
+                                className="text-primary mt-2 text-center text-[14px]"
+                                role="status"
+                                aria-live="polite"
+                            >
+                                PDF로 저장되었습니다.
+                            </p>
+                        )}
+                        {reportSaveError && (
+                            <p
+                                className="text-danger mt-2 text-center text-[14px]"
+                                role="alert"
+                            >
+                                리포트를 저장하지 못했습니다. 다시 시도해주세요.
+                            </p>
+                        )}
+                    </div>
                 </Card>
 
                 <Card className="flex h-full flex-col p-6 sm:p-8">
                     <div className="border-line border-b pb-4">
-                        <h2 className="text-text-strong text-[22px] font-bold sm:text-[23px]">
+                        <h2 className="text-primary text-[22px] font-bold sm:text-[23px]">
                             공식 상담 신청
                         </h2>
                     </div>
@@ -443,7 +465,7 @@ function ResultConfirmPage() {
                                         [필수] 개인정보 수집 및 이용에 동의{" "}
                                         <button
                                             type="button"
-                                            className="text-primary underline underline-offset-2"
+                                            className="text-text-secondary"
                                             onClick={() => {
                                                 // TODO: 개인정보 처리방침 모달은 추후 별도 작업에서 연동
                                             }}

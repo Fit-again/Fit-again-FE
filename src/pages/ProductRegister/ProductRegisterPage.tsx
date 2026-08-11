@@ -79,7 +79,7 @@ function ProductRegisterPage() {
                     </div>
 
                     <Card variant="soft" className="mt-8 sm:mt-12 lg:mt-28">
-                        <h3 className="border-line border-b pb-2 text-center text-[15px] font-medium">
+                        <h3 className="border-line text-primary border-b pb-2 text-center text-[15px] font-medium">
                             촬영 가이드
                         </h3>
                         <ul className="text-text-secondary mt-3 list-disc space-y-1 pl-5 text-[15px]">

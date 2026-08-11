@@ -78,54 +78,56 @@ function AIAnalysisPage() {
                 title="AI 분석"
                 description="AI가 제품 상태와 불편 사항을 분석하고 있어요."
             >
-                <Card className="mx-auto max-w-140">
-                    <div
-                        className="bg-line h-2 w-full overflow-hidden rounded-full"
-                        role="progressbar"
-                        aria-label="AI 분석 진행률"
-                        aria-valuemin={0}
-                        aria-valuemax={100}
-                        aria-valuenow={progress}
-                    >
+                <div className="flex flex-1 items-center justify-center pt-16">
+                    <Card className="w-full max-w-160 p-8">
                         <div
-                            className="bg-primary h-full rounded-full transition-[width] duration-500"
-                            style={{ width: `${progress}%` }}
-                        />
-                    </div>
+                            className="bg-line h-2 w-full overflow-hidden rounded-full"
+                            role="progressbar"
+                            aria-label="AI 분석 진행률"
+                            aria-valuemin={0}
+                            aria-valuemax={100}
+                            aria-valuenow={progress}
+                        >
+                            <div
+                                className="bg-primary h-full rounded-full transition-[width] duration-500"
+                                style={{ width: `${progress}%` }}
+                            />
+                        </div>
 
-                    <ul className="mt-8 flex flex-col gap-5">
-                        {ANALYSIS_STEPS.map((step, index) => {
-                            const status: StepStatus =
-                                index < completedCount
-                                    ? "done"
-                                    : index === completedCount
-                                      ? "active"
-                                      : "pending";
+                        <ul className="mt-8 flex flex-col gap-5">
+                            {ANALYSIS_STEPS.map((step, index) => {
+                                const status: StepStatus =
+                                    index < completedCount
+                                        ? "done"
+                                        : index === completedCount
+                                          ? "active"
+                                          : "pending";
 
-                            return (
-                                <li
-                                    key={step.id}
-                                    className="flex items-center gap-3"
-                                >
-                                    <StepIcon status={status} />
-                                    <span
-                                        className={`text-[18px] ${status === "pending" ? "text-text-secondary" : "text-primary font-medium"}`}
+                                return (
+                                    <li
+                                        key={step.id}
+                                        className="flex items-center gap-3"
                                     >
-                                        {step.label}
-                                    </span>
-                                </li>
-                            );
-                        })}
-                    </ul>
+                                        <StepIcon status={status} />
+                                        <span
+                                            className={`text-[18px] ${status === "pending" ? "text-text-secondary" : "text-primary font-medium"}`}
+                                        >
+                                            {step.label}
+                                        </span>
+                                    </li>
+                                );
+                            })}
+                        </ul>
 
-                    <p
-                        className="text-text-secondary mt-8 text-center text-[16px]"
-                        role="status"
-                        aria-live="polite"
-                    >
-                        {`${ANALYSIS_STEPS[completedCount].label}...`}
-                    </p>
-                </Card>
+                        <p
+                            className="text-text-secondary mt-8 text-center text-[16px]"
+                            role="status"
+                            aria-live="polite"
+                        >
+                            {`${ANALYSIS_STEPS[completedCount].label}...`}
+                        </p>
+                    </Card>
+                </div>
             </PageLayout>
         );
     }
@@ -158,7 +160,7 @@ function AIAnalysisPage() {
                 />
             }
         >
-            <div className="grid gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.3fr)]">
+            <div className="grid gap-10 lg:grid-cols-2">
                 <section>
                     <PhotoCarousel photos={analysisPhotos} />
                     <p className="text-text-secondary mt-4 text-[15px]">
@@ -169,14 +171,14 @@ function AIAnalysisPage() {
 
                 <section className="flex flex-col gap-8">
                     <div>
-                        <h2 className="text-text-strong flex flex-wrap items-baseline gap-2 text-[23px] font-bold sm:text-[25px]">
+                        <h2 className="text-primary flex flex-wrap items-baseline gap-2 text-[23px] font-bold sm:text-[25px]">
                             AI가 확인한 제품 특징
                             <span className="text-text-secondary text-[15px] font-normal">
                                 (업로드된 사진을 기반으로 확인된 내용입니다)
                             </span>
                         </h2>
                         <Card className="mt-4">
-                            <dl className="divide-line divide-y">
+                            <dl>
                                 <InfoRow label="제품 유형">
                                     <span className="text-[18px]">
                                         {productTypeLabel}
@@ -199,17 +201,23 @@ function AIAnalysisPage() {
                     </div>
 
                     <div>
-                        <h2 className="text-text-strong text-[23px] font-bold sm:text-[25px]">
+                        <h2 className="text-primary text-[23px] font-bold sm:text-[25px]">
                             현재 사용 환경 분석
                         </h2>
                         <Card className="mt-4">
-                            <dl className="divide-line divide-y">
-                                <InfoRow label="현재 사용 목적">
+                            <dl>
+                                <InfoRow
+                                    label="현재 사용 목적"
+                                    labelWidthClassName="w-40"
+                                >
                                     <span className="text-[18px]">
                                         {MOCK_ANALYSIS.usagePurpose}
                                     </span>
                                 </InfoRow>
-                                <InfoRow label="주요 불편 원인">
+                                <InfoRow
+                                    label="주요 불편 원인"
+                                    labelWidthClassName="w-40"
+                                >
                                     {painPointCauses.length > 0 ? (
                                         <ul className="text-[18px]">
                                             {painPointCauses.map((cause) => (
@@ -222,7 +230,10 @@ function AIAnalysisPage() {
                                         </span>
                                     )}
                                 </InfoRow>
-                                <InfoRow label="개선 필요 부분">
+                                <InfoRow
+                                    label="개선 필요 부분"
+                                    labelWidthClassName="w-40"
+                                >
                                     <TagList
                                         tone="soft"
                                         items={
@@ -272,13 +283,17 @@ const StepIcon = ({ status }: { status: StepStatus }) => {
 
 const InfoRow = ({
     label,
+    labelWidthClassName = "w-28",
     children,
 }: {
     label: string;
+    labelWidthClassName?: string;
     children: ReactNode;
 }) => (
-    <div className="flex gap-6 py-4 first:pt-0 last:pb-0">
-        <dt className="border-line text-text-strong w-28 shrink-0 border-r pr-4 text-[18px] font-medium">
+    <div className="flex gap-4 py-4 first:pt-0 last:pb-0">
+        <dt
+            className={`border-line text-text-strong shrink-0 border-r pr-3 text-[18px] font-medium ${labelWidthClassName}`}
+        >
             {label}
         </dt>
         <dd className="flex-1">{children}</dd>
