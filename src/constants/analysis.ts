@@ -1,9 +1,3 @@
-export const ANALYSIS_STEPS = [
-    { id: "product", label: "제품 정보 확인 중" },
-    { id: "pain-point", label: "불편 사항 분석 중" },
-    { id: "solution", label: "리폼 방향 도출 중" },
-] as const;
-
 /* 실제 AI 이미지 분석 API 연동 전까지 사용하는 목업 결과입니다. */
 export const MOCK_ANALYSIS = {
     externalStructure: ["더블 핸들", "탈부착 스트랩", "사이드 포켓"],

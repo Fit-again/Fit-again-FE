@@ -58,6 +58,7 @@ describe("ProductRegisterPage", () => {
         useReformFlowStore.setState({
             productType: "shoulder",
             frontPhoto,
+            detailPhotos: [createImageFile("saved-detail.png")],
             wearPhotos: [createImageFile("saved-wear.png")],
         });
 
@@ -68,6 +69,7 @@ describe("ProductRegisterPage", () => {
             "true"
         );
         expect(screen.getByText("saved-front.png")).toBeInTheDocument();
+        expect(screen.getByAltText("디테일 사진 1")).toBeInTheDocument();
         expect(screen.getByAltText("마모 부위 사진 1")).toBeInTheDocument();
     });
 
@@ -158,6 +160,24 @@ describe("ProductRegisterPage", () => {
         expect(
             screen.getByLabelText("마모 부위 사진 추가")
         ).toBeInTheDocument();
+    });
+
+    it("디테일 사진을 업로드하고 개별 삭제할 수 있다", async () => {
+        const user = userEvent.setup();
+        renderPage();
+
+        await user.upload(
+            screen.getByLabelText("디테일 사진 추가"),
+            createImageFile("detail.png")
+        );
+
+        expect(screen.getByAltText("디테일 사진 1")).toBeInTheDocument();
+
+        await user.click(
+            screen.getByRole("button", { name: "디테일 사진 1 삭제" })
+        );
+
+        expect(screen.queryByAltText("디테일 사진 1")).not.toBeInTheDocument();
     });
 
     it("모든 필수값을 채우고 다음 단계를 누르면 다음 화면으로 이동한다", async () => {

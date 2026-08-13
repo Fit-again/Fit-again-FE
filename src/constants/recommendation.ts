@@ -3,12 +3,6 @@ import type {
     RecommendedTask,
 } from "@/types/recommendation";
 
-export const RECOMMEND_STEPS = [
-    { id: "context", label: "분석 결과 확인 중" },
-    { id: "score", label: "리폼 적합도 계산 중" },
-    { id: "compose", label: "맞춤 추천 구성 중" },
-] as const;
-
 /* 실제 AI 추천 API 연동 전까지 사용하는 목업 결과입니다. */
 export const MOCK_RECOMMENDATION = {
     title: "리폼 (Reform)",

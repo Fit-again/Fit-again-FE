@@ -5,6 +5,7 @@ type MultiPhotoUploadProps = {
     files: File[];
     maxCount: number;
     itemLabel: string;
+    className?: string;
     onAdd: (file: File) => void;
     onRemove: (index: number) => void;
 };
@@ -13,13 +14,14 @@ const MultiPhotoUpload = ({
     files,
     maxCount,
     itemLabel,
+    className = "grid-cols-3 sm:grid-cols-5",
     onAdd,
     onRemove,
 }: MultiPhotoUploadProps) => {
     const inputId = useId();
 
     return (
-        <div className="grid grid-cols-3 gap-3 sm:grid-cols-5">
+        <div className={`grid gap-3 ${className}`}>
             {Array.from({ length: maxCount }, (_, index) => {
                 const file = files[index];
 

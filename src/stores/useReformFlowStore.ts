@@ -4,6 +4,7 @@ import { create } from "zustand";
 const initialReformFlowState = {
     productType: null,
     frontPhoto: null,
+    detailPhotos: [],
     wearPhotos: [],
     painPointKeywordIds: [],
     description: "",

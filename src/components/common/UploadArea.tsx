@@ -8,6 +8,8 @@ type UploadAreaProps = {
     multiple?: boolean;
     disabled?: boolean;
     file?: File | null;
+    compact?: boolean;
+    className?: string;
     onFilesSelected?: (files: File[]) => void;
 };
 
@@ -18,6 +20,8 @@ const UploadArea = ({
     multiple = false,
     disabled = false,
     file,
+    compact = false,
+    className = "",
     onFilesSelected,
 }: UploadAreaProps) => {
     const inputId = useId();
@@ -38,17 +42,19 @@ const UploadArea = ({
                 }}
             />
             <label
-                className={`focus-within:outline-primary border-line text-text-secondary flex min-h-[240px] w-full flex-col items-center justify-center gap-3 rounded-[5px] border bg-white p-3 text-center focus-within:outline-3 focus-within:outline-offset-2 ${disabled ? "cursor-not-allowed opacity-60" : "hover:border-primary cursor-pointer"}`}
+                className={`focus-within:outline-primary border-line text-text-secondary flex w-full flex-col items-center justify-center gap-3 overflow-hidden rounded-[5px] border p-3 text-center focus-within:outline-3 focus-within:outline-offset-2 ${compact ? "bg-placeholder aspect-square" : "min-h-60 bg-white"} ${disabled ? "cursor-not-allowed opacity-60" : "hover:border-primary cursor-pointer"} ${className}`}
                 htmlFor={inputId}
             >
                 <img
                     ref={imgRef}
                     alt={label}
-                    className={`max-h-[180px] w-full rounded-[5px] object-contain ${file ? "" : "hidden"}`}
+                    className={`h-full w-full rounded-[5px] ${compact ? "object-cover" : "max-h-45 object-contain"} ${file ? "" : "hidden"}`}
                 />
                 {!file && <UploadIcon />}
-                <span className="text-[18px] font-medium">{label}</span>
-                {description && !file && (
+                <span className={compact ? "sr-only" : "text-lg font-medium"}>
+                    {label}
+                </span>
+                {description && !file && !compact && (
                     <span className="max-w-sm px-5 text-[15px]">
                         {description}
                     </span>

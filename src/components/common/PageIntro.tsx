@@ -5,7 +5,7 @@ type PageIntroProps = {
 
 const PageIntro = ({ title, description }: PageIntroProps) => (
     <section className="border-line border-b bg-white shadow-[0_6px_5px_0_rgba(231,222,216,0.25)]">
-        <div className="mx-auto w-full max-w-[1240px] px-5 py-6 sm:px-8 lg:py-5 xl:px-0">
+        <div className="mx-auto w-full max-w-[1240px] px-5 py-6 sm:px-8 lg:py-4 xl:px-0">
             <h1 className="text-primary text-[28px] leading-tight font-bold sm:text-[30px]">
                 {title}
             </h1>

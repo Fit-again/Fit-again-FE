@@ -5,35 +5,27 @@ export const SIMULATION_STEPS: SimulationStep[] = [
         id: "disassemble",
         stepNumber: 1,
         title: "해체",
-        progressLabel: "해체 시뮬레이션 중",
         bullets: ["교체 대상 부위 확인", "기존 부품 분리 준비"],
     },
     {
         id: "replace",
         stepNumber: 2,
         title: "교체",
-        progressLabel: "교체 시뮬레이션 중",
         bullets: ["경량 스트랩 교체", "어깨 패드 추가"],
     },
     {
         id: "reinforce",
         stepNumber: 3,
         title: "보강",
-        progressLabel: "보강 시뮬레이션 중",
         bullets: ["모서리 보수", "가죽 마감 보강"],
     },
     {
         id: "complete",
         stepNumber: 4,
         title: "완성",
-        progressLabel: "완성 이미지 생성 중",
         bullets: ["최종 리폼 결과 확인", "개선된 사용 모습 미리보기"],
     },
 ];
-
-export const SIMULATION_PROGRESS_STEPS = SIMULATION_STEPS.map(
-    ({ id, progressLabel }) => ({ id, label: progressLabel })
-);
 
 export const DEFAULT_BEFORE_BULLETS = [
     "스트랩이 자주 흘러내림",

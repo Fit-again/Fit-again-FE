@@ -12,7 +12,7 @@ import type { AlternativeOption } from "@/types/recommendation";
 const RecommendationResult = ({ frontPhoto }: { frontPhoto: File | null }) => (
     <>
         <Card className="p-6 sm:p-8">
-            <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.5fr)_minmax(0,0.9fr)]">
+            <div className="grid gap-8 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.5fr)_minmax(0,0.9fr)]">
                 <ProductPhoto file={frontPhoto} />
 
                 <div>
@@ -118,14 +118,14 @@ const ProductPhoto = ({ file }: { file: File | null }) => {
 
     if (!file) {
         return (
-            <div className="border-line bg-placeholder text-text-secondary flex aspect-4/5 items-center justify-center rounded-[5px] border">
+            <div className="border-line bg-placeholder text-text-secondary flex aspect-square items-center justify-center rounded-[5px] border">
                 <span className="text-[14px]">사진 없음</span>
             </div>
         );
     }
 
     return (
-        <div className="border-line bg-ground aspect-4/5 overflow-hidden rounded-[5px] border">
+        <div className="border-line bg-ground aspect-square overflow-hidden rounded-[5px] border">
             <img
                 ref={imageRef}
                 alt="추천 제품 사진"

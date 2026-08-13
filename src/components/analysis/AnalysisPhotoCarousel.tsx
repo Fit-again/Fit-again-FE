@@ -22,7 +22,7 @@ const AnalysisPhotoCarousel = ({ photos }: { photos: AnalysisPhoto[] }) => {
 
     return (
         <div>
-            <div className="border-line bg-ground relative aspect-4/3 overflow-hidden rounded-[5px] border">
+            <div className="border-line bg-ground relative aspect-square overflow-hidden rounded-[5px] border">
                 <img
                     ref={imgRef}
                     alt={current.label}
@@ -40,31 +40,14 @@ const AnalysisPhotoCarousel = ({ photos }: { photos: AnalysisPhoto[] }) => {
                             label="다음 사진"
                             onClick={goNext}
                         />
-                        <span className="bg-primary/80 absolute right-3 bottom-3 rounded-full px-3 py-1 text-[13px] text-white">
-                            {currentIndex + 1} / {photos.length}
+                        <span className="bg-secondary text-text-strong absolute right-1/2 -bottom-11 translate-x-1/2 rounded-full px-3 py-1 text-sm">
+                            {currentIndex + 1}/{photos.length}
                         </span>
                     </>
                 )}
             </div>
 
-            <p className="text-text-secondary mt-2 text-center text-[15px]">
-                {current.label}
-            </p>
-
-            {photos.length > 1 && (
-                <div className="mt-3 flex justify-center gap-2">
-                    {photos.map((photo, photoIndex) => (
-                        <button
-                            key={photo.label}
-                            type="button"
-                            aria-label={`${photo.label} 보기`}
-                            aria-current={photoIndex === currentIndex}
-                            onClick={() => setIndex(photoIndex)}
-                            className={`size-2.5 cursor-pointer rounded-full transition-colors ${photoIndex === currentIndex ? "bg-primary" : "bg-line"}`}
-                        />
-                    ))}
-                </div>
-            )}
+            {photos.length > 1 && <div className="h-11" aria-hidden="true" />}
         </div>
     );
 };

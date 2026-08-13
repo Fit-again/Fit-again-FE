@@ -119,6 +119,7 @@ describe("App 라우팅", () => {
         ).toBeInTheDocument();
         expect(useReformFlowStore.getState().productType).toBeNull();
         expect(useReformFlowStore.getState().frontPhoto).toBeNull();
+        expect(useReformFlowStore.getState().detailPhotos).toEqual([]);
         expect(useReformFlowStore.getState().painPointKeywordIds).toEqual([]);
     });
 });

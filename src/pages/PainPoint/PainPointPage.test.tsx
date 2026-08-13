@@ -1,7 +1,7 @@
-import { render, screen } from "@testing-library/react";
+import { act, fireEvent, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { MemoryRouter, Route, Routes } from "react-router-dom";
-import { beforeEach, describe, expect, it } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import AIAnalysisPage from "@/pages/AIAnalysis/AIAnalysisPage";
 import PainPointPage from "@/pages/PainPoint/PainPointPage";
 import ProductRegisterPage from "@/pages/ProductRegister/ProductRegisterPage";
@@ -25,6 +25,10 @@ const renderPage = () =>
 describe("PainPointPage", () => {
     beforeEach(() => {
         useReformFlowStore.getState().resetFlow();
+    });
+
+    afterEach(() => {
+        vi.useRealTimers();
     });
 
     it("불편 입력 공통 레이아웃을 보여준다", () => {
@@ -102,14 +106,20 @@ describe("PainPointPage", () => {
     });
 
     it("키워드를 선택하고 다음 단계를 누르면 AI 분석 화면으로 이동한다", async () => {
-        const user = userEvent.setup();
+        vi.useFakeTimers();
         renderPage();
 
-        await user.click(screen.getByRole("button", { name: "무거움" }));
-        await user.click(screen.getByRole("button", { name: "AI 분석 시작" }));
+        fireEvent.click(screen.getByRole("button", { name: "무거움" }));
+        fireEvent.click(screen.getByRole("button", { name: "AI 분석 시작" }));
+
+        expect(screen.getByText("AI 분석 결과 로딩 중")).toBeInTheDocument();
+
+        await act(async () => {
+            await vi.advanceTimersByTimeAsync(1200);
+        });
 
         expect(
-            screen.getByRole("heading", { name: "AI 분석" })
+            screen.getByRole("heading", { name: "AI 분석 결과" })
         ).toBeInTheDocument();
     });
 

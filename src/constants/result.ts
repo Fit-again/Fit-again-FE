@@ -1,9 +1,3 @@
-export const RESULT_STEPS = [
-    { id: "compile", label: "리폼 결과 데이터 정리 중" },
-    { id: "difficulty", label: "예상 난이도 산정 중" },
-    { id: "report", label: "AI 리폼 리포트 생성 중" },
-] as const;
-
 export const DIFFICULTY_LEVELS = [
     "매우 쉬움",
     "쉬움",

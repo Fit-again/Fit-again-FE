@@ -4,6 +4,7 @@ export type ProductType =
 export type ProductInfo = {
     productType: ProductType;
     frontPhoto: File;
+    detailPhotos: File[];
     wearPhotos: File[];
 };
 
@@ -15,6 +16,7 @@ export type PainPointInfo = {
 export type ReformFlowState = {
     productType: ProductType | null;
     frontPhoto: File | null;
+    detailPhotos: File[];
     wearPhotos: File[];
     painPointKeywordIds: string[];
     description: string;

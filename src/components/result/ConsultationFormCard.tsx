@@ -10,7 +10,6 @@ type ConsultationFormCardProps = {
     message: string;
     agreed: boolean;
     submitted: boolean;
-    submitSuccess: boolean;
     errors: {
         name?: string;
         contact?: string;
@@ -20,6 +19,7 @@ type ConsultationFormCardProps = {
     onContactChange: (value: string) => void;
     onMessageChange: (value: string) => void;
     onAgreementChange: (checked: boolean) => void;
+    onViewAgreement: () => void;
     onSubmit: (event: SyntheticEvent<HTMLFormElement>) => void;
 };
 
@@ -29,12 +29,12 @@ const ConsultationFormCard = ({
     message,
     agreed,
     submitted,
-    submitSuccess,
     errors,
     onNameChange,
     onContactChange,
     onMessageChange,
     onAgreementChange,
+    onViewAgreement,
     onSubmit,
 }: ConsultationFormCardProps) => (
     <Card className="flex h-full flex-col p-6 sm:p-8">
@@ -107,9 +107,8 @@ const ConsultationFormCard = ({
                     />
                     <button
                         type="button"
-                        className="text-text-secondary cursor-not-allowed text-sm underline underline-offset-2"
-                        aria-label="개인정보 수집 및 이용 내용 보기 기능 준비 중"
-                        disabled
+                        className="text-text-secondary hover:text-primary cursor-pointer text-sm underline underline-offset-2"
+                        onClick={onViewAgreement}
                     >
                         (보기)
                     </button>
@@ -122,19 +121,10 @@ const ConsultationFormCard = ({
                 />
             </div>
 
-            <div className="mt-auto flex flex-col gap-2">
+            <div className="mt-auto">
                 <Button type="submit" variant="soft" fullWidth>
                     상담 신청하기
                 </Button>
-                {submitSuccess && (
-                    <p
-                        className="text-primary text-center text-[15px]"
-                        role="status"
-                        aria-live="polite"
-                    >
-                        상담 신청이 접수되었습니다. 담당자가 곧 연락드릴게요.
-                    </p>
-                )}
             </div>
         </form>
     </Card>
