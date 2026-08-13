@@ -12,7 +12,7 @@ import type { AlternativeOption } from "@/types/recommendation";
 const RecommendationResult = ({ frontPhoto }: { frontPhoto: File | null }) => (
     <>
         <Card className="p-6 sm:p-8">
-            <div className="grid gap-8 lg:grid-cols-[minmax(220px,280px)_minmax(0,1fr)_minmax(220px,260px)]">
+            <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.5fr)_minmax(0,0.9fr)]">
                 <ProductPhoto file={frontPhoto} />
 
                 <div>
@@ -85,7 +85,9 @@ const RecommendationResult = ({ frontPhoto }: { frontPhoto: File | null }) => (
 const AlternativeCard = ({ option }: { option: AlternativeOption }) => (
     <button
         type="button"
-        className="group border-line focus-visible:outline-primary hover:border-primary flex w-full cursor-pointer items-center justify-between gap-4 rounded-[5px] border bg-white p-6 text-left transition-[border-color,box-shadow] hover:shadow-[0_4px_8px_rgba(91,58,41,0.28)] focus-visible:outline-3 focus-visible:outline-offset-2"
+        className="border-line flex w-full cursor-not-allowed items-center justify-between gap-4 rounded-[5px] border bg-white p-5 text-left opacity-75 sm:p-6"
+        aria-label={`${option.label} 기능 준비 중`}
+        disabled
     >
         <div>
             <Tag
@@ -105,7 +107,9 @@ const AlternativeCard = ({ option }: { option: AlternativeOption }) => (
                 ))}
             </div>
         </div>
-        <ChevronRightIcon />
+        <span className="text-text-secondary shrink-0 text-sm font-medium">
+            준비 중
+        </span>
     </button>
 );
 
@@ -179,22 +183,6 @@ const RecycleIcon = () => (
             strokeWidth="1.3"
             strokeLinecap="round"
             strokeLinejoin="round"
-        />
-    </svg>
-);
-
-const ChevronRightIcon = () => (
-    <svg
-        className="text-line group-hover:text-primary size-11 shrink-0 transition-colors"
-        viewBox="0 0 49 57"
-        fill="none"
-        aria-hidden="true"
-    >
-        <path
-            fillRule="evenodd"
-            clipRule="evenodd"
-            d="M18.5951 10.5794C19.6385 9.53602 21.3302 9.53602 22.3737 10.5794L38.4049 26.6107C39.4484 27.6541 39.4484 29.3459 38.4049 30.3893L22.3737 46.4206C21.3302 47.464 19.6385 47.464 18.5951 46.4206C17.5516 45.3771 17.5516 43.6854 18.5951 42.6419L32.737 28.5L18.5951 14.3581C17.5516 13.3146 17.5516 11.6229 18.5951 10.5794Z"
-            fill="currentColor"
         />
     </svg>
 );

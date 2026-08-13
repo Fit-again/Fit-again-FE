@@ -64,12 +64,12 @@ const AnalysisResult = ({
                 </h2>
                 <Card className="mt-4">
                     <dl>
-                        <InfoRow label="현재 사용 목적" wide>
+                        <InfoRow label="현재 사용 목적">
                             <span className="text-[18px]">
                                 {MOCK_ANALYSIS.usagePurpose}
                             </span>
                         </InfoRow>
-                        <InfoRow label="주요 불편 원인" wide>
+                        <InfoRow label="주요 불편 원인">
                             {painPointCauses.length > 0 ? (
                                 <ul className="text-[18px]">
                                     {painPointCauses.map((cause) => (
@@ -82,7 +82,7 @@ const AnalysisResult = ({
                                 </span>
                             )}
                         </InfoRow>
-                        <InfoRow label="개선 필요 부분" wide>
+                        <InfoRow label="개선 필요 부분">
                             <TagList
                                 tone="soft"
                                 items={MOCK_ANALYSIS.improvementSuggestions}
@@ -97,20 +97,16 @@ const AnalysisResult = ({
 
 const InfoRow = ({
     label,
-    wide = false,
     children,
 }: {
     label: string;
-    wide?: boolean;
     children: ReactNode;
 }) => (
-    <div className="flex gap-4 py-4 first:pt-0 last:pb-0">
-        <dt
-            className={`border-line text-text-strong shrink-0 border-r pr-3 text-[18px] font-medium ${wide ? "w-40" : "w-28"}`}
-        >
+    <div className="flex flex-col gap-2 py-4 first:pt-0 last:pb-0 sm:flex-row sm:gap-4">
+        <dt className="border-line text-text-strong border-b pb-2 text-base font-medium sm:basis-32 sm:border-r sm:border-b-0 sm:pr-3 sm:pb-0 lg:basis-40 lg:text-lg">
             {label}
         </dt>
-        <dd className="flex-1">{children}</dd>
+        <dd className="min-w-0 flex-1">{children}</dd>
     </div>
 );
 

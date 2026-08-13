@@ -111,7 +111,7 @@ function ResultConfirmPage() {
                 />
             }
         >
-            <div className="grid gap-6 lg:grid-cols-[minmax(0,1.65fr)_minmax(320px,1fr)]">
+            <div className="grid gap-6 lg:grid-cols-[minmax(0,1.65fr)_minmax(0,1fr)]">
                 <ResultReportCard
                     reportRef={reportRef}
                     frontPhoto={frontPhoto}

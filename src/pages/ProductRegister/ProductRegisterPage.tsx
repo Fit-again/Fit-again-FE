@@ -20,10 +20,15 @@ const isValidProductPhoto = (file: File) => file.type.startsWith("image/");
 
 function ProductRegisterPage() {
     const navigate = useNavigate();
+    const savedProductType = useReformFlowStore((state) => state.productType);
+    const savedFrontPhoto = useReformFlowStore((state) => state.frontPhoto);
+    const savedWearPhotos = useReformFlowStore((state) => state.wearPhotos);
     const setProductInfo = useReformFlowStore((state) => state.setProductInfo);
-    const [selectedType, setSelectedType] = useState<ProductType | null>(null);
-    const [frontPhoto, setFrontPhoto] = useState<File | null>(null);
-    const [wearPhotos, setWearPhotos] = useState<File[]>([]);
+    const [selectedType, setSelectedType] = useState<ProductType | null>(
+        savedProductType
+    );
+    const [frontPhoto, setFrontPhoto] = useState<File | null>(savedFrontPhoto);
+    const [wearPhotos, setWearPhotos] = useState<File[]>(savedWearPhotos);
     const [submitted, setSubmitted] = useState(false);
 
     const typeError = !selectedType ? "제품 유형을 선택해주세요" : undefined;
@@ -51,7 +56,7 @@ function ProductRegisterPage() {
             description="분석에 필요한 제품 정보와 사진을 등록해주세요."
             actions={<PageActions nextLabel="다음 단계" onNext={handleNext} />}
         >
-            <div className="grid gap-10 lg:grid-cols-[minmax(420px,1fr)_minmax(0,1.45fr)] lg:gap-7">
+            <div className="grid gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.45fr)] lg:gap-7">
                 <section className="lg:border-line lg:border-r lg:pr-7">
                     <SectionHeading
                         number={1}

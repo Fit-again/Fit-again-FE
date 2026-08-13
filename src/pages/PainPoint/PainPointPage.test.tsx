@@ -1,11 +1,12 @@
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { MemoryRouter, Route, Routes } from "react-router-dom";
-import { describe, expect, it } from "vitest";
+import { beforeEach, describe, expect, it } from "vitest";
 import AIAnalysisPage from "@/pages/AIAnalysis/AIAnalysisPage";
 import PainPointPage from "@/pages/PainPoint/PainPointPage";
 import ProductRegisterPage from "@/pages/ProductRegister/ProductRegisterPage";
 import { ROUTES } from "@/routes/paths";
+import { useReformFlowStore } from "@/stores/useReformFlowStore";
 
 const renderPage = () =>
     render(
@@ -22,6 +23,10 @@ const renderPage = () =>
     );
 
 describe("PainPointPage", () => {
+    beforeEach(() => {
+        useReformFlowStore.getState().resetFlow();
+    });
+
     it("불편 입력 공통 레이아웃을 보여준다", () => {
         renderPage();
 
@@ -52,6 +57,23 @@ describe("PainPointPage", () => {
         await user.click(heavy);
 
         expect(heavy).toHaveAttribute("aria-pressed", "false");
+    });
+
+    it("이전에 저장한 불편 정보를 다시 화면에 표시한다", () => {
+        useReformFlowStore.setState({
+            painPointKeywordIds: ["heavy", "shoulder-pain"],
+            description: "이전에 작성한 설명",
+        });
+
+        renderPage();
+
+        expect(screen.getByRole("button", { name: "무거움" })).toHaveAttribute(
+            "aria-pressed",
+            "true"
+        );
+        expect(screen.getByLabelText("추가 설명 입력")).toHaveValue(
+            "이전에 작성한 설명"
+        );
     });
 
     it("키워드를 선택하지 않고 다음 단계를 누르면 에러를 보여주고 이동하지 않는다", async () => {

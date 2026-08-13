@@ -136,7 +136,7 @@ function ReformSimulationPage() {
                                 현재 상태
                             </span>
                         </h3>
-                        <div className="mt-4 grid gap-5 sm:grid-cols-[minmax(140px,180px)_1fr] sm:items-center">
+                        <div className="mt-4 grid gap-5 sm:grid-cols-[minmax(0,0.8fr)_minmax(0,1.2fr)] sm:items-center">
                             <StepPhoto file={frontPhoto} alt="현재 제품 사진" />
                             <ul className="flex flex-col gap-2.5">
                                 {beforeBullets.map((bullet) => (
@@ -168,7 +168,7 @@ function ReformSimulationPage() {
                                 리폼 후 기대효과
                             </span>
                         </h3>
-                        <div className="mt-4 grid gap-5 sm:grid-cols-[minmax(140px,180px)_1fr] sm:items-center">
+                        <div className="mt-4 grid gap-5 sm:grid-cols-[minmax(0,0.8fr)_minmax(0,1.2fr)] sm:items-center">
                             <StepPhoto
                                 file={frontPhoto}
                                 alt="리폼 후 기대 제품 사진"

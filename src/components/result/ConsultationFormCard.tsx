@@ -94,29 +94,26 @@ const ConsultationFormCard = ({
             </Field>
 
             <div>
-                <Checkbox
-                    id="consult-agree"
-                    checked={agreed}
-                    invalid={submitted && !!errors.agree}
-                    aria-describedby="consult-agree-error"
-                    onChange={(event) =>
-                        onAgreementChange(event.target.checked)
-                    }
-                    label={
-                        <>
-                            [필수] 개인정보 수집 및 이용에 동의{" "}
-                            <button
-                                type="button"
-                                className="text-text-secondary"
-                                onClick={() => {
-                                    // 개인정보 보기 기능은 별도 작업에서 연결합니다.
-                                }}
-                            >
-                                (보기)
-                            </button>
-                        </>
-                    }
-                />
+                <div className="flex flex-wrap items-start gap-x-2 gap-y-1">
+                    <Checkbox
+                        id="consult-agree"
+                        checked={agreed}
+                        invalid={submitted && !!errors.agree}
+                        aria-describedby="consult-agree-error"
+                        onChange={(event) =>
+                            onAgreementChange(event.target.checked)
+                        }
+                        label="[필수] 개인정보 수집 및 이용에 동의"
+                    />
+                    <button
+                        type="button"
+                        className="text-text-secondary cursor-not-allowed text-sm underline underline-offset-2"
+                        aria-label="개인정보 수집 및 이용 내용 보기 기능 준비 중"
+                        disabled
+                    >
+                        (보기)
+                    </button>
+                </div>
                 <ReservedError
                     id="consult-agree-error"
                     show={submitted && !!errors.agree}

@@ -86,6 +86,11 @@ describe("ResultConfirmPage", () => {
         ).toBeInTheDocument();
         expect(screen.getByText("AI 리폼 리포트")).toBeInTheDocument();
         expect(screen.getByText("공식 상담 신청")).toBeInTheDocument();
+        expect(
+            screen.getByRole("button", {
+                name: "개인정보 수집 및 이용 내용 보기 기능 준비 중",
+            })
+        ).toBeDisabled();
     });
 
     it("필수값을 채우지 않고 상담 신청하기를 누르면 항목별 에러를 보여준다", async () => {

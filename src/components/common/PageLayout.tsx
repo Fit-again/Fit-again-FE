@@ -17,7 +17,7 @@ const PageLayout = ({
     children,
     actions,
 }: PageLayoutProps) => (
-    <div className="bg-ground flex min-h-[1024px] w-full flex-col">
+    <div className="bg-ground flex min-h-dvh w-full flex-col">
         <ProgressHeader currentStep={currentStep} />
         <PageIntro title={title} description={description} />
         <main className="mx-auto flex w-full max-w-[1240px] flex-1 flex-col px-5 py-8 sm:px-8 lg:py-12 xl:px-0">

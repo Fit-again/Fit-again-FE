@@ -20,4 +20,5 @@ export type ReformFlowState = {
     description: string;
     setProductInfo: (info: ProductInfo) => void;
     setPainPoint: (info: PainPointInfo) => void;
+    resetFlow: () => void;
 };

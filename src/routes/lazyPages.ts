@@ -3,6 +3,7 @@ import { lazy } from "react";
 export const AIAnalysisPage = lazy(
     () => import("@/pages/AIAnalysis/AIAnalysisPage")
 );
+export const ErrorPage = lazy(() => import("@/pages/Error/ErrorPage"));
 export const HomePage = lazy(() => import("@/pages/Home/HomePage"));
 export const NotFoundPage = lazy(() => import("@/pages/NotFound/NotFoundPage"));
 export const PainPointPage = lazy(

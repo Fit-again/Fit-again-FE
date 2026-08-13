@@ -12,9 +12,14 @@ const DESCRIPTION_MAX = 1000;
 
 function PainPointPage() {
     const navigate = useNavigate();
+    const savedKeywordIds = useReformFlowStore(
+        (state) => state.painPointKeywordIds
+    );
+    const savedDescription = useReformFlowStore((state) => state.description);
     const setPainPoint = useReformFlowStore((state) => state.setPainPoint);
-    const [selectedKeywords, setSelectedKeywords] = useState<string[]>([]);
-    const [description, setDescription] = useState("");
+    const [selectedKeywords, setSelectedKeywords] =
+        useState<string[]>(savedKeywordIds);
+    const [description, setDescription] = useState(savedDescription);
     const [submitted, setSubmitted] = useState(false);
 
     const keywordError =
@@ -54,7 +59,7 @@ function PainPointPage() {
                 />
             }
         >
-            <div className="grid gap-10 lg:grid-cols-[minmax(420px,1fr)_minmax(0,1.45fr)] lg:gap-7">
+            <div className="grid gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.45fr)] lg:gap-7">
                 <section className="lg:border-line lg:border-r lg:pr-7">
                     <SectionHeading
                         number={1}

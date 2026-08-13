@@ -5,9 +5,11 @@
  */
 
 import App from "@/App";
+import ReformFlowRoute from "@/components/route/ReformFlowRoute";
 import RouteLoading from "@/components/route/RouteLoading";
 import {
     AIAnalysisPage,
+    ErrorPage,
     HomePage,
     NotFoundPage,
     PainPointPage,
@@ -24,10 +26,17 @@ const lazyPage = (page: ReactNode) => (
     <Suspense fallback={<RouteLoading />}>{page}</Suspense>
 );
 
+const guardedPage = (page: ReactNode, requirement: "product" | "painPoint") => (
+    <ReformFlowRoute requirement={requirement}>
+        {lazyPage(page)}
+    </ReformFlowRoute>
+);
+
 export const appRoutes: RouteObject[] = [
     {
         path: ROUTES.home,
         element: <App />,
+        errorElement: lazyPage(<ErrorPage />),
         children: [
             { index: true, element: lazyPage(<HomePage />) },
             {
@@ -36,23 +45,23 @@ export const appRoutes: RouteObject[] = [
             },
             {
                 path: ROUTES.painPoint.slice(1),
-                element: lazyPage(<PainPointPage />),
+                element: guardedPage(<PainPointPage />, "product"),
             },
             {
                 path: ROUTES.aiAnalysis.slice(1),
-                element: lazyPage(<AIAnalysisPage />),
+                element: guardedPage(<AIAnalysisPage />, "painPoint"),
             },
             {
                 path: ROUTES.solutionRecommend.slice(1),
-                element: lazyPage(<SolutionRecommendPage />),
+                element: guardedPage(<SolutionRecommendPage />, "painPoint"),
             },
             {
                 path: ROUTES.reformSimulation.slice(1),
-                element: lazyPage(<ReformSimulationPage />),
+                element: guardedPage(<ReformSimulationPage />, "painPoint"),
             },
             {
                 path: ROUTES.resultConfirm.slice(1),
-                element: lazyPage(<ResultConfirmPage />),
+                element: guardedPage(<ResultConfirmPage />, "painPoint"),
             },
             { path: "*", element: lazyPage(<NotFoundPage />) },
         ],

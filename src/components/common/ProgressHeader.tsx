@@ -4,6 +4,8 @@
  */
 
 import { SERVICE_STEPS } from "@/constants/serviceSteps";
+import { ROUTES } from "@/routes/paths";
+import { Link } from "react-router-dom";
 
 type ProgressHeaderProps = {
     currentStep: number;
@@ -17,14 +19,14 @@ const ProgressHeader = ({ currentStep }: ProgressHeaderProps) => {
 
     return (
         <header className="border-line border-b bg-white">
-            <div className="mx-auto flex min-h-[88px] w-full max-w-[1320px] items-center gap-10 px-5 sm:px-8 lg:px-[30px]">
-                <a
-                    className="font-logo text-primary focus-visible:outline-primary shrink-0 text-[34px] leading-none font-bold focus-visible:rounded focus-visible:outline-3 focus-visible:outline-offset-2"
-                    href="/"
+            <div className="mx-auto flex w-full max-w-[1320px] items-center gap-5 px-5 py-4 sm:min-h-22 sm:gap-10 sm:px-8 lg:px-8">
+                <Link
+                    className="font-logo text-primary focus-visible:outline-primary shrink-0 text-3xl leading-none font-bold focus-visible:rounded focus-visible:outline-3 focus-visible:outline-offset-2 sm:text-[34px]"
+                    to={ROUTES.home}
                     aria-label="Fit Again 홈"
                 >
                     Fit:again
-                </a>
+                </Link>
 
                 <nav
                     className="hidden min-w-0 flex-1 xl:block"

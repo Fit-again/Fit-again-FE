@@ -1,10 +1,11 @@
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { MemoryRouter, Route, Routes } from "react-router-dom";
-import { describe, expect, it } from "vitest";
+import { beforeEach, describe, expect, it } from "vitest";
 import PainPointPage from "@/pages/PainPoint/PainPointPage";
 import ProductRegisterPage from "@/pages/ProductRegister/ProductRegisterPage";
 import { ROUTES } from "@/routes/paths";
+import { useReformFlowStore } from "@/stores/useReformFlowStore";
 
 const createImageFile = (name = "photo.png") =>
     new File(["dummy"], name, { type: "image/png" });
@@ -23,6 +24,10 @@ const renderPage = () =>
     );
 
 describe("ProductRegisterPage", () => {
+    beforeEach(() => {
+        useReformFlowStore.getState().resetFlow();
+    });
+
     it("제품 등록 공통 레이아웃을 보여준다", () => {
         renderPage();
 
@@ -46,6 +51,24 @@ describe("ProductRegisterPage", () => {
         await user.click(shoulderBag);
 
         expect(shoulderBag).toHaveAttribute("aria-pressed", "true");
+    });
+
+    it("이전에 저장한 제품 정보를 다시 화면에 표시한다", () => {
+        const frontPhoto = createImageFile("saved-front.png");
+        useReformFlowStore.setState({
+            productType: "shoulder",
+            frontPhoto,
+            wearPhotos: [createImageFile("saved-wear.png")],
+        });
+
+        renderPage();
+
+        expect(screen.getByRole("button", { name: "숄더백" })).toHaveAttribute(
+            "aria-pressed",
+            "true"
+        );
+        expect(screen.getByText("saved-front.png")).toBeInTheDocument();
+        expect(screen.getByAltText("마모 부위 사진 1")).toBeInTheDocument();
     });
 
     it("테스트용 컴포넌트 확인 영역을 노출하지 않는다", () => {

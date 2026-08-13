@@ -18,7 +18,7 @@ const PageActions = ({
     <div className="flex flex-col-reverse gap-3 sm:flex-row sm:items-center sm:justify-between">
         {onPrevious ? (
             <Button
-                className="sm:min-w-[150px]"
+                className="sm:flex-1 lg:max-w-40"
                 variant="outline"
                 onClick={onPrevious}
             >
@@ -28,7 +28,7 @@ const PageActions = ({
             <span aria-hidden="true" />
         )}
         <Button
-            className="sm:min-w-[300px]"
+            className="sm:flex-[2] lg:max-w-xs"
             onClick={onNext}
             disabled={nextDisabled}
         >

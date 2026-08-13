@@ -37,7 +37,7 @@ const ResultReportCard = ({
                 </p>
             </div>
 
-            <div className="mt-6 grid flex-1 gap-6 sm:grid-cols-[minmax(220px,1fr)_1.1fr]">
+            <div className="mt-6 grid flex-1 gap-6 sm:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)]">
                 <div className="flex flex-col items-start justify-center">
                     <h3 className="text-primary text-[16px] font-bold">
                         최종 리폼 결과
@@ -145,7 +145,7 @@ const DifficultyGauge = ({ level }: { level: number }) => {
             <div
                 className="h-2 w-full overflow-hidden rounded-full"
                 style={{
-                    background: `linear-gradient(to right, #f6d9d3 0%, var(--color-danger) ${fillPercent}%, var(--color-line) ${fillPercent}%, var(--color-line) 100%)`,
+                    background: `linear-gradient(to right, var(--color-danger-soft) 0%, var(--color-danger) ${fillPercent}%, var(--color-line) ${fillPercent}%, var(--color-line) 100%)`,
                 }}
                 role="img"
                 aria-label={`예상 난이도: ${DIFFICULTY_LEVELS[level]}`}
