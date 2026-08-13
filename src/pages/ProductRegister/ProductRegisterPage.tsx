@@ -5,12 +5,11 @@ import PageLayout from "@/components/common/PageLayout";
 import SectionHeading from "@/components/common/SectionHeading";
 import SelectionCard from "@/components/common/SelectionCard";
 import UploadArea from "@/components/common/UploadArea";
-import ProductTypeIcon, {
-    type ProductType,
-} from "@/components/product/ProductTypeIcon";
+import ProductTypeIcon from "@/components/product/ProductTypeIcon";
 import { PRODUCT_TYPES } from "@/constants/productTypes";
 import { ROUTES } from "@/routes/paths";
 import { useReformFlowStore } from "@/stores/useReformFlowStore";
+import type { ProductType } from "@/types/reformFlow";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 

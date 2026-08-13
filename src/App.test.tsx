@@ -1,42 +1,41 @@
 import { render, screen } from "@testing-library/react";
-import { MemoryRouter } from "react-router-dom";
 import { describe, expect, it } from "vitest";
-import App from "@/App";
+import { appRoutes } from "@/router";
+import { createMemoryRouter, RouterProvider } from "react-router-dom";
+
+const renderPath = (path: string) => {
+    const router = createMemoryRouter(appRoutes, {
+        initialEntries: [path],
+    });
+
+    return render(<RouterProvider router={router} />);
+};
 
 describe("App 라우팅", () => {
-    it("루트 경로에서 홈 화면을 보여준다", () => {
-        render(
-            <MemoryRouter initialEntries={["/"]}>
-                <App />
-            </MemoryRouter>
-        );
+    it("루트 경로에서 홈 화면을 보여준다", async () => {
+        renderPath("/");
 
         expect(
-            screen.getByRole("heading", { name: "Fit:again" })
+            await screen.findByRole("heading", { name: "Fit:again" })
         ).toBeInTheDocument();
     });
 
-    it("/product-register 경로에서 제품 등록 화면을 보여준다", () => {
-        render(
-            <MemoryRouter initialEntries={["/product-register"]}>
-                <App />
-            </MemoryRouter>
-        );
+    it("/product-register 경로에서 제품 등록 화면을 보여준다", async () => {
+        renderPath("/product-register");
 
         expect(
-            screen.getByRole("heading", { name: "제품 등록", level: 1 })
+            await screen.findByRole("heading", {
+                name: "제품 등록",
+                level: 1,
+            })
         ).toBeInTheDocument();
     });
 
-    it("정의되지 않은 경로에서 404 화면을 보여준다", () => {
-        render(
-            <MemoryRouter initialEntries={["/unknown"]}>
-                <App />
-            </MemoryRouter>
-        );
+    it("정의되지 않은 경로에서 404 화면을 보여준다", async () => {
+        renderPath("/unknown");
 
         expect(
-            screen.getByRole("heading", { name: "404" })
+            await screen.findByRole("heading", { name: "404" })
         ).toBeInTheDocument();
     });
 });

@@ -9,9 +9,7 @@ import otherSvg from "@/assets/product-types/other.svg?raw";
 import pouchSvg from "@/assets/product-types/pouch.svg?raw";
 import shoulderBagSvg from "@/assets/product-types/shoulder-bag.svg?raw";
 import toteBagSvg from "@/assets/product-types/tote-bag.svg?raw";
-
-export type ProductType =
-    "tote" | "shoulder" | "cross" | "backpack" | "pouch" | "other";
+import type { ProductType } from "@/types/reformFlow";
 
 const productTypeIcons: Record<ProductType, string> = {
     tote: toteBagSvg,

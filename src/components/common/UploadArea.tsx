@@ -1,4 +1,5 @@
-import { useEffect, useId, useRef } from "react";
+import { useObjectUrlImage } from "@/hooks/useObjectUrlImage";
+import { useId } from "react";
 
 type UploadAreaProps = {
     label: string;
@@ -20,22 +21,7 @@ const UploadArea = ({
     onFilesSelected,
 }: UploadAreaProps) => {
     const inputId = useId();
-    const imgRef = useRef<HTMLImageElement>(null);
-
-    /*
-     * blob URL은 img 엘리먼트에 직접(ref로) 반영합니다.
-     * React state로 다루면 StrictMode의 effect 이중 실행 시
-     * "생성 → 정리(해제) → 재실행"이 같은 커밋 안에서 렌더 없이 발생해,
-     * 방금 해제된 URL이 화면에 남는 문제가 생깁니다.
-     */
-    useEffect(() => {
-        if (!file || !imgRef.current) return;
-
-        const url = URL.createObjectURL(file);
-        imgRef.current.src = url;
-
-        return () => URL.revokeObjectURL(url);
-    }, [file]);
+    const imgRef = useObjectUrlImage(file ?? null);
 
     return (
         <div>

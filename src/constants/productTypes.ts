@@ -1,4 +1,4 @@
-import type { ProductType } from "@/components/product/ProductTypeIcon";
+import type { ProductType } from "@/types/reformFlow";
 
 export type ProductTypeOption = {
     id: ProductType;
