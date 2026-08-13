@@ -1,33 +1,26 @@
-import type { ProductType } from "@/components/product/ProductTypeIcon";
+import type { ReformFlowState } from "@/types/reformFlow";
 import { create } from "zustand";
 
-type ProductInfo = {
-    productType: ProductType;
-    frontPhoto: File;
-    wearPhotos: File[];
-};
-
-type PainPointInfo = {
-    painPointKeywordIds: string[];
-    description: string;
-};
-
-type ReformFlowState = {
-    productType: ProductType | null;
-    frontPhoto: File | null;
-    wearPhotos: File[];
-    painPointKeywordIds: string[];
-    description: string;
-    setProductInfo: (info: ProductInfo) => void;
-    setPainPoint: (info: PainPointInfo) => void;
-};
-
-export const useReformFlowStore = create<ReformFlowState>((set) => ({
+const initialReformFlowState = {
     productType: null,
     frontPhoto: null,
+    detailPhotos: [],
     wearPhotos: [],
     painPointKeywordIds: [],
     description: "",
+    recommendedSolution: "reform" as const,
+    selectedSolution: "reform" as const,
+    selectedUpcycleProduct: "mini-crossbag" as const,
+};
+
+export const useReformFlowStore = create<ReformFlowState>((set) => ({
+    ...initialReformFlowState,
     setProductInfo: (info) => set(info),
     setPainPoint: (info) => set(info),
+    setRecommendedSolution: (recommendedSolution) =>
+        set({ recommendedSolution, selectedSolution: recommendedSolution }),
+    setSelectedSolution: (selectedSolution) => set({ selectedSolution }),
+    setSelectedUpcycleProduct: (selectedUpcycleProduct) =>
+        set({ selectedUpcycleProduct }),
+    resetFlow: () => set(initialReformFlowState),
 }));

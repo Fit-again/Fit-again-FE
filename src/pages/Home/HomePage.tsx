@@ -1,6 +1,7 @@
 import Button from "@/components/common/Button";
 import heroBeforeAfter from "@/assets/home/hero-before-after.png";
 import { ROUTES } from "@/routes/paths";
+import { useReformFlowStore } from "@/stores/useReformFlowStore";
 import { useNavigate } from "react-router-dom";
 
 const painPoints = [
@@ -11,6 +12,12 @@ const painPoints = [
 
 const HomePage = () => {
     const navigate = useNavigate();
+    const resetFlow = useReformFlowStore((state) => state.resetFlow);
+
+    const handleStart = () => {
+        resetFlow();
+        navigate(ROUTES.productRegister);
+    };
 
     return (
         <div className="bg-ground flex min-h-screen w-full flex-col">
@@ -34,9 +41,9 @@ const HomePage = () => {
                         지금 바로 나의 제품을 분석해보세요.
                     </p>
                     <Button
-                        className="mt-8 w-full sm:w-auto sm:min-w-[340px]"
+                        className="mx-auto mt-8 w-full max-w-sm lg:mx-0"
                         size="lg"
-                        onClick={() => navigate(ROUTES.productRegister)}
+                        onClick={handleStart}
                     >
                         시작하기
                     </Button>
@@ -61,7 +68,7 @@ const HomePage = () => {
                         {painPoints.map((point) => (
                             <span
                                 key={point}
-                                className="bg-ground/20 inline-flex min-h-9 items-center rounded-[5px] px-5 py-1.5 text-[24px] text-white/90 shadow-[0_0_12.2px_0_rgba(250,248,243,0.5)]"
+                                className="bg-ground/20 inline-flex min-h-9 items-center rounded-[5px] px-4 py-1.5 text-base text-white/90 shadow-[0_0_12.2px_0_rgba(250,248,243,0.5)] sm:px-5 sm:text-xl lg:text-2xl"
                             >
                                 {point}
                             </span>

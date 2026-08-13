@@ -1,4 +1,4 @@
-import { act, render, screen } from "@testing-library/react";
+import { act, fireEvent, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { MemoryRouter, Route, Routes } from "react-router-dom";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
@@ -35,49 +35,17 @@ const renderPage = () =>
         </MemoryRouter>
     );
 
-const finishAnalysis = async () => {
-    for (let i = 0; i < 3; i += 1) {
-        await act(async () => {
-            await vi.advanceTimersByTimeAsync(1200);
-        });
-    }
-    vi.useRealTimers();
-};
-
 describe("AIAnalysisPage", () => {
     beforeEach(() => {
         seedReformFlowStore();
-        vi.useFakeTimers();
     });
 
     afterEach(() => {
         vi.useRealTimers();
     });
 
-    it("분석 진행 중에는 단계별 체크리스트와 진행률을 보여준다", async () => {
+    it("이전 단계 입력을 반영한 분석 결과를 보여준다", () => {
         renderPage();
-
-        expect(
-            screen.getByRole("heading", { name: "AI 분석", level: 1 })
-        ).toBeInTheDocument();
-        expect(screen.getByText("제품 정보 확인 중...")).toBeInTheDocument();
-        expect(
-            screen.getByRole("progressbar", { name: "AI 분석 진행률" })
-        ).toHaveAttribute("aria-valuenow", "0");
-
-        await act(async () => {
-            await vi.advanceTimersByTimeAsync(1200);
-        });
-
-        expect(
-            screen.getByRole("progressbar", { name: "AI 분석 진행률" })
-        ).toHaveAttribute("aria-valuenow", "33");
-    });
-
-    it("분석이 끝나면 이전 단계 입력을 반영한 분석 결과를 보여준다", async () => {
-        renderPage();
-
-        await finishAnalysis();
 
         expect(
             screen.getByRole("heading", { name: "AI 분석 결과", level: 1 })
@@ -92,25 +60,23 @@ describe("AIAnalysisPage", () => {
 
     it("분석 이미지는 한 장씩 보여주고 슬라이드로 넘겨볼 수 있다", async () => {
         renderPage();
-        await finishAnalysis();
-
         expect(screen.getByAltText("정면 사진")).toBeInTheDocument();
         expect(
             screen.queryByAltText("마모 부위 사진 1")
         ).not.toBeInTheDocument();
-        expect(screen.getByText("1 / 2")).toBeInTheDocument();
+        expect(screen.getByText("1/2")).toBeInTheDocument();
 
         const user = userEvent.setup();
         await user.click(screen.getByRole("button", { name: "다음 사진" }));
 
         expect(screen.getByAltText("마모 부위 사진 1")).toBeInTheDocument();
         expect(screen.queryByAltText("정면 사진")).not.toBeInTheDocument();
-        expect(screen.getByText("2 / 2")).toBeInTheDocument();
+        expect(screen.getByText("2/2")).toBeInTheDocument();
 
         await user.click(screen.getByRole("button", { name: "다음 사진" }));
 
         expect(screen.getByAltText("정면 사진")).toBeInTheDocument();
-        expect(screen.getByText("1 / 2")).toBeInTheDocument();
+        expect(screen.getByText("1/2")).toBeInTheDocument();
 
         await user.click(screen.getByRole("button", { name: "이전 사진" }));
 
@@ -119,8 +85,6 @@ describe("AIAnalysisPage", () => {
 
     it("이전 단계를 누르면 불편 입력 화면으로 이동한다", async () => {
         renderPage();
-        await finishAnalysis();
-
         const user = userEvent.setup();
         await user.click(screen.getByRole("button", { name: "이전 단계" }));
 
@@ -130,16 +94,18 @@ describe("AIAnalysisPage", () => {
     });
 
     it("추천 결과 보기를 누르면 추천 화면으로 이동한다", async () => {
+        vi.useFakeTimers();
         renderPage();
-        await finishAnalysis();
+        fireEvent.click(screen.getByRole("button", { name: "추천 결과 보기" }));
 
-        const user = userEvent.setup();
-        await user.click(
-            screen.getByRole("button", { name: "추천 결과 보기" })
-        );
+        expect(screen.getByText("AI 추천 결과 로딩 중")).toBeInTheDocument();
+
+        await act(async () => {
+            await vi.advanceTimersByTimeAsync(1200);
+        });
 
         expect(
-            screen.getByRole("heading", { name: "AI 추천", level: 1 })
+            screen.getByRole("heading", { name: "AI 추천 결과", level: 1 })
         ).toBeInTheDocument();
     });
 });

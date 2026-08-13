@@ -1,9 +1,11 @@
-import { useEffect, useId, useRef } from "react";
+import { useObjectUrlImage } from "@/hooks/useObjectUrlImage";
+import { useId } from "react";
 
 type MultiPhotoUploadProps = {
     files: File[];
     maxCount: number;
     itemLabel: string;
+    className?: string;
     onAdd: (file: File) => void;
     onRemove: (index: number) => void;
 };
@@ -12,13 +14,14 @@ const MultiPhotoUpload = ({
     files,
     maxCount,
     itemLabel,
+    className = "grid-cols-3 sm:grid-cols-5",
     onAdd,
     onRemove,
 }: MultiPhotoUploadProps) => {
     const inputId = useId();
 
     return (
-        <div className="grid grid-cols-3 gap-3 sm:grid-cols-5">
+        <div className={`grid gap-3 ${className}`}>
             {Array.from({ length: maxCount }, (_, index) => {
                 const file = files[index];
 
@@ -65,22 +68,7 @@ const PhotoThumbnail = ({
     label: string;
     onRemove: () => void;
 }) => {
-    const imgRef = useRef<HTMLImageElement>(null);
-
-    /*
-     * blob URL은 img 엘리먼트에 직접(ref로) 반영합니다.
-     * React state로 다루면 StrictMode의 effect 이중 실행 시
-     * "생성 → 정리(해제) → 재실행"이 같은 커밋 안에서 렌더 없이 발생해,
-     * 방금 해제된 URL이 화면에 남는 문제가 생깁니다.
-     */
-    useEffect(() => {
-        if (!imgRef.current) return;
-
-        const url = URL.createObjectURL(file);
-        imgRef.current.src = url;
-
-        return () => URL.revokeObjectURL(url);
-    }, [file]);
+    const imgRef = useObjectUrlImage(file);
 
     return (
         <div className="border-line relative aspect-square overflow-hidden rounded-[5px] border">
