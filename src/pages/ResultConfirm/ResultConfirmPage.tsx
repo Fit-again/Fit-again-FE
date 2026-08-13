@@ -14,6 +14,9 @@ import { useNavigate } from "react-router-dom";
 function ResultConfirmPage() {
     const navigate = useNavigate();
     const frontPhoto = useReformFlowStore((state) => state.frontPhoto);
+    const selectedSolution = useReformFlowStore(
+        (state) => state.selectedSolution
+    );
     const painPointKeywordIds = useReformFlowStore(
         (state) => state.painPointKeywordIds
     );
@@ -42,6 +45,11 @@ function ResultConfirmPage() {
     const agreeError = !agreed
         ? "개인정보 수집 및 이용에 동의해주세요"
         : undefined;
+    const previousRoute = {
+        reform: ROUTES.reformSimulation,
+        resell: ROUTES.resellPreview,
+        upcycle: ROUTES.upcyclePreview,
+    }[selectedSolution];
 
     const handleSaveReport = async () => {
         if (!reportRef.current) return;
@@ -80,7 +88,7 @@ function ResultConfirmPage() {
                 actions={
                     <PageActions
                         nextLabel="홈으로"
-                        onPrevious={() => navigate(ROUTES.reformSimulation)}
+                        onPrevious={() => navigate(previousRoute)}
                         onNext={() => navigate(ROUTES.home)}
                     />
                 }

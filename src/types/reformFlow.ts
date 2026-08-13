@@ -1,3 +1,5 @@
+import type { SolutionType, UpcycleProductType } from "@/types/recommendation";
+
 export type ProductType =
     "tote" | "shoulder" | "cross" | "backpack" | "pouch" | "other";
 
@@ -20,7 +22,13 @@ export type ReformFlowState = {
     wearPhotos: File[];
     painPointKeywordIds: string[];
     description: string;
+    recommendedSolution: SolutionType;
+    selectedSolution: SolutionType;
+    selectedUpcycleProduct: UpcycleProductType;
     setProductInfo: (info: ProductInfo) => void;
     setPainPoint: (info: PainPointInfo) => void;
+    setRecommendedSolution: (solution: SolutionType) => void;
+    setSelectedSolution: (solution: SolutionType) => void;
+    setSelectedUpcycleProduct: (product: UpcycleProductType) => void;
     resetFlow: () => void;
 };

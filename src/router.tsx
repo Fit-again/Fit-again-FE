@@ -15,8 +15,10 @@ import {
     PainPointPage,
     ProductRegisterPage,
     ReformSimulationPage,
+    ResellPreviewPage,
     ResultConfirmPage,
     SolutionRecommendPage,
+    UpcyclePreviewPage,
 } from "@/routes/lazyPages";
 import { ROUTES } from "@/routes/paths";
 import { Suspense, type ReactNode } from "react";
@@ -58,6 +60,14 @@ export const appRoutes: RouteObject[] = [
             {
                 path: ROUTES.reformSimulation.slice(1),
                 element: guardedPage(<ReformSimulationPage />, "painPoint"),
+            },
+            {
+                path: ROUTES.resellPreview.slice(1),
+                element: guardedPage(<ResellPreviewPage />, "painPoint"),
+            },
+            {
+                path: ROUTES.upcyclePreview.slice(1),
+                element: guardedPage(<UpcyclePreviewPage />, "painPoint"),
             },
             {
                 path: ROUTES.resultConfirm.slice(1),

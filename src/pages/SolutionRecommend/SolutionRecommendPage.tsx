@@ -2,6 +2,10 @@ import PageActions from "@/components/common/PageActions";
 import PageLayout from "@/components/common/PageLayout";
 import TransitionLoadingOverlay from "@/components/common/TransitionLoadingOverlay";
 import RecommendationResult from "@/components/recommendation/RecommendationResult";
+import {
+    RECOMMENDATION_CONTENT,
+    RECOMMENDATION_DESCRIPTIONS,
+} from "@/constants/recommendation";
 import { useTransitionNavigation } from "@/hooks/useTransitionNavigation";
 import { ROUTES } from "@/routes/paths";
 import { useReformFlowStore } from "@/stores/useReformFlowStore";
@@ -9,9 +13,27 @@ import { useNavigate } from "react-router-dom";
 
 function SolutionRecommendPage() {
     const navigate = useNavigate();
-    const { isTransitioning, startTransition } = useTransitionNavigation(
-        ROUTES.reformSimulation
+    const recommendedSolution = useReformFlowStore(
+        (state) => state.recommendedSolution
     );
+    const selectedSolution = useReformFlowStore(
+        (state) => state.selectedSolution
+    );
+    const setSelectedSolution = useReformFlowStore(
+        (state) => state.setSelectedSolution
+    );
+    const previewRoute = {
+        reform: ROUTES.reformSimulation,
+        resell: ROUTES.resellPreview,
+        upcycle: ROUTES.upcyclePreview,
+    }[selectedSolution];
+    const loadingTitle = {
+        reform: "리폼 시뮬레이션 로딩 중",
+        resell: "리셀 미리보기 로딩 중",
+        upcycle: "업사이클링 미리보기 로딩 중",
+    }[selectedSolution];
+    const { isTransitioning, startTransition } =
+        useTransitionNavigation(previewRoute);
     const frontPhoto = useReformFlowStore((state) => state.frontPhoto);
 
     return (
@@ -19,20 +41,28 @@ function SolutionRecommendPage() {
             <PageLayout
                 currentStep={4}
                 title="AI 추천 결과"
-                description="현재 제품에 가장 적합한 리폼 방향을 확인해보세요."
+                description={RECOMMENDATION_DESCRIPTIONS[selectedSolution]}
                 actions={
                     <PageActions
-                        nextLabel="시뮬레이션 보기"
+                        nextLabel={
+                            RECOMMENDATION_CONTENT[selectedSolution]
+                                .previewLabel
+                        }
                         onPrevious={() => navigate(ROUTES.aiAnalysis)}
                         onNext={startTransition}
                         nextDisabled={isTransitioning}
                     />
                 }
             >
-                <RecommendationResult frontPhoto={frontPhoto} />
+                <RecommendationResult
+                    frontPhoto={frontPhoto}
+                    recommendedSolution={recommendedSolution}
+                    selectedSolution={selectedSolution}
+                    onSelect={setSelectedSolution}
+                />
             </PageLayout>
             {isTransitioning && (
-                <TransitionLoadingOverlay title="리폼 시뮬레이션 로딩 중" />
+                <TransitionLoadingOverlay title={loadingTitle} />
             )}
         </>
     );

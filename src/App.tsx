@@ -9,6 +9,8 @@ const PAGE_TITLES: Record<string, string> = {
     [ROUTES.aiAnalysis]: "AI 분석 | Fit Again",
     [ROUTES.solutionRecommend]: "AI 추천 | Fit Again",
     [ROUTES.reformSimulation]: "리폼 시뮬레이션 | Fit Again",
+    [ROUTES.resellPreview]: "리셀 미리보기 | Fit Again",
+    [ROUTES.upcyclePreview]: "업사이클링 미리보기 | Fit Again",
     [ROUTES.resultConfirm]: "결과 확인 | Fit Again",
 };
 

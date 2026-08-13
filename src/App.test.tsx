@@ -104,6 +104,8 @@ describe("App 라우팅", () => {
                 type: "image/png",
             }),
             painPointKeywordIds: ["heavy"],
+            selectedSolution: "resell",
+            selectedUpcycleProduct: "pouch",
         });
 
         renderPath(ROUTES.home);
@@ -121,5 +123,9 @@ describe("App 라우팅", () => {
         expect(useReformFlowStore.getState().frontPhoto).toBeNull();
         expect(useReformFlowStore.getState().detailPhotos).toEqual([]);
         expect(useReformFlowStore.getState().painPointKeywordIds).toEqual([]);
+        expect(useReformFlowStore.getState().selectedSolution).toBe("reform");
+        expect(useReformFlowStore.getState().selectedUpcycleProduct).toBe(
+            "mini-crossbag"
+        );
     });
 });

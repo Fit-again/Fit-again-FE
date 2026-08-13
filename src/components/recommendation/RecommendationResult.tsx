@@ -3,99 +3,146 @@ import CheckBadge from "@/components/common/CheckBadge";
 import Tag from "@/components/common/Tag";
 import {
     ALTERNATIVE_OPTIONS,
-    MOCK_RECOMMENDATION,
-    RECOMMENDED_TASKS,
+    RECOMMENDATION_CONTENT,
 } from "@/constants/recommendation";
 import { useObjectUrlImage } from "@/hooks/useObjectUrlImage";
-import type { AlternativeOption } from "@/types/recommendation";
+import type { AlternativeOption, SolutionType } from "@/types/recommendation";
 
-const RecommendationResult = ({ frontPhoto }: { frontPhoto: File | null }) => (
-    <>
-        <Card className="p-6 sm:p-8">
-            <div className="grid gap-8 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.5fr)_minmax(0,0.9fr)]">
-                <ProductPhoto file={frontPhoto} />
+type RecommendationResultProps = {
+    frontPhoto: File | null;
+    recommendedSolution: SolutionType;
+    selectedSolution: SolutionType;
+    onSelect: (solution: SolutionType) => void;
+};
 
-                <div>
-                    <Tag tone="primary" icon={<SparkleIcon />}>
-                        AI 추천
-                    </Tag>
-                    <h2 className="text-primary mt-4 text-[24px] font-bold sm:text-[26px]">
-                        {MOCK_RECOMMENDATION.title}
-                    </h2>
-                    <p className="text-text-secondary mt-4 text-[17px] leading-relaxed">
-                        {MOCK_RECOMMENDATION.description}
-                    </p>
+const RecommendationResult = ({
+    frontPhoto,
+    recommendedSolution,
+    selectedSolution,
+    onSelect,
+}: RecommendationResultProps) => {
+    const content = RECOMMENDATION_CONTENT[selectedSolution];
+    const alternatives = ALTERNATIVE_OPTIONS.filter(
+        (option) => option.id !== selectedSolution
+    );
 
-                    <div className="border-line mt-6 rounded-[5px] border p-5">
-                        <h3 className="text-primary text-[17px] font-bold">
-                            추천 이유
+    return (
+        <>
+            <Card className="p-5 sm:p-6">
+                <div className="grid gap-7 lg:grid-cols-[minmax(0,0.95fr)_minmax(0,1.25fr)_minmax(0,0.75fr)]">
+                    <ProductPhoto file={frontPhoto} />
+
+                    <div>
+                        {selectedSolution === recommendedSolution && (
+                            <Tag tone="primary" icon={<SparkleIcon />}>
+                                AI 추천
+                            </Tag>
+                        )}
+                        <h2 className="text-primary mt-3 text-[24px] font-bold sm:text-[26px]">
+                            {content.label}{" "}
+                            <span className="text-[18px] font-medium">
+                                ({content.englishLabel})
+                            </span>
+                        </h2>
+                        <p className="text-text-strong mt-4 text-[17px] leading-relaxed">
+                            {content.description}
+                        </p>
+
+                        <div className="border-line mt-6 rounded-[5px] border p-5 shadow-[0_3px_7px_rgba(91,58,41,0.12)]">
+                            <h3 className="text-primary text-[18px] font-bold">
+                                추천 이유
+                            </h3>
+                            <ul className="mt-3 flex flex-col gap-2.5">
+                                {content.reasons.map((reason) => (
+                                    <li
+                                        key={reason}
+                                        className="flex items-start gap-2.5"
+                                    >
+                                        <CheckBadge />
+                                        <span className="text-[16px] leading-relaxed">
+                                            {reason}
+                                        </span>
+                                    </li>
+                                ))}
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div className="lg:border-line lg:border-l lg:pl-5">
+                        <h3 className="text-primary text-[18px] font-bold">
+                            {content.taskHeading}
                         </h3>
-                        <ul className="mt-3 flex flex-col gap-2.5">
-                            {MOCK_RECOMMENDATION.reasons.map((reason) => (
-                                <li
-                                    key={reason}
-                                    className="flex items-start gap-2.5"
-                                >
-                                    <CheckBadge />
-                                    <span className="text-[16px] leading-relaxed">
-                                        {reason}
-                                    </span>
+                        <ul className="mt-4 flex flex-col gap-3">
+                            {content.tasks.map((task, index) => (
+                                <li key={task.id}>
+                                    <div className="border-primary/60 bg-secondary rounded-[5px] border p-3">
+                                        <p className="text-text-strong text-[16px] font-medium">
+                                            {task.title}
+                                        </p>
+                                        <p className="text-text-secondary mt-1 text-[14px] leading-snug">
+                                            {task.description}
+                                        </p>
+                                    </div>
+                                    {selectedSolution !== "reform" &&
+                                        index < content.tasks.length - 1 && (
+                                            <div
+                                                className="text-line flex h-6 items-center justify-center text-2xl"
+                                                aria-hidden="true"
+                                            >
+                                                ⌄
+                                            </div>
+                                        )}
                                 </li>
                             ))}
                         </ul>
                     </div>
                 </div>
+            </Card>
 
-                <div className="lg:border-line lg:border-l lg:pl-7">
-                    <h3 className="text-primary text-[17px] font-bold">
-                        추천 리폼 작업
-                    </h3>
-                    <ul className="mt-4 flex flex-col gap-3">
-                        {RECOMMENDED_TASKS.map((task) => (
-                            <li
-                                key={task.id}
-                                className="bg-secondary rounded-[5px] p-4"
-                            >
-                                <p className="text-text-strong text-[16px] font-medium">
-                                    {task.title}
-                                </p>
-                                <p className="text-text-secondary mt-1 text-[14px] leading-relaxed">
-                                    {task.description}
-                                </p>
-                            </li>
-                        ))}
-                    </ul>
+            <section className="mt-8">
+                <h2 className="text-primary text-[23px] font-bold sm:text-[25px]">
+                    다른 활용 방법
+                </h2>
+                <div className="mt-4 grid gap-4 sm:grid-cols-2">
+                    {alternatives.map((option) => (
+                        <AlternativeCard
+                            key={option.id}
+                            option={option}
+                            recommended={option.id === recommendedSolution}
+                            onClick={() => onSelect(option.id)}
+                        />
+                    ))}
                 </div>
-            </div>
-        </Card>
+            </section>
+        </>
+    );
+};
 
-        <section className="mt-10">
-            <h2 className="text-primary text-[23px] font-bold sm:text-[25px]">
-                다른 활용 방법
-            </h2>
-            <div className="mt-4 grid gap-4 sm:grid-cols-2">
-                {ALTERNATIVE_OPTIONS.map((option) => (
-                    <AlternativeCard key={option.id} option={option} />
-                ))}
-            </div>
-        </section>
-    </>
-);
-
-const AlternativeCard = ({ option }: { option: AlternativeOption }) => (
+const AlternativeCard = ({
+    option,
+    recommended,
+    onClick,
+}: {
+    option: AlternativeOption;
+    recommended: boolean;
+    onClick: () => void;
+}) => (
     <button
         type="button"
-        className="border-line flex w-full cursor-not-allowed items-center justify-between gap-4 rounded-[5px] border bg-white p-5 text-left opacity-75 sm:p-6"
-        aria-label={`${option.label} 기능 준비 중`}
-        disabled
+        className="border-line hover:border-primary focus-visible:outline-primary flex w-full cursor-pointer items-center justify-between gap-4 rounded-[5px] border bg-white p-5 text-left transition-[border-color,box-shadow] hover:shadow-[0_3px_7px_rgba(91,58,41,0.12)] focus-visible:outline-3 focus-visible:outline-offset-2"
+        onClick={onClick}
     >
         <div>
-            <Tag
-                tone="soft"
-                icon={option.id === "resell" ? <TagIcon /> : <RecycleIcon />}
-            >
-                {option.label}
-            </Tag>
+            <div className="flex flex-wrap items-center gap-2">
+                <Tag tone="soft" icon={<SolutionIcon type={option.id} />}>
+                    {option.label}
+                </Tag>
+                {recommended && (
+                    <Tag tone="primary" icon={<SparkleIcon />}>
+                        AI 추천
+                    </Tag>
+                )}
+            </div>
             <div className="mt-4 flex flex-col gap-1">
                 {option.description.map((line) => (
                     <p
@@ -107,8 +154,8 @@ const AlternativeCard = ({ option }: { option: AlternativeOption }) => (
                 ))}
             </div>
         </div>
-        <span className="text-text-secondary shrink-0 text-sm font-medium">
-            준비 중
+        <span className="text-line shrink-0 text-4xl" aria-hidden="true">
+            ›
         </span>
     </button>
 );
@@ -147,44 +194,48 @@ const SparkleIcon = () => (
     </svg>
 );
 
-const TagIcon = () => (
-    <svg
-        className="size-3.5"
-        viewBox="0 0 16 16"
-        fill="none"
-        aria-hidden="true"
-    >
-        <path
-            d="M8.7 1.3 14 6.6a1.5 1.5 0 0 1 0 2.1l-4.6 4.6a1.5 1.5 0 0 1-2.1 0L2 8V2h6.7Z"
-            stroke="currentColor"
-            strokeWidth="1.3"
-            strokeLinejoin="round"
-        />
-        <circle cx="5.2" cy="5.2" r="1" fill="currentColor" />
-    </svg>
-);
+const SolutionIcon = ({ type }: { type: SolutionType }) => {
+    if (type === "upcycle") {
+        return (
+            <svg
+                className="size-3.5"
+                viewBox="0 0 16 16"
+                fill="none"
+                aria-hidden="true"
+            >
+                <path
+                    d="M2 8a6 6 0 0 1 10.5-4M14 8a6 6 0 0 1-10.5 4"
+                    stroke="currentColor"
+                    strokeWidth="1.3"
+                    strokeLinecap="round"
+                />
+                <path
+                    d="M11.5 1.5 12.5 4l-2.5 1M4.5 14.5 3.5 12l2.5-1"
+                    stroke="currentColor"
+                    strokeWidth="1.3"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                />
+            </svg>
+        );
+    }
 
-const RecycleIcon = () => (
-    <svg
-        className="size-3.5"
-        viewBox="0 0 16 16"
-        fill="none"
-        aria-hidden="true"
-    >
-        <path
-            d="M2 8a6 6 0 0 1 10.5-4M14 8a6 6 0 0 1-10.5 4"
-            stroke="currentColor"
-            strokeWidth="1.3"
-            strokeLinecap="round"
-        />
-        <path
-            d="M11.5 1.5 12.5 4l-2.5 1M4.5 14.5 3.5 12l2.5-1"
-            stroke="currentColor"
-            strokeWidth="1.3"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-        />
-    </svg>
-);
+    return (
+        <svg
+            className="size-3.5"
+            viewBox="0 0 16 16"
+            fill="none"
+            aria-hidden="true"
+        >
+            <path
+                d="M8.7 1.3 14 6.6a1.5 1.5 0 0 1 0 2.1l-4.6 4.6a1.5 1.5 0 0 1-2.1 0L2 8V2h6.7Z"
+                stroke="currentColor"
+                strokeWidth="1.3"
+                strokeLinejoin="round"
+            />
+            <circle cx="5.2" cy="5.2" r="1" fill="currentColor" />
+        </svg>
+    );
+};
 
 export default RecommendationResult;
