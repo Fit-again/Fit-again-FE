@@ -6,11 +6,15 @@ import TransitionLoadingOverlay from "@/components/common/TransitionLoadingOverl
 import { PAIN_POINT_KEYWORDS } from "@/constants/painPointKeywords";
 import { useTransitionNavigation } from "@/hooks/useTransitionNavigation";
 import { ROUTES } from "@/routes/paths";
+import {
+    DESCRIPTION_MAX,
+    painPointSchema,
+    type PainPointFormType,
+} from "@/schema/painPointSchema";
 import { useReformFlowStore } from "@/stores/useReformFlowStore";
-import { useState } from "react";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Controller, useForm, useWatch } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
-
-const DESCRIPTION_MAX = 1000;
 
 function PainPointPage() {
     const navigate = useNavigate();
@@ -22,33 +26,26 @@ function PainPointPage() {
     );
     const savedDescription = useReformFlowStore((state) => state.description);
     const setPainPoint = useReformFlowStore((state) => state.setPainPoint);
-    const [selectedKeywords, setSelectedKeywords] =
-        useState<string[]>(savedKeywordIds);
-    const [description, setDescription] = useState(savedDescription);
-    const [submitted, setSubmitted] = useState(false);
+    const {
+        control,
+        handleSubmit,
+        register,
+        formState: { errors },
+    } = useForm<PainPointFormType>({
+        resolver: zodResolver(painPointSchema),
+        defaultValues: {
+            painPointKeywordIds: savedKeywordIds,
+            description: savedDescription,
+        },
+    });
+    const [selectedKeywords, description] = useWatch({
+        control,
+        name: ["painPointKeywordIds", "description"],
+    });
 
-    const keywordError =
-        selectedKeywords.length === 0
-            ? "불편 키워드를 1개 이상 선택해주세요"
-            : undefined;
-
-    const toggleKeyword = (id: string) => {
-        setSelectedKeywords((prev) =>
-            prev.includes(id)
-                ? prev.filter((keywordId) => keywordId !== id)
-                : [...prev, id]
-        );
-    };
-
-    const handleNext = () => {
-        setSubmitted(true);
-        if (!keywordError) {
-            setPainPoint({
-                painPointKeywordIds: selectedKeywords,
-                description,
-            });
-            startTransition();
-        }
+    const onSubmit = (values: PainPointFormType) => {
+        setPainPoint(values);
+        startTransition();
     };
 
     return (
@@ -61,7 +58,7 @@ function PainPointPage() {
                     <PageActions
                         nextLabel="AI 분석 시작"
                         onPrevious={() => navigate(ROUTES.productRegister)}
-                        onNext={handleNext}
+                        onNext={() => void handleSubmit(onSubmit)()}
                         nextDisabled={isTransitioning}
                     />
                 }
@@ -73,20 +70,52 @@ function PainPointPage() {
                             title="불편 키워드 선택"
                             detail="복수 선택 가능"
                             required
-                            error={submitted ? keywordError : undefined}
+                            error={errors.painPointKeywordIds?.message}
                         />
                         <p className="text-text-secondary mt-1 text-[18px]">
                             현재 느끼는 불편함을 선택해주세요.
                         </p>
                         <div className="mt-5 flex flex-wrap gap-4">
-                            {PAIN_POINT_KEYWORDS.map(({ id, label }) => (
-                                <KeywordToggle
-                                    key={id}
-                                    label={label}
-                                    selected={selectedKeywords.includes(id)}
-                                    onClick={() => toggleKeyword(id)}
-                                />
-                            ))}
+                            <Controller
+                                control={control}
+                                name="painPointKeywordIds"
+                                render={({ field }) => (
+                                    <>
+                                        {PAIN_POINT_KEYWORDS.map(
+                                            ({ id, label }) => {
+                                                const selected =
+                                                    selectedKeywords.includes(
+                                                        id
+                                                    );
+
+                                                return (
+                                                    <KeywordToggle
+                                                        key={id}
+                                                        label={label}
+                                                        selected={selected}
+                                                        onClick={() =>
+                                                            field.onChange(
+                                                                selected
+                                                                    ? selectedKeywords.filter(
+                                                                          (
+                                                                              keywordId
+                                                                          ) =>
+                                                                              keywordId !==
+                                                                              id
+                                                                      )
+                                                                    : [
+                                                                          ...selectedKeywords,
+                                                                          id,
+                                                                      ]
+                                                            )
+                                                        }
+                                                    />
+                                                );
+                                            }
+                                        )}
+                                    </>
+                                )}
+                            />
                         </div>
                     </section>
 
@@ -104,9 +133,7 @@ function PainPointPage() {
                                 maxLength={DESCRIPTION_MAX}
                                 showCount
                                 value={description}
-                                onChange={(event) =>
-                                    setDescription(event.target.value)
-                                }
+                                {...register("description")}
                             />
                         </div>
                     </section>

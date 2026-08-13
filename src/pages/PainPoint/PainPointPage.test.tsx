@@ -109,8 +109,12 @@ describe("PainPointPage", () => {
         vi.useFakeTimers();
         renderPage();
 
-        fireEvent.click(screen.getByRole("button", { name: "무거움" }));
-        fireEvent.click(screen.getByRole("button", { name: "AI 분석 시작" }));
+        await act(async () => {
+            fireEvent.click(screen.getByRole("button", { name: "무거움" }));
+            fireEvent.click(
+                screen.getByRole("button", { name: "AI 분석 시작" })
+            );
+        });
 
         expect(screen.getByText("AI 분석 결과 로딩 중")).toBeInTheDocument();
 

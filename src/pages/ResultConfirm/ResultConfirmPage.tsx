@@ -4,11 +4,11 @@ import Modal from "@/components/common/Modal";
 import ConsultationFormCard from "@/components/result/ConsultationFormCard";
 import ResultReportCard from "@/components/result/ResultReportCard";
 import { PAIN_POINT_CAUSE_TEXT } from "@/constants/painPointKeywords";
-import { CONTACT_REGEX, DEFAULT_RESOLVED_ISSUES } from "@/constants/result";
+import { DEFAULT_RESOLVED_ISSUES } from "@/constants/result";
 import { ROUTES } from "@/routes/paths";
 import { useReformFlowStore } from "@/stores/useReformFlowStore";
 import { downloadReportPdf } from "@/utils/downloadReportPdf";
-import { useRef, useState, type SyntheticEvent } from "react";
+import { useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 function ResultConfirmPage() {
@@ -24,27 +24,12 @@ function ResultConfirmPage() {
     const [isSavingReport, setIsSavingReport] = useState(false);
     const [reportSaved, setReportSaved] = useState(false);
     const [reportSaveError, setReportSaveError] = useState(false);
-    const [name, setName] = useState("");
-    const [contact, setContact] = useState("");
-    const [message, setMessage] = useState("");
-    const [agreed, setAgreed] = useState(false);
-    const [submitted, setSubmitted] = useState(false);
     const [agreementOpen, setAgreementOpen] = useState(false);
     const [submittedAt, setSubmittedAt] = useState<Date | null>(null);
     const resolvedIssues =
         painPointKeywordIds.length > 0
             ? painPointKeywordIds.map((id) => PAIN_POINT_CAUSE_TEXT[id] ?? id)
             : DEFAULT_RESOLVED_ISSUES;
-    const nameError = name.trim() === "" ? "성명을 입력해주세요" : undefined;
-    const contactError =
-        contact.trim() === ""
-            ? "연락처를 입력해주세요"
-            : !CONTACT_REGEX.test(contact)
-              ? "올바른 연락처 형식이 아닙니다"
-              : undefined;
-    const agreeError = !agreed
-        ? "개인정보 수집 및 이용에 동의해주세요"
-        : undefined;
     const previousRoute = {
         reform: ROUTES.reformSimulation,
         resell: ROUTES.resellPreview,
@@ -66,16 +51,6 @@ function ResultConfirmPage() {
             setReportSaveError(true);
         } finally {
             setIsSavingReport(false);
-        }
-    };
-
-    const handleSubmit = (event: SyntheticEvent<HTMLFormElement>) => {
-        event.preventDefault();
-        setSubmitted(true);
-
-        if (!nameError && !contactError && !agreeError) {
-            // 실제 상담 신청 API 연동 전까지 사용하는 목업 제출 처리입니다.
-            setSubmittedAt(new Date());
         }
     };
 
@@ -104,22 +79,8 @@ function ResultConfirmPage() {
                         onSave={() => void handleSaveReport()}
                     />
                     <ConsultationFormCard
-                        name={name}
-                        contact={contact}
-                        message={message}
-                        agreed={agreed}
-                        submitted={submitted}
-                        errors={{
-                            name: nameError,
-                            contact: contactError,
-                            agree: agreeError,
-                        }}
-                        onNameChange={setName}
-                        onContactChange={setContact}
-                        onMessageChange={setMessage}
-                        onAgreementChange={setAgreed}
                         onViewAgreement={() => setAgreementOpen(true)}
-                        onSubmit={handleSubmit}
+                        onSubmit={() => setSubmittedAt(new Date())}
                     />
                 </div>
             </PageLayout>

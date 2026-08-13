@@ -8,16 +8,16 @@ import UploadArea from "@/components/common/UploadArea";
 import ProductTypeIcon from "@/components/product/ProductTypeIcon";
 import { PRODUCT_TYPES } from "@/constants/productTypes";
 import { ROUTES } from "@/routes/paths";
+import {
+    DETAIL_PHOTO_MAX,
+    productRegisterSchema,
+    type ProductRegisterFormType,
+    WEAR_PHOTO_MAX,
+} from "@/schema/productRegisterSchema";
 import { useReformFlowStore } from "@/stores/useReformFlowStore";
-import type { ProductType } from "@/types/reformFlow";
-import { useState } from "react";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Controller, useForm, useWatch } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
-
-const DETAIL_PHOTO_MAX = 4;
-const WEAR_PHOTO_MAX = 5;
-
-// TODO: 실제 제품 판별은 백엔드 이미지 분석 API 연동 후 대체
-const isValidProductPhoto = (file: File) => file.type.startsWith("image/");
 
 function ProductRegisterPage() {
     const navigate = useNavigate();
@@ -26,31 +26,27 @@ function ProductRegisterPage() {
     const savedDetailPhotos = useReformFlowStore((state) => state.detailPhotos);
     const savedWearPhotos = useReformFlowStore((state) => state.wearPhotos);
     const setProductInfo = useReformFlowStore((state) => state.setProductInfo);
-    const [selectedType, setSelectedType] = useState<ProductType | null>(
-        savedProductType
-    );
-    const [frontPhoto, setFrontPhoto] = useState<File | null>(savedFrontPhoto);
-    const [detailPhotos, setDetailPhotos] = useState<File[]>(savedDetailPhotos);
-    const [wearPhotos, setWearPhotos] = useState<File[]>(savedWearPhotos);
-    const [submitted, setSubmitted] = useState(false);
+    const {
+        control,
+        handleSubmit,
+        formState: { errors },
+    } = useForm<ProductRegisterFormType>({
+        resolver: zodResolver(productRegisterSchema),
+        defaultValues: {
+            productType: savedProductType ?? undefined,
+            frontPhoto: savedFrontPhoto ?? undefined,
+            detailPhotos: savedDetailPhotos,
+            wearPhotos: savedWearPhotos,
+        },
+    });
+    const [selectedType, frontPhoto, detailPhotos, wearPhotos] = useWatch({
+        control,
+        name: ["productType", "frontPhoto", "detailPhotos", "wearPhotos"],
+    });
 
-    const typeError = !selectedType ? "제품 유형을 선택해주세요" : undefined;
-    const frontPhotoError = !frontPhoto
-        ? "정면 사진을 업로드해주세요"
-        : !isValidProductPhoto(frontPhoto)
-          ? "올바른 제품이 아닙니다"
-          : undefined;
-    const handleNext = () => {
-        setSubmitted(true);
-        if (!typeError && !frontPhotoError) {
-            setProductInfo({
-                productType: selectedType!,
-                frontPhoto: frontPhoto!,
-                detailPhotos,
-                wearPhotos,
-            });
-            navigate(ROUTES.painPoint);
-        }
+    const onSubmit = (values: ProductRegisterFormType) => {
+        setProductInfo(values);
+        navigate(ROUTES.painPoint);
     };
 
     return (
@@ -58,7 +54,12 @@ function ProductRegisterPage() {
             currentStep={1}
             title="제품 등록"
             description="분석에 필요한 제품 정보와 사진을 등록해주세요."
-            actions={<PageActions nextLabel="다음 단계" onNext={handleNext} />}
+            actions={
+                <PageActions
+                    nextLabel="다음 단계"
+                    onNext={() => void handleSubmit(onSubmit)()}
+                />
+            }
         >
             <div className="grid gap-10 lg:grid-cols-2 lg:gap-8 xl:grid-cols-[minmax(0,1.48fr)_minmax(0,2fr)]">
                 <section className="lg:border-line lg:border-r lg:pr-8">
@@ -66,21 +67,29 @@ function ProductRegisterPage() {
                         number={1}
                         title="제품 유형 선택"
                         required
-                        error={submitted ? typeError : undefined}
+                        error={errors.productType?.message}
                     />
                     <p className="text-text-secondary mt-1 text-[18px]">
                         제품 유형을 선택해주세요.
                     </p>
                     <div className="mt-3 grid grid-cols-2 gap-4 sm:grid-cols-3">
-                        {PRODUCT_TYPES.map(({ id, label }) => (
-                            <SelectionCard
-                                key={id}
-                                label={label}
-                                icon={<ProductTypeIcon type={id} />}
-                                selected={selectedType === id}
-                                onClick={() => setSelectedType(id)}
-                            />
-                        ))}
+                        <Controller
+                            control={control}
+                            name="productType"
+                            render={({ field }) => (
+                                <>
+                                    {PRODUCT_TYPES.map(({ id, label }) => (
+                                        <SelectionCard
+                                            key={id}
+                                            label={label}
+                                            icon={<ProductTypeIcon type={id} />}
+                                            selected={selectedType === id}
+                                            onClick={() => field.onChange(id)}
+                                        />
+                                    ))}
+                                </>
+                            )}
+                        />
                     </div>
 
                     <Card variant="soft" className="mt-8 p-3 sm:mt-12 xl:mt-24">
@@ -102,24 +111,30 @@ function ProductRegisterPage() {
                             number={2}
                             title="정면 사진 업로드"
                             required
-                            error={submitted ? frontPhotoError : undefined}
+                            error={errors.frontPhoto?.message}
                         />
                         <p className="text-text-secondary mt-1 text-[18px]">
                             제품의 양면이 잘 보이도록 촬영해주세요.
                         </p>
                         <div className="mt-3">
-                            <UploadArea
-                                label={
-                                    frontPhoto
-                                        ? frontPhoto.name
-                                        : "정면 사진을 선택해주세요"
-                                }
-                                description="PNG, JPG 파일을 업로드할 수 있습니다."
-                                file={frontPhoto}
-                                compact
-                                onFilesSelected={(files) =>
-                                    setFrontPhoto(files[0] ?? null)
-                                }
+                            <Controller
+                                control={control}
+                                name="frontPhoto"
+                                render={({ field }) => (
+                                    <UploadArea
+                                        label={
+                                            frontPhoto
+                                                ? frontPhoto.name
+                                                : "정면 사진을 선택해주세요"
+                                        }
+                                        description="PNG, JPG 파일을 업로드할 수 있습니다."
+                                        file={frontPhoto ?? null}
+                                        compact
+                                        onFilesSelected={(files) =>
+                                            field.onChange(files[0])
+                                        }
+                                    />
+                                )}
                             />
                         </div>
                     </div>
@@ -134,19 +149,30 @@ function ProductRegisterPage() {
                             제품을 다양한 각도로 촬영해주세요.
                         </p>
                         <div className="mt-3">
-                            <MultiPhotoUpload
-                                files={detailPhotos}
-                                maxCount={DETAIL_PHOTO_MAX}
-                                itemLabel="디테일 사진"
-                                className="grid-cols-2"
-                                onAdd={(file) =>
-                                    setDetailPhotos((prev) => [...prev, file])
-                                }
-                                onRemove={(index) =>
-                                    setDetailPhotos((prev) =>
-                                        prev.filter((_, i) => i !== index)
-                                    )
-                                }
+                            <Controller
+                                control={control}
+                                name="detailPhotos"
+                                render={({ field }) => (
+                                    <MultiPhotoUpload
+                                        files={detailPhotos}
+                                        maxCount={DETAIL_PHOTO_MAX}
+                                        itemLabel="디테일 사진"
+                                        className="grid-cols-2"
+                                        onAdd={(file) =>
+                                            field.onChange([
+                                                ...detailPhotos,
+                                                file,
+                                            ])
+                                        }
+                                        onRemove={(index) =>
+                                            field.onChange(
+                                                detailPhotos.filter(
+                                                    (_, i) => i !== index
+                                                )
+                                            )
+                                        }
+                                    />
+                                )}
                             />
                         </div>
                     </div>
@@ -162,19 +188,30 @@ function ProductRegisterPage() {
                             촬영해주세요.
                         </p>
                         <div className="mt-3">
-                            <MultiPhotoUpload
-                                files={wearPhotos}
-                                maxCount={WEAR_PHOTO_MAX}
-                                itemLabel="마모 부위 사진"
-                                className="grid-cols-3 sm:grid-cols-5"
-                                onAdd={(file) =>
-                                    setWearPhotos((prev) => [...prev, file])
-                                }
-                                onRemove={(index) =>
-                                    setWearPhotos((prev) =>
-                                        prev.filter((_, i) => i !== index)
-                                    )
-                                }
+                            <Controller
+                                control={control}
+                                name="wearPhotos"
+                                render={({ field }) => (
+                                    <MultiPhotoUpload
+                                        files={wearPhotos}
+                                        maxCount={WEAR_PHOTO_MAX}
+                                        itemLabel="마모 부위 사진"
+                                        className="grid-cols-3 sm:grid-cols-5"
+                                        onAdd={(file) =>
+                                            field.onChange([
+                                                ...wearPhotos,
+                                                file,
+                                            ])
+                                        }
+                                        onRemove={(index) =>
+                                            field.onChange(
+                                                wearPhotos.filter(
+                                                    (_, i) => i !== index
+                                                )
+                                            )
+                                        }
+                                    />
+                                )}
                             />
                         </div>
                     </div>

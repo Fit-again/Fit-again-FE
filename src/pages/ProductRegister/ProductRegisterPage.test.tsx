@@ -113,7 +113,7 @@ describe("ProductRegisterPage", () => {
         await user.click(screen.getByRole("button", { name: "다음 단계" }));
 
         expect(
-            screen.getByRole("heading", { name: "불편 입력" })
+            await screen.findByRole("heading", { name: "불편 입력" })
         ).toBeInTheDocument();
     });
 
@@ -196,7 +196,7 @@ describe("ProductRegisterPage", () => {
         await user.click(screen.getByRole("button", { name: "다음 단계" }));
 
         expect(
-            screen.getByRole("heading", { name: "불편 입력" })
+            await screen.findByRole("heading", { name: "불편 입력" })
         ).toBeInTheDocument();
     });
 });
