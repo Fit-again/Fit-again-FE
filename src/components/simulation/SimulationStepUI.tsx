@@ -7,31 +7,40 @@ export const StepCardShell = ({
     step,
     pager,
     children,
+    onOpen,
 }: {
     step: SimulationStep;
     pager?: ReactNode;
     children: ReactNode;
+    onOpen: () => void;
 }) => (
-    <Card as="article" className="flex flex-1 flex-col p-5">
-        <div className="flex items-center justify-between gap-2">
-            <div className="flex items-center gap-2">
-                <span className="border-primary bg-secondary text-primary inline-flex h-7 shrink-0 items-center rounded-full border px-3 text-[13px] font-medium">
-                    {`STEP ${step.stepNumber}`}
-                </span>
-                <h3 className="text-primary text-[18px] font-bold">
-                    {step.title}
-                </h3>
+    <Card as="article" className="flex flex-1 flex-col p-0">
+        <button
+            type="button"
+            className="focus-visible:outline-primary flex h-full w-full cursor-pointer flex-col p-5 text-left focus-visible:outline-3 focus-visible:outline-offset-2"
+            onClick={onOpen}
+            aria-label={`${step.title} 단계 상세 보기`}
+        >
+            <div className="flex items-center justify-between gap-2">
+                <div className="flex items-center gap-2">
+                    <span className="border-primary bg-secondary text-primary inline-flex h-7 shrink-0 items-center rounded-full border px-3 text-[13px] font-medium">
+                        {`STEP ${step.stepNumber}`}
+                    </span>
+                    <h3 className="text-primary text-[18px] font-bold">
+                        {step.title}
+                    </h3>
+                </div>
+                {pager}
             </div>
-            {pager}
-        </div>
 
-        <div className="mt-4">{children}</div>
+            <div className="mt-4">{children}</div>
 
-        <ul className="text-text-secondary mt-4 list-disc space-y-1.5 pl-5 text-[15px]">
-            {step.bullets.map((bullet) => (
-                <li key={bullet}>{bullet}</li>
-            ))}
-        </ul>
+            <ul className="text-text-strong mt-4 list-disc space-y-1.5 pl-5 text-[15px]">
+                {step.bullets.map((bullet) => (
+                    <li key={bullet}>{bullet}</li>
+                ))}
+            </ul>
+        </button>
     </Card>
 );
 

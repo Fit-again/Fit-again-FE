@@ -22,6 +22,7 @@ function AIAnalysisPage() {
     const painPointKeywordIds = useReformFlowStore(
         (state) => state.painPointKeywordIds
     );
+    const description = useReformFlowStore((state) => state.description);
     const productTypeLabel =
         PRODUCT_TYPES.find((type) => type.id === productType)?.label ?? "-";
     const painPointCauses = painPointKeywordIds.map(
@@ -58,6 +59,7 @@ function AIAnalysisPage() {
                     productTypeLabel={productTypeLabel}
                     painPointCauses={painPointCauses}
                     photos={photos}
+                    canInferUsagePurpose={description.trim().length > 0}
                 />
             </PageLayout>
             {isTransitioning && (

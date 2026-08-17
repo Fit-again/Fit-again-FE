@@ -72,6 +72,19 @@ describe("ReformSimulationPage", () => {
         ).toBeInTheDocument();
     });
 
+    it("단계 카드를 누르면 해당 단계의 상세 모달을 보여준다", async () => {
+        const user = userEvent.setup();
+        renderPage();
+
+        await user.click(
+            screen.getByRole("button", { name: "해체 단계 상세 보기" })
+        );
+
+        expect(
+            screen.getByRole("dialog", { name: "STEP 1 해체" })
+        ).toBeInTheDocument();
+    });
+
     it("이전 단계를 누르면 추천 화면으로 이동한다", async () => {
         renderPage();
 

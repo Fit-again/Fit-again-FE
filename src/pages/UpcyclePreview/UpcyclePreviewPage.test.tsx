@@ -29,12 +29,12 @@ describe("UpcyclePreviewPage", () => {
         ).toHaveAttribute("aria-pressed", "true");
         expect(
             screen.getByRole("heading", {
-                name: "2. 왜 이 방향을 제안했을까요?",
+                name: "왜 이 방향을 제안했을까요?",
             })
         ).toBeInTheDocument();
         expect(
             screen.getByRole("heading", {
-                name: "3. 이렇게 달라질 수 있어요",
+                name: "이렇게 달라질 수 있어요",
             })
         ).toBeInTheDocument();
     });

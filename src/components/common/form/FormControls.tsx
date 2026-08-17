@@ -12,6 +12,7 @@ export const Field = ({
     description,
     error,
     children,
+    className = "",
 }: {
     label: string;
     htmlFor: string;
@@ -20,15 +21,20 @@ export const Field = ({
     description?: string;
     error?: string;
     children: ReactNode;
+    className?: string;
 }) => (
-    <div className="space-y-2">
+    <div className={`space-y-2 ${className}`}>
         <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
             <label
                 className="text-text-strong text-[18px] font-medium"
                 htmlFor={htmlFor}
             >
                 {label}
-                {required && <span className="sr-only"> (필수)</span>}
+                {required && !error && (
+                    <span className="text-danger ml-1" aria-label="필수">
+                        *
+                    </span>
+                )}
             </label>
             {optional && (
                 <span className="text-text-secondary text-[15px]">(선택)</span>
@@ -78,7 +84,7 @@ export const Textarea = ({
     return (
         <div className="relative">
             <textarea
-                className={`focus:border-primary focus-visible:outline-primary placeholder:text-text-secondary/70 disabled:bg-secondary min-h-[180px] w-full resize-y rounded-[5px] border bg-white px-[15px] py-[10px] text-[18px] outline-none focus-visible:outline-2 focus-visible:outline-offset-1 disabled:cursor-not-allowed ${showCount ? "pb-8" : ""} ${invalid ? "border-danger" : "border-line"} ${className}`}
+                className={`focus:border-primary focus-visible:outline-primary placeholder:text-text-secondary/70 disabled:bg-secondary block min-h-[180px] w-full resize-y rounded-[5px] border bg-white px-[15px] py-[10px] text-[18px] outline-none focus-visible:outline-2 focus-visible:outline-offset-1 disabled:cursor-not-allowed ${showCount ? "pb-8" : ""} ${invalid ? "border-danger" : "border-line"} ${className}`}
                 aria-invalid={invalid || undefined}
                 value={value}
                 maxLength={maxLength}

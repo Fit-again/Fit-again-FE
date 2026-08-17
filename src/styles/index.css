@@ -50,11 +50,15 @@ body {
     background: #faf8f3;
 }
 
-button,
 input,
 textarea,
 select {
-    font: inherit;
+    font-family: inherit;
+    color: inherit;
+}
+
+button {
+    font-family: inherit;
 }
 
 button,

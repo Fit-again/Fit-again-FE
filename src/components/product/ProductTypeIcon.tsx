@@ -23,9 +23,15 @@ const productTypeIcons: Record<ProductType, string> = {
 const normalizeIconColor = (svg: string) =>
     svg.replaceAll("#888888", "currentColor");
 
-const ProductTypeIcon = ({ type }: { type: ProductType }) => (
+const ProductTypeIcon = ({
+    type,
+    className = "h-16 w-20",
+}: {
+    type: ProductType;
+    className?: string;
+}) => (
     <span
-        className="flex h-16 w-20 items-center justify-center [&_svg]:max-h-full [&_svg]:max-w-full"
+        className={`flex items-center justify-center [&_svg]:max-h-full [&_svg]:max-w-full ${className}`}
         dangerouslySetInnerHTML={{
             __html: normalizeIconColor(productTypeIcons[type]),
         }}

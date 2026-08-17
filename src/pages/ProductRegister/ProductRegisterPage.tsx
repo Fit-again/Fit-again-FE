@@ -1,4 +1,5 @@
 import Card from "@/components/common/Card";
+import { ErrorMessage } from "@/components/common/form/FormControls";
 import MultiPhotoUpload from "@/components/common/MultiPhotoUpload";
 import PageActions from "@/components/common/PageActions";
 import PageLayout from "@/components/common/PageLayout";
@@ -61,8 +62,8 @@ function ProductRegisterPage() {
                 />
             }
         >
-            <div className="grid gap-10 lg:grid-cols-2 lg:gap-8 xl:grid-cols-[minmax(0,1.48fr)_minmax(0,2fr)]">
-                <section className="lg:border-line lg:border-r lg:pr-8">
+            <div className="grid gap-10 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.3fr)] lg:gap-7 xl:grid-cols-[minmax(0,521px)_minmax(0,690px)]">
+                <section className="lg:border-line lg:border-r lg:pr-[30px]">
                     <SectionHeading
                         number={1}
                         title="제품 유형 선택"
@@ -92,7 +93,7 @@ function ProductRegisterPage() {
                         />
                     </div>
 
-                    <Card variant="soft" className="mt-8 p-3 sm:mt-12 xl:mt-24">
+                    <Card variant="soft" className="mt-8 p-3 sm:mt-12 xl:mt-28">
                         <h3 className="border-line text-primary border-b pb-1 text-center text-[15px] font-medium">
                             촬영 가이드
                         </h3>
@@ -105,79 +106,88 @@ function ProductRegisterPage() {
                     </Card>
                 </section>
 
-                <section className="grid content-start gap-6 xl:grid-cols-2">
-                    <div>
-                        <SectionHeading
-                            number={2}
-                            title="정면 사진 업로드"
-                            required
-                            error={errors.frontPhoto?.message}
-                        />
-                        <p className="text-text-secondary mt-1 text-[18px]">
-                            제품의 양면이 잘 보이도록 촬영해주세요.
-                        </p>
-                        <div className="mt-3">
-                            <Controller
-                                control={control}
-                                name="frontPhoto"
-                                render={({ field }) => (
-                                    <UploadArea
-                                        label={
-                                            frontPhoto
-                                                ? frontPhoto.name
-                                                : "정면 사진을 선택해주세요"
-                                        }
-                                        description="PNG, JPG 파일을 업로드할 수 있습니다."
-                                        file={frontPhoto ?? null}
-                                        compact
-                                        onFilesSelected={(files) =>
-                                            field.onChange(files[0])
-                                        }
-                                    />
-                                )}
+                <section className="content-start">
+                    <div className="grid gap-7 xl:grid-cols-2 xl:gap-[30px]">
+                        <div>
+                            {errors.frontPhoto?.message && (
+                                <div className="mb-1">
+                                    <ErrorMessage>
+                                        {errors.frontPhoto.message}
+                                    </ErrorMessage>
+                                </div>
+                            )}
+                            <SectionHeading
+                                number={2}
+                                title="정면 사진 업로드"
+                                required
                             />
+                            <p className="text-text-secondary mt-1 text-[18px]">
+                                제품의 양면이 잘 보이도록 촬영해주세요.
+                            </p>
+                            <div className="mt-3">
+                                <Controller
+                                    control={control}
+                                    name="frontPhoto"
+                                    render={({ field }) => (
+                                        <UploadArea
+                                            label={
+                                                frontPhoto
+                                                    ? frontPhoto.name
+                                                    : "정면 사진을 선택해주세요"
+                                            }
+                                            description="PNG, JPG 파일을 업로드할 수 있습니다."
+                                            file={frontPhoto ?? null}
+                                            compact
+                                            className="aspect-square"
+                                            onFilesSelected={(files) =>
+                                                field.onChange(files[0])
+                                            }
+                                        />
+                                    )}
+                                />
+                            </div>
                         </div>
-                    </div>
 
-                    <div>
-                        <SectionHeading
-                            number={3}
-                            title="디테일 사진 업로드"
-                            detail="최대 4장"
-                        />
-                        <p className="text-text-secondary mt-1 text-lg">
-                            제품을 다양한 각도로 촬영해주세요.
-                        </p>
-                        <div className="mt-3">
-                            <Controller
-                                control={control}
-                                name="detailPhotos"
-                                render={({ field }) => (
-                                    <MultiPhotoUpload
-                                        files={detailPhotos}
-                                        maxCount={DETAIL_PHOTO_MAX}
-                                        itemLabel="디테일 사진"
-                                        className="grid-cols-2"
-                                        onAdd={(file) =>
-                                            field.onChange([
-                                                ...detailPhotos,
-                                                file,
-                                            ])
-                                        }
-                                        onRemove={(index) =>
-                                            field.onChange(
-                                                detailPhotos.filter(
-                                                    (_, i) => i !== index
+                        <div>
+                            <SectionHeading
+                                number={3}
+                                title="디테일 사진 업로드"
+                                detail="최대 4장"
+                            />
+                            <p className="text-text-secondary mt-1 text-[18px]">
+                                제품을 다양한 각도로 촬영해주세요.
+                            </p>
+                            <div className="mt-3">
+                                <Controller
+                                    control={control}
+                                    name="detailPhotos"
+                                    render={({ field }) => (
+                                        <MultiPhotoUpload
+                                            files={detailPhotos}
+                                            maxCount={DETAIL_PHOTO_MAX}
+                                            itemLabel="디테일 사진"
+                                            className="grid-cols-2"
+                                            onAdd={(file) =>
+                                                field.onChange([
+                                                    ...detailPhotos,
+                                                    file,
+                                                ])
+                                            }
+                                            onRemove={(index) =>
+                                                field.onChange(
+                                                    detailPhotos.filter(
+                                                        (_, i) => i !== index
+                                                    )
                                                 )
-                                            )
-                                        }
-                                    />
-                                )}
-                            />
+                                            }
+                                        />
+                                    )}
+                                />
+                            </div>
                         </div>
                     </div>
 
-                    <div className="xl:col-span-2">
+                    <div className="mt-7 xl:mt-[30px]">
                         <SectionHeading
                             number={4}
                             title="마모 부위 사진 업로드"

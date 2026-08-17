@@ -8,9 +8,18 @@ type ModalProps = {
     title: string;
     children: ReactNode;
     onClose: () => void;
-    footer?: ReactNode;
+    footer?: ReactNode | false;
     closeLabel?: string;
+    size?: "default" | "wide" | "step";
+    titleAlign?: "left" | "center";
+    showCloseButton?: boolean;
 };
+
+const sizeStyles = {
+    default: "max-w-[700px]",
+    wide: "max-w-[946px]",
+    step: "max-w-[810px]",
+} as const;
 
 const Modal = ({
     open,
@@ -19,6 +28,9 @@ const Modal = ({
     onClose,
     footer,
     closeLabel = "닫기",
+    size = "default",
+    titleAlign = "left",
+    showCloseButton = true,
 }: ModalProps) => {
     const titleId = useId();
     const dialogRef = useDialogAccessibility<HTMLDivElement>(open, onClose);
@@ -46,40 +58,46 @@ const Modal = ({
                 onClick={onClose}
             />
             <div
-                className="border-line relative max-h-[calc(100vh-40px)] w-full max-w-[700px] overflow-y-auto rounded-[5px] border bg-white p-5 shadow-[5px_7px_4px_rgba(91,58,41,0.14)] sm:p-6"
+                className={`border-line relative max-h-[calc(100vh-40px)] w-full overflow-y-auto rounded-[5px] border bg-white p-5 shadow-[5px_7px_4px_rgba(91,58,41,0.14)] sm:p-6 ${sizeStyles[size]}`}
                 ref={dialogRef}
                 role="dialog"
                 aria-modal="true"
                 aria-labelledby={titleId}
                 tabIndex={-1}
             >
-                <div className="border-line flex items-center justify-between gap-4 border-b pb-[15px]">
+                <div
+                    className={`border-line flex items-center gap-4 border-b pb-[15px] ${titleAlign === "center" ? "justify-center" : "justify-between"}`}
+                >
                     <h2
                         className="text-primary text-[20px] font-bold sm:text-[25px]"
                         id={titleId}
                     >
                         {title}
                     </h2>
-                    <button
-                        className="focus-visible:outline-primary text-primary flex size-10 shrink-0 cursor-pointer items-center justify-center rounded-[5px] text-[32px] leading-none focus-visible:outline-3"
-                        type="button"
-                        aria-label={closeLabel}
-                        onClick={onClose}
-                        data-dialog-initial-focus
-                    >
-                        ×
-                    </button>
+                    {showCloseButton && (
+                        <button
+                            className="focus-visible:outline-primary text-primary flex size-10 shrink-0 cursor-pointer items-center justify-center rounded-[5px] text-[32px] leading-none focus-visible:outline-3"
+                            type="button"
+                            aria-label={closeLabel}
+                            onClick={onClose}
+                            data-dialog-initial-focus
+                        >
+                            ×
+                        </button>
+                    )}
                 </div>
                 <div className="py-5 text-[18px] leading-relaxed">
                     {children}
                 </div>
-                <div className="mt-2">
-                    {footer ?? (
-                        <Button fullWidth onClick={onClose}>
-                            {closeLabel}
-                        </Button>
-                    )}
-                </div>
+                {footer !== false && (
+                    <div className="mt-2">
+                        {footer ?? (
+                            <Button fullWidth onClick={onClose}>
+                                {closeLabel}
+                            </Button>
+                        )}
+                    </div>
+                )}
             </div>
         </div>,
         document.body

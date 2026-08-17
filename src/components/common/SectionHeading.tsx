@@ -19,7 +19,7 @@ const SectionHeading = ({
         <span>
             {number}. {title}
             {required && !error && (
-                <span className="text-danger ml-1" aria-hidden="true">
+                <span className="text-danger ml-1" aria-label="필수">
                     *
                 </span>
             )}

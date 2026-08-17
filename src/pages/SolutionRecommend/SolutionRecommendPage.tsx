@@ -58,7 +58,7 @@ function SolutionRecommendPage() {
                     frontPhoto={frontPhoto}
                     recommendedSolution={recommendedSolution}
                     selectedSolution={selectedSolution}
-                    onSelect={setSelectedSolution}
+                    onSelectSolution={setSelectedSolution}
                 />
             </PageLayout>
             {isTransitioning && (

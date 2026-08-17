@@ -12,14 +12,14 @@ type RecommendationResultProps = {
     frontPhoto: File | null;
     recommendedSolution: SolutionType;
     selectedSolution: SolutionType;
-    onSelect: (solution: SolutionType) => void;
+    onSelectSolution: (solution: SolutionType) => void;
 };
 
 const RecommendationResult = ({
     frontPhoto,
     recommendedSolution,
     selectedSolution,
-    onSelect,
+    onSelectSolution,
 }: RecommendationResultProps) => {
     const content = RECOMMENDATION_CONTENT[selectedSolution];
     const alternatives = ALTERNATIVE_OPTIONS.filter(
@@ -27,7 +27,7 @@ const RecommendationResult = ({
     );
 
     return (
-        <>
+        <div>
             <Card className="p-5 sm:p-6">
                 <div className="grid gap-7 lg:grid-cols-[minmax(0,0.95fr)_minmax(0,1.25fr)_minmax(0,0.75fr)]">
                     <ProductPhoto file={frontPhoto} />
@@ -109,12 +109,12 @@ const RecommendationResult = ({
                             key={option.id}
                             option={option}
                             recommended={option.id === recommendedSolution}
-                            onClick={() => onSelect(option.id)}
+                            onClick={() => onSelectSolution(option.id)}
                         />
                     ))}
                 </div>
             </section>
-        </>
+        </div>
     );
 };
 

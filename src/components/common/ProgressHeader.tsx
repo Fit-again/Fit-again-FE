@@ -3,25 +3,29 @@
  * 넓은 화면에서는 전체 단계를, 작은 화면에서는 현재 단계와 진행률을 표시합니다.
  */
 
-import { SERVICE_STEPS } from "@/constants/serviceSteps";
+import { SERVICE_STEPS, type ServiceStep } from "@/constants/serviceSteps";
 import { ROUTES } from "@/routes/paths";
 import { Link } from "react-router-dom";
 
 type ProgressHeaderProps = {
     currentStep: number;
+    steps?: ServiceStep[];
 };
 
-const ProgressHeader = ({ currentStep }: ProgressHeaderProps) => {
+const ProgressHeader = ({
+    currentStep,
+    steps = SERVICE_STEPS,
+}: ProgressHeaderProps) => {
     const activeStep =
-        SERVICE_STEPS.find((step) => step.id === currentStep) ??
-        SERVICE_STEPS[0];
-    const progress = `${(activeStep.id / SERVICE_STEPS.length) * 100}%`;
+        steps.find((step) => step.id === currentStep) ?? steps[0];
+    const progress = `${(activeStep.id / steps.length) * 100}%`;
+    const hasCondensedResultSteps = steps.length === 5;
 
     return (
         <header className="border-line border-b bg-white">
-            <div className="mx-auto flex w-full max-w-[1320px] items-center gap-5 px-5 py-4 sm:min-h-22 sm:gap-10 sm:px-8 lg:px-8">
+            <div className="mx-auto flex min-h-[87px] w-full max-w-[1320px] items-center gap-5 px-5 py-4 sm:gap-10 sm:px-8 xl:gap-16 xl:px-0">
                 <Link
-                    className="font-logo text-primary focus-visible:outline-primary shrink-0 text-3xl leading-none font-bold focus-visible:rounded focus-visible:outline-3 focus-visible:outline-offset-2 sm:text-[34px]"
+                    className="font-logo text-primary focus-visible:outline-primary shrink-0 text-[34px] leading-none font-normal focus-visible:rounded focus-visible:outline-3 focus-visible:outline-offset-2 sm:text-[40px]"
                     to={ROUTES.home}
                     aria-label="Fit Again 홈"
                 >
@@ -29,11 +33,11 @@ const ProgressHeader = ({ currentStep }: ProgressHeaderProps) => {
                 </Link>
 
                 <nav
-                    className="hidden min-w-0 flex-1 xl:block"
+                    className={`hidden min-w-0 flex-1 xl:block ${hasCondensedResultSteps ? "xl:ml-[120px]" : ""}`}
                     aria-label="서비스 진행 단계"
                 >
                     <ol className="flex items-center">
-                        {SERVICE_STEPS.map((step, index) => {
+                        {steps.map((step, index) => {
                             const active = step.id === activeStep.id;
 
                             return (
@@ -43,7 +47,7 @@ const ProgressHeader = ({ currentStep }: ProgressHeaderProps) => {
                                     aria-current={active ? "step" : undefined}
                                 >
                                     <span
-                                        className={`flex shrink-0 items-center gap-2 text-[17px] whitespace-nowrap ${active ? "text-primary font-bold" : "text-primary/35"}`}
+                                        className={`flex shrink-0 items-center gap-2 whitespace-nowrap ${active ? "text-primary text-[20px] font-bold" : "text-primary/35 text-[18px]"}`}
                                     >
                                         {active && (
                                             <span className="bg-primary flex size-6 items-center justify-center rounded-full text-[14px] text-white">
@@ -52,7 +56,7 @@ const ProgressHeader = ({ currentStep }: ProgressHeaderProps) => {
                                         )}
                                         {step.label}
                                     </span>
-                                    {index < SERVICE_STEPS.length - 1 && (
+                                    {index < steps.length - 1 && (
                                         <span
                                             className="bg-line mx-5 h-px min-w-4 flex-1"
                                             aria-hidden="true"
@@ -70,7 +74,7 @@ const ProgressHeader = ({ currentStep }: ProgressHeaderProps) => {
                             {activeStep.id}. {activeStep.label}
                         </span>
                         <span className="text-text-secondary">
-                            / {SERVICE_STEPS.length}
+                            / {steps.length}
                         </span>
                     </div>
                     <div
@@ -78,7 +82,7 @@ const ProgressHeader = ({ currentStep }: ProgressHeaderProps) => {
                         role="progressbar"
                         aria-label="서비스 진행률"
                         aria-valuemin={1}
-                        aria-valuemax={SERVICE_STEPS.length}
+                        aria-valuemax={steps.length}
                         aria-valuenow={activeStep.id}
                     >
                         <div

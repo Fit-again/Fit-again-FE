@@ -1,11 +1,12 @@
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { MemoryRouter, Route, Routes } from "react-router-dom";
-import { describe, expect, it, vi } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import HomePage from "@/pages/Home/HomePage";
 import ReformSimulationPage from "@/pages/ReformSimulation/ReformSimulationPage";
 import ResultConfirmPage from "@/pages/ResultConfirm/ResultConfirmPage";
 import { ROUTES } from "@/routes/paths";
+import { useReformFlowStore } from "@/stores/useReformFlowStore";
 
 vi.mock("html2canvas-pro", () => ({
     default: vi.fn().mockResolvedValue({
@@ -46,6 +47,10 @@ const renderPage = () =>
     );
 
 describe("ResultConfirmPage", () => {
+    beforeEach(() => {
+        useReformFlowStore.getState().resetFlow();
+    });
+
     it("AI 리폼 리포트와 공식 상담 신청 폼을 보여준다", () => {
         renderPage();
 
@@ -107,6 +112,36 @@ describe("ResultConfirmPage", () => {
             screen.getByRole("dialog", { name: "개인정보 수집 및 이용 동의" })
         ).toBeInTheDocument();
         expect(screen.getByText("1. 수집 및 이용 목적")).toBeInTheDocument();
+    });
+
+    it("업사이클링 결과와 업사이클링 상담 항목을 보여준다", () => {
+        useReformFlowStore.setState({
+            selectedSolution: "upcycle",
+            selectedUpcycleProduct: "mini-crossbag",
+        });
+        renderPage();
+
+        expect(
+            screen.getByRole("heading", { name: "미니 크로스백" })
+        ).toBeInTheDocument();
+        expect(screen.getByText("예상되는 변화")).toBeInTheDocument();
+        expect(screen.getByText("희망 업사이클링 제품")).toBeInTheDocument();
+        expect(screen.queryByText("AI 리폼 리포트")).not.toBeInTheDocument();
+    });
+
+    it("리셀 결과에서는 상담 절차와 다음 제품 추천을 보여준다", () => {
+        useReformFlowStore.setState({ selectedSolution: "resell" });
+        renderPage();
+
+        expect(
+            screen.getByRole("heading", {
+                name: "리셀을 선택한다면, 이렇게 이어갈 수 있어요.",
+            })
+        ).toBeInTheDocument();
+        expect(screen.getByText("전문 검수 및 조건 안내")).toBeInTheDocument();
+        expect(screen.getByText("경량 크로스백")).toBeInTheDocument();
+        expect(screen.getByText("문의사항")).toBeInTheDocument();
+        expect(screen.queryByText("AI 리폼 리포트")).not.toBeInTheDocument();
     });
 
     it("리포트 저장 버튼을 누르면 PDF를 생성하고 저장 완료 메시지를 보여준다", async () => {

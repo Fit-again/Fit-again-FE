@@ -19,6 +19,7 @@ function App() {
 
     useEffect(() => {
         document.title = PAGE_TITLES[pathname] ?? "Fit Again";
+        window.scrollTo({ top: 0, left: 0, behavior: "auto" });
     }, [pathname]);
 
     return <Outlet />;

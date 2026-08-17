@@ -42,7 +42,7 @@ const UploadArea = ({
                 }}
             />
             <label
-                className={`focus-within:outline-primary border-line text-text-secondary flex w-full flex-col items-center justify-center gap-3 overflow-hidden rounded-[5px] border p-3 text-center focus-within:outline-3 focus-within:outline-offset-2 ${compact ? "bg-placeholder aspect-square" : "min-h-60 bg-white"} ${disabled ? "cursor-not-allowed opacity-60" : "hover:border-primary cursor-pointer"} ${className}`}
+                className={`focus-within:outline-primary border-line text-text-secondary flex w-full flex-col items-center justify-center gap-3 overflow-hidden rounded-[5px] border p-3 text-center focus-within:outline-3 focus-within:outline-offset-2 ${compact ? "bg-placeholder" : "min-h-60 bg-white"} ${disabled ? "cursor-not-allowed opacity-60" : "hover:border-primary cursor-pointer"} ${className}`}
                 htmlFor={inputId}
             >
                 <img

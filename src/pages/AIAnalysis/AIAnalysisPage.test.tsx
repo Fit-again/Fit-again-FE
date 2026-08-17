@@ -58,29 +58,24 @@ describe("AIAnalysisPage", () => {
         expect(screen.getByAltText("정면 사진")).toBeInTheDocument();
     });
 
-    it("분석 이미지는 한 장씩 보여주고 슬라이드로 넘겨볼 수 있다", async () => {
+    it("일반 분석 결과는 등록한 사진을 캐러셀로 보여준다", () => {
         renderPage();
         expect(screen.getByAltText("정면 사진")).toBeInTheDocument();
         expect(
-            screen.queryByAltText("마모 부위 사진 1")
-        ).not.toBeInTheDocument();
+            screen.getByRole("button", { name: "다음 사진" })
+        ).toBeInTheDocument();
         expect(screen.getByText("1/2")).toBeInTheDocument();
+    });
 
-        const user = userEvent.setup();
-        await user.click(screen.getByRole("button", { name: "다음 사진" }));
+    it("사용 목적을 추론할 수 없으면 오류 문구와 사진 슬라이드를 보여준다", () => {
+        useReformFlowStore.setState({ description: "" });
+        renderPage();
 
-        expect(screen.getByAltText("마모 부위 사진 1")).toBeInTheDocument();
-        expect(screen.queryByAltText("정면 사진")).not.toBeInTheDocument();
-        expect(screen.getByText("2/2")).toBeInTheDocument();
-
-        await user.click(screen.getByRole("button", { name: "다음 사진" }));
-
-        expect(screen.getByAltText("정면 사진")).toBeInTheDocument();
+        expect(screen.getByText("확인할 수 없음")).toBeInTheDocument();
+        expect(
+            screen.getByRole("button", { name: "다음 사진" })
+        ).toBeInTheDocument();
         expect(screen.getByText("1/2")).toBeInTheDocument();
-
-        await user.click(screen.getByRole("button", { name: "이전 사진" }));
-
-        expect(screen.getByAltText("마모 부위 사진 1")).toBeInTheDocument();
     });
 
     it("이전 단계를 누르면 불편 입력 화면으로 이동한다", async () => {

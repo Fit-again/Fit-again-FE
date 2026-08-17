@@ -52,6 +52,7 @@ function ResellPreviewPage() {
             currentStep={5}
             title="리셀 미리보기"
             description="나에게는 불편했던 이 제품, 누구에게는 잘 맞을까요?"
+            contentSpacing="compact"
             actions={
                 <PageActions
                     nextLabel="결과 보기"
@@ -60,7 +61,7 @@ function ResellPreviewPage() {
                 />
             }
         >
-            <div className="-mt-4 grid gap-7 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.4fr)]">
+            <div className="-mt-4 grid gap-7 lg:grid-cols-[minmax(0,490px)_minmax(0,1fr)] lg:gap-[30px]">
                 <section>
                     <h2 className="text-primary text-[23px] font-bold sm:text-[25px]">
                         분석한 제품
@@ -199,7 +200,7 @@ const PhotoMarker = ({
     className: string;
 }) => (
     <span
-        className={`absolute flex size-5 items-center justify-center rounded-full text-[11px] font-bold text-white shadow ${tone === "danger" ? "bg-danger" : "bg-after"} ${className}`}
+        className={`absolute flex size-5 items-center justify-center rounded-full text-[11px] font-bold text-white shadow before:absolute before:size-10 before:rounded-full before:border before:border-dashed ${tone === "danger" ? "bg-danger before:border-danger" : "bg-after before:border-after"} ${className}`}
         aria-hidden="true"
     >
         {number}

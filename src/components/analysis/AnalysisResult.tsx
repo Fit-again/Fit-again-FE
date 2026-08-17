@@ -11,12 +11,14 @@ type AnalysisResultProps = {
     productTypeLabel: string;
     painPointCauses: string[];
     photos: AnalysisPhoto[];
+    canInferUsagePurpose: boolean;
 };
 
 const AnalysisResult = ({
     productTypeLabel,
     painPointCauses,
     photos,
+    canInferUsagePurpose,
 }: AnalysisResultProps) => (
     <div className="grid gap-10 lg:grid-cols-2">
         <section>
@@ -65,8 +67,12 @@ const AnalysisResult = ({
                 <Card className="mt-4">
                     <dl>
                         <InfoRow label="현재 사용 목적">
-                            <span className="text-[18px]">
-                                {MOCK_ANALYSIS.usagePurpose}
+                            <span
+                                className={`text-[18px] ${canInferUsagePurpose ? "" : "text-danger font-medium"}`}
+                            >
+                                {canInferUsagePurpose
+                                    ? MOCK_ANALYSIS.usagePurpose
+                                    : "확인할 수 없음"}
                             </span>
                         </InfoRow>
                         <InfoRow label="주요 불편 원인">

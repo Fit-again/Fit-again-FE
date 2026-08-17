@@ -2,7 +2,10 @@ import PageActions from "@/components/common/PageActions";
 import PageLayout from "@/components/common/PageLayout";
 import Modal from "@/components/common/Modal";
 import ConsultationFormCard from "@/components/result/ConsultationFormCard";
+import ResellResultCard from "@/components/result/ResellResultCard";
 import ResultReportCard from "@/components/result/ResultReportCard";
+import UpcycleResultCard from "@/components/result/UpcycleResultCard";
+import { RESELL_RESULT_STEPS } from "@/constants/serviceSteps";
 import { PAIN_POINT_CAUSE_TEXT } from "@/constants/painPointKeywords";
 import { DEFAULT_RESOLVED_ISSUES } from "@/constants/result";
 import { ROUTES } from "@/routes/paths";
@@ -20,6 +23,12 @@ function ResultConfirmPage() {
     const painPointKeywordIds = useReformFlowStore(
         (state) => state.painPointKeywordIds
     );
+    const selectedUpcycleProduct = useReformFlowStore(
+        (state) => state.selectedUpcycleProduct
+    );
+    const setSelectedUpcycleProduct = useReformFlowStore(
+        (state) => state.setSelectedUpcycleProduct
+    );
     const reportRef = useRef<HTMLDivElement>(null);
     const [isSavingReport, setIsSavingReport] = useState(false);
     const [reportSaved, setReportSaved] = useState(false);
@@ -34,6 +43,12 @@ function ResultConfirmPage() {
         reform: ROUTES.reformSimulation,
         resell: ROUTES.resellPreview,
         upcycle: ROUTES.upcyclePreview,
+    }[selectedSolution];
+    const pageDescription = {
+        reform: "AI 리폼 리포트를 확인하고 저장하거나 공식 상담을 신청할 수 있습니다.",
+        resell: "내 제품의 리셀 가능성과 다음 활용 방향을 정리했어요.",
+        upcycle:
+            "선택하신 업사이클링 방향의 예상 결과를 확인하고 상담을 신청해보세요.",
     }[selectedSolution];
 
     const handleSaveReport = async () => {
@@ -57,9 +72,15 @@ function ResultConfirmPage() {
     return (
         <>
             <PageLayout
-                currentStep={6}
+                currentStep={selectedSolution === "resell" ? 5 : 6}
+                steps={
+                    selectedSolution === "resell"
+                        ? RESELL_RESULT_STEPS
+                        : undefined
+                }
                 title="결과 확인"
-                description="AI 리폼 리포트를 확인하고 저장하거나 공식 상담을 신청할 수 있습니다."
+                description={pageDescription}
+                contentSpacing="compact"
                 actions={
                     <PageActions
                         nextLabel="홈으로"
@@ -68,17 +89,28 @@ function ResultConfirmPage() {
                     />
                 }
             >
-                <div className="grid gap-6 lg:grid-cols-[minmax(0,1.65fr)_minmax(0,1fr)]">
-                    <ResultReportCard
-                        reportRef={reportRef}
-                        frontPhoto={frontPhoto}
-                        resolvedIssues={resolvedIssues}
-                        isSaving={isSavingReport}
-                        saved={reportSaved}
-                        saveError={reportSaveError}
-                        onSave={() => void handleSaveReport()}
-                    />
+                <div className="grid gap-[30px] lg:grid-cols-[minmax(0,1.83fr)_minmax(0,1fr)] xl:min-h-[686px]">
+                    {selectedSolution === "upcycle" ? (
+                        <UpcycleResultCard
+                            selectedProductId={selectedUpcycleProduct}
+                            onSelectProduct={setSelectedUpcycleProduct}
+                        />
+                    ) : selectedSolution === "resell" ? (
+                        <ResellResultCard />
+                    ) : (
+                        <ResultReportCard
+                            reportRef={reportRef}
+                            frontPhoto={frontPhoto}
+                            resolvedIssues={resolvedIssues}
+                            isSaving={isSavingReport}
+                            saved={reportSaved}
+                            saveError={reportSaveError}
+                            onSave={() => void handleSaveReport()}
+                        />
+                    )}
                     <ConsultationFormCard
+                        solutionType={selectedSolution}
+                        selectedUpcycleProduct={selectedUpcycleProduct}
                         onViewAgreement={() => setAgreementOpen(true)}
                         onSubmit={() => setSubmittedAt(new Date())}
                     />
@@ -88,6 +120,9 @@ function ResultConfirmPage() {
             <Modal
                 open={agreementOpen}
                 title="개인정보 수집 및 이용 동의"
+                size="wide"
+                titleAlign="center"
+                showCloseButton={false}
                 onClose={() => setAgreementOpen(false)}
             >
                 <AgreementContent />
@@ -96,6 +131,8 @@ function ResultConfirmPage() {
             <Modal
                 open={submittedAt !== null}
                 title="공식 상담 신청 완료"
+                titleAlign="center"
+                showCloseButton={false}
                 onClose={() => setSubmittedAt(null)}
             >
                 <ConsultationComplete submittedAt={submittedAt} />

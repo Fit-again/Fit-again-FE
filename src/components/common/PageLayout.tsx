@@ -1,5 +1,6 @@
 import ProgressHeader from "@/components/common/ProgressHeader";
 import PageIntro from "@/components/common/PageIntro";
+import type { ServiceStep } from "@/constants/serviceSteps";
 import type { ReactNode } from "react";
 
 type PageLayoutProps = {
@@ -8,6 +9,8 @@ type PageLayoutProps = {
     description: string;
     children: ReactNode;
     actions?: ReactNode;
+    contentSpacing?: "default" | "compact";
+    steps?: ServiceStep[];
 };
 
 const PageLayout = ({
@@ -16,13 +19,17 @@ const PageLayout = ({
     description,
     children,
     actions,
+    contentSpacing = "default",
+    steps,
 }: PageLayoutProps) => (
     <div className="bg-ground flex min-h-dvh w-full flex-col">
-        <ProgressHeader currentStep={currentStep} />
+        <ProgressHeader currentStep={currentStep} steps={steps} />
         <PageIntro title={title} description={description} />
-        <main className="mx-auto flex w-full max-w-[1240px] flex-1 flex-col px-5 py-8 sm:px-8 lg:py-12 xl:px-0">
+        <main
+            className={`mx-auto flex w-full max-w-[1240px] flex-1 flex-col px-5 pt-8 pb-6 sm:px-8 xl:px-0 ${contentSpacing === "compact" ? "lg:pt-8" : "lg:pt-12"}`}
+        >
             {children}
-            {actions && <div className="mt-auto pt-12">{actions}</div>}
+            {actions && <div className="mt-auto pt-7">{actions}</div>}
         </main>
     </div>
 );

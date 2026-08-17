@@ -62,7 +62,7 @@ describe("SolutionRecommendPage", () => {
         expect(screen.getByAltText("추천 제품 사진")).toBeInTheDocument();
     });
 
-    it("다른 활용 방법을 선택하면 추천 내용과 CTA를 변경한다", async () => {
+    it("다른 활용 방법을 누르면 선택한 추천 내용으로 화면을 변경한다", async () => {
         const user = userEvent.setup();
         renderPage();
 
@@ -74,18 +74,14 @@ describe("SolutionRecommendPage", () => {
         expect(
             screen.getByRole("button", { name: "리셀 미리보기" })
         ).toBeInTheDocument();
-        expect(
-            screen.getByRole("button", { name: /리폼.*AI 추천/ })
-        ).toBeInTheDocument();
+        expect(useReformFlowStore.getState().selectedSolution).toBe("resell");
 
         await user.click(screen.getByRole("button", { name: /업사이클링/ }));
 
         expect(
             screen.getByRole("heading", { name: "업사이클링 (Upcycling)" })
         ).toBeInTheDocument();
-        expect(
-            screen.getByRole("button", { name: "업사이클링 미리보기" })
-        ).toBeInTheDocument();
+        expect(useReformFlowStore.getState().selectedSolution).toBe("upcycle");
     });
 
     it("리셀 미리보기를 누르면 리셀 미리보기 화면으로 이동한다", async () => {
