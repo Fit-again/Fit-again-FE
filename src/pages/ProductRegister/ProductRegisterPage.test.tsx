@@ -93,6 +93,17 @@ describe("ProductRegisterPage", () => {
         expect(
             screen.getByText("정면 사진을 업로드해주세요")
         ).toBeInTheDocument();
+        const alerts = screen.getAllByRole("alert");
+        const productTypeError = alerts.find((alert) =>
+            alert.textContent?.includes("제품 유형")
+        );
+        const frontPhotoError = alerts.find((alert) =>
+            alert.textContent?.includes("정면 사진")
+        );
+
+        expect(productTypeError?.closest("h2")).not.toBeNull();
+        expect(frontPhotoError?.closest("h2")).toBeNull();
+        expect(frontPhotoError?.parentElement).toHaveClass("absolute");
         expect(
             screen.queryByText("마모 부위 사진을 업로드해주세요")
         ).not.toBeInTheDocument();

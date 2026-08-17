@@ -6,6 +6,7 @@ type SectionHeadingProps = {
     detail?: string;
     required?: boolean;
     error?: string;
+    errorPosition?: "inline" | "external";
 };
 
 const SectionHeading = ({
@@ -14,6 +15,7 @@ const SectionHeading = ({
     detail,
     required = false,
     error,
+    errorPosition = "inline",
 }: SectionHeadingProps) => (
     <h2 className="text-primary flex flex-wrap items-baseline gap-2 text-[23px] font-bold sm:text-[25px]">
         <span>
@@ -29,7 +31,9 @@ const SectionHeading = ({
                 ({detail})
             </span>
         )}
-        {error && <ErrorMessage>{error}</ErrorMessage>}
+        {error && errorPosition === "inline" && (
+            <ErrorMessage>{error}</ErrorMessage>
+        )}
     </h2>
 );
 

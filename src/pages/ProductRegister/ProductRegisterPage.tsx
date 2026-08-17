@@ -108,9 +108,9 @@ function ProductRegisterPage() {
 
                 <section className="content-start">
                     <div className="grid gap-7 xl:grid-cols-2 xl:gap-[30px]">
-                        <div>
+                        <div className="relative">
                             {errors.frontPhoto?.message && (
-                                <div className="mb-1">
+                                <div className="absolute bottom-full left-[10px] mb-0.5">
                                     <ErrorMessage>
                                         {errors.frontPhoto.message}
                                     </ErrorMessage>
@@ -120,6 +120,8 @@ function ProductRegisterPage() {
                                 number={2}
                                 title="정면 사진 업로드"
                                 required
+                                error={errors.frontPhoto?.message}
+                                errorPosition="external"
                             />
                             <p className="text-text-secondary mt-1 text-[18px]">
                                 제품의 양면이 잘 보이도록 촬영해주세요.

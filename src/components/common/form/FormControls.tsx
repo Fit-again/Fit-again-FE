@@ -107,7 +107,7 @@ export const ErrorMessage = ({
     children: ReactNode;
 }) => (
     <span
-        className="text-danger inline-flex items-center gap-1 text-[15px]"
+        className="text-danger inline-flex items-center gap-1 text-[15px] leading-[18px]"
         id={id}
         role="alert"
     >
