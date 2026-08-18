@@ -99,7 +99,31 @@ describe("AIAnalysisPage", () => {
         ).toBeInTheDocument();
     });
 
-    it("추천 결과 보기를 누르면 추천 화면으로 이동한다", async () => {
+    it("추천이 이미 완료되었으면 POST 없이 추천 화면으로 이동한다", async () => {
+        renderPage();
+        const user = userEvent.setup();
+        await user.click(
+            screen.getByRole("button", { name: "추천 결과 보기" })
+        );
+
+        await waitFor(() =>
+            expect(
+                screen.getByRole("heading", {
+                    name: "AI 추천 결과",
+                    level: 1,
+                })
+            ).toBeInTheDocument()
+        );
+        expect(requestRecommendationApi).not.toHaveBeenCalled();
+    });
+
+    it("진단만 완료되었으면 추천을 요청하고 결과를 조회한다", async () => {
+        vi.mocked(getRecommendationApi)
+            .mockResolvedValueOnce({ status: "DIAGNOSED", rankings: null })
+            .mockResolvedValueOnce({
+                status: "RECOMMENDED",
+                rankings: recommendationRankingsFixture,
+            });
         renderPage();
         const user = userEvent.setup();
         await user.click(
@@ -118,5 +142,72 @@ describe("AIAnalysisPage", () => {
             1,
             expect.any(AbortSignal)
         );
+    });
+
+    it("추천 생성 중이면 POST 없이 결과 조회를 이어간다", async () => {
+        vi.mocked(getRecommendationApi)
+            .mockResolvedValueOnce({ status: "RECOMMENDING", rankings: null })
+            .mockResolvedValueOnce({
+                status: "RECOMMENDED",
+                rankings: recommendationRankingsFixture,
+            });
+        renderPage();
+        const user = userEvent.setup();
+        await user.click(
+            screen.getByRole("button", { name: "추천 결과 보기" })
+        );
+
+        await waitFor(() =>
+            expect(
+                screen.getByRole("heading", {
+                    name: "AI 추천 결과",
+                    level: 1,
+                })
+            ).toBeInTheDocument()
+        );
+        expect(requestRecommendationApi).not.toHaveBeenCalled();
+    });
+
+    it("추천 작업이 실패했으면 실패 메시지를 보여준다", async () => {
+        vi.mocked(getRecommendationApi).mockResolvedValue({
+            status: "FAILED",
+            rankings: null,
+        });
+        renderPage();
+        const user = userEvent.setup();
+        await user.click(
+            screen.getByRole("button", { name: "추천 결과 보기" })
+        );
+
+        expect(
+            await screen.findByText("AI 작업 처리에 실패했습니다.")
+        ).toBeInTheDocument();
+        expect(requestRecommendationApi).not.toHaveBeenCalled();
+    });
+
+    it("POST 직전에 선행 생성이 완료되면 최신 결과로 이동한다", async () => {
+        vi.mocked(getRecommendationApi)
+            .mockResolvedValueOnce({ status: "DIAGNOSED", rankings: null })
+            .mockResolvedValueOnce({
+                status: "RECOMMENDED",
+                rankings: recommendationRankingsFixture,
+            });
+        vi.mocked(requestRecommendationApi).mockRejectedValueOnce(
+            new Error("TASK400")
+        );
+        renderPage();
+        const user = userEvent.setup();
+        await user.click(
+            screen.getByRole("button", { name: "추천 결과 보기" })
+        );
+
+        expect(
+            await screen.findByRole("heading", {
+                name: "AI 추천 결과",
+                level: 1,
+            })
+        ).toBeInTheDocument();
+        expect(requestRecommendationApi).toHaveBeenCalledOnce();
+        expect(getRecommendationApi).toHaveBeenCalledTimes(2);
     });
 });

@@ -56,13 +56,32 @@ function AIAnalysisPage() {
         abortControllerRef.current = controller;
 
         try {
-            await requestRecommendationApi(taskId, controller.signal);
-            const result = await pollUntil({
-                load: () => getRecommendationApi(taskId, controller.signal),
-                isComplete: (value) => value.status === "RECOMMENDED",
-                isFailed: (value) => value.status === "FAILED",
-                signal: controller.signal,
-            });
+            const loadRecommendation = () =>
+                getRecommendationApi(taskId, controller.signal);
+            let result = await loadRecommendation();
+
+            if (result.status === "DIAGNOSED") {
+                try {
+                    await requestRecommendationApi(taskId, controller.signal);
+                } catch (error) {
+                    result = await loadRecommendation();
+                    if (result.status === "DIAGNOSED") throw error;
+                }
+            }
+
+            if (result.status === "FAILED") {
+                throw new ApiError("AI 작업 처리에 실패했습니다.");
+            }
+
+            if (result.status !== "RECOMMENDED") {
+                result = await pollUntil({
+                    load: loadRecommendation,
+                    isComplete: (value) => value.status === "RECOMMENDED",
+                    isFailed: (value) => value.status === "FAILED",
+                    signal: controller.signal,
+                });
+            }
+
             if (!result.rankings?.length) {
                 throw new ApiError("AI 추천 결과를 확인할 수 없습니다.");
             }

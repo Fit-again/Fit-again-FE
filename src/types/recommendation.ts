@@ -7,7 +7,8 @@ export type RecommendedTask = {
 export type SolutionType = "reform" | "resell" | "upcycle";
 
 export type RecommendationType = "REFORM" | "RESELL" | "UPCYCLING";
-export type RecommendationStatus = "RECOMMENDING" | "RECOMMENDED" | "FAILED";
+export type RecommendationStatus =
+    "DIAGNOSED" | "RECOMMENDING" | "RECOMMENDED" | "FAILED";
 export type WorkCategory = "REPLACE" | "REINFORCE";
 
 export type RecommendedWork = {
