@@ -152,6 +152,68 @@ describe("PainPointPage", () => {
         );
     });
 
+    it.each(["RECOMMENDING", "RECOMMENDED"] as const)(
+        "진단 결과가 있으면 추천 상태가 %s여도 AI 분석 화면으로 이동한다",
+        async (status) => {
+            vi.mocked(getDiagnosisApi).mockResolvedValue({
+                status,
+                diagnosisResult: diagnosisFixture,
+            });
+            renderPage();
+            const user = userEvent.setup();
+
+            await user.click(screen.getByRole("button", { name: "무거움" }));
+            await user.click(
+                screen.getByRole("button", { name: "AI 분석 시작" })
+            );
+
+            await waitFor(() =>
+                expect(
+                    screen.getByRole("heading", { name: "AI 분석 결과" })
+                ).toBeInTheDocument()
+            );
+        }
+    );
+
+    it("추천 생성만 실패하고 진단 결과가 남아 있으면 AI 분석 화면으로 이동한다", async () => {
+        vi.mocked(getDiagnosisApi).mockResolvedValue({
+            status: "FAILED",
+            diagnosisResult: diagnosisFixture,
+            errorMessage: "추천 생성에 실패했습니다.",
+        });
+        renderPage();
+        const user = userEvent.setup();
+
+        await user.click(screen.getByRole("button", { name: "무거움" }));
+        await user.click(screen.getByRole("button", { name: "AI 분석 시작" }));
+
+        await waitFor(() =>
+            expect(
+                screen.getByRole("heading", { name: "AI 분석 결과" })
+            ).toBeInTheDocument()
+        );
+    });
+
+    it("진단 결과 없이 작업이 실패하면 서버 오류를 표시한다", async () => {
+        vi.mocked(getDiagnosisApi).mockResolvedValue({
+            status: "FAILED",
+            diagnosisResult: null,
+            errorMessage: "진단 생성에 실패했습니다.",
+        });
+        renderPage();
+        const user = userEvent.setup();
+
+        await user.click(screen.getByRole("button", { name: "무거움" }));
+        await user.click(screen.getByRole("button", { name: "AI 분석 시작" }));
+
+        expect(
+            await screen.findByText("진단 생성에 실패했습니다.")
+        ).toBeInTheDocument();
+        expect(
+            screen.queryByRole("heading", { name: "AI 분석 결과" })
+        ).not.toBeInTheDocument();
+    });
+
     it("추가 설명을 자유롭게 입력할 수 있다", async () => {
         const user = userEvent.setup();
         renderPage();

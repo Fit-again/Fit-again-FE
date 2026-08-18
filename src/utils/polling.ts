@@ -5,17 +5,15 @@ export const POLLING_TIMEOUT_MS = 180_000;
 
 const wait = (duration: number, signal?: AbortSignal) =>
     new Promise<void>((resolve, reject) => {
-        const timeout = window.setTimeout(resolve, duration);
-        signal?.addEventListener(
-            "abort",
-            () => {
-                window.clearTimeout(timeout);
-                reject(
-                    new DOMException("요청이 취소되었습니다.", "AbortError")
-                );
-            },
-            { once: true }
-        );
+        const handleAbort = () => {
+            window.clearTimeout(timeout);
+            reject(new DOMException("요청이 취소되었습니다.", "AbortError"));
+        };
+        const timeout = window.setTimeout(() => {
+            signal?.removeEventListener("abort", handleAbort);
+            resolve();
+        }, duration);
+        signal?.addEventListener("abort", handleAbort, { once: true });
     });
 
 export const pollUntil = async <T>({

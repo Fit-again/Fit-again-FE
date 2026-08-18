@@ -1,7 +1,13 @@
 import axiosInstance from "@/api/axiosInstance";
+import { createConsultationApi } from "@/api/consultationApi";
 import { analyzeImagesApi } from "@/api/imageApi";
-import { getRecommendationApi } from "@/api/recommendationApi";
+import {
+    getRecommendationApi,
+    requestRecommendationApi,
+} from "@/api/recommendationApi";
+import { unwrapApiResponse } from "@/api/response";
 import { createTaskApi } from "@/api/taskApi";
+import { ApiError } from "@/types/api";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 vi.mock("@/api/axiosInstance", () => ({
@@ -124,5 +130,51 @@ describe("API 요청 매핑", () => {
             xPercent: 32.5,
             yPercent: 71,
         });
+    });
+
+    it("추천 생성 요청에 3분 타임아웃과 취소 신호를 적용한다", async () => {
+        const controller = new AbortController();
+        vi.mocked(axiosInstance.post).mockResolvedValue(success({ taskId: 7 }));
+
+        await requestRecommendationApi(7, controller.signal);
+
+        expect(axiosInstance.post).toHaveBeenCalledWith(
+            "/tasks/7/recommendations",
+            undefined,
+            { signal: controller.signal, timeout: 180_000 }
+        );
+    });
+
+    it("상담 신청 값을 Swagger JSON 필드명으로 전송한다", async () => {
+        const body = {
+            userName: "홍길동",
+            phoneNumber: "010-1234-5678",
+            desiredUpcyclingProducts: ["미니 크로스백", "카드지갑"],
+            importantAspect: "가벼운 무게",
+            additionalRequest: "스트랩 길이를 확인해주세요.",
+            privacyAgreed: true,
+        };
+        vi.mocked(axiosInstance.post).mockResolvedValue(
+            success({ consultationId: 3 })
+        );
+
+        await expect(createConsultationApi(7, body)).resolves.toEqual({
+            consultationId: 3,
+        });
+        expect(axiosInstance.post).toHaveBeenCalledWith(
+            "/tasks/7/consultations",
+            body
+        );
+    });
+
+    it("공통 응답이 실패이거나 결과가 없으면 서버 코드를 포함한 오류를 던진다", () => {
+        expect(() =>
+            unwrapApiResponse({
+                isSuccess: false,
+                code: "TASK400",
+                message: "요청할 수 없는 작업 상태입니다.",
+                result: null,
+            })
+        ).toThrow(ApiError);
     });
 });

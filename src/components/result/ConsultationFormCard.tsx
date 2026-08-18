@@ -47,7 +47,9 @@ const ConsultationFormCard = ({
             contact: "",
             message: "",
             upcycleProducts:
-                solutionType === "upcycle" ? [selectedUpcycleProduct] : [],
+                solutionType === "upcycle" && selectedUpcycleProduct
+                    ? [selectedUpcycleProduct]
+                    : [],
             importantPart: undefined,
             agreed: false,
         },

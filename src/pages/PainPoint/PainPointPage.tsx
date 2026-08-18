@@ -103,8 +103,9 @@ function PainPointPage() {
             );
             const diagnosis = await pollUntil({
                 load: () => getDiagnosisApi(taskId, controller.signal),
-                isComplete: (value) => value.status === "DIAGNOSED",
-                isFailed: (value) => value.status === "FAILED",
+                isComplete: (value) => value.diagnosisResult !== null,
+                isFailed: (value) =>
+                    value.status === "FAILED" && value.diagnosisResult === null,
                 getFailureMessage: (value) => value.errorMessage,
                 signal: controller.signal,
             });

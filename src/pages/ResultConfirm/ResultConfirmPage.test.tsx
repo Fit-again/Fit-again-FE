@@ -149,6 +149,53 @@ describe("ResultConfirmPage", () => {
         expect(screen.queryByText("AI 리폼 리포트")).not.toBeInTheDocument();
     });
 
+    it("업사이클링 상담은 동적 제품 목록과 중요 항목 하나를 전송한다", async () => {
+        useReformFlowStore.setState({
+            selectedSolution: "upcycle",
+            selectedUpcycleProduct: "미니 크로스백",
+        });
+        renderPage();
+        const user = userEvent.setup();
+
+        await user.click(
+            screen.getAllByRole("button", { name: "카드지갑" })[1]
+        );
+        await user.click(screen.getByLabelText("가벼운 무게"));
+        await user.click(screen.getByLabelText("실용적인 수납"));
+        await user.type(screen.getByLabelText(/^성명/), "홍길동");
+        await user.type(screen.getByLabelText(/^연락처/), "010-1234-5678");
+        await user.click(screen.getByLabelText(/개인정보 수집 및 이용에 동의/));
+        await user.click(screen.getByRole("button", { name: "상담 신청하기" }));
+
+        expect(createConsultationApi).toHaveBeenCalledWith(1, {
+            userName: "홍길동",
+            phoneNumber: "010-1234-5678",
+            desiredUpcyclingProducts: ["미니 크로스백", "카드지갑"],
+            importantAspect: "실용적인 수납",
+            additionalRequest: undefined,
+            privacyAgreed: true,
+        });
+    });
+
+    it("선택된 업사이클링 제품이 없으면 빈 제품명을 제출하지 않는다", async () => {
+        useReformFlowStore.setState({
+            selectedSolution: "upcycle",
+            selectedUpcycleProduct: "",
+        });
+        renderPage();
+        const user = userEvent.setup();
+
+        await user.type(screen.getByLabelText(/^성명/), "홍길동");
+        await user.type(screen.getByLabelText(/^연락처/), "010-1234-5678");
+        await user.click(screen.getByLabelText(/개인정보 수집 및 이용에 동의/));
+        await user.click(screen.getByRole("button", { name: "상담 신청하기" }));
+
+        expect(
+            screen.getByText("희망 업사이클링 제품을 선택해주세요")
+        ).toBeInTheDocument();
+        expect(createConsultationApi).not.toHaveBeenCalled();
+    });
+
     it("리셀 결과에서는 상담 절차와 다음 제품 추천을 보여준다", () => {
         useReformFlowStore.setState({ selectedSolution: "resell" });
         renderPage();

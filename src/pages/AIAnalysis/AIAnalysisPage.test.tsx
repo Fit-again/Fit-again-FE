@@ -210,4 +210,70 @@ describe("AIAnalysisPage", () => {
         expect(requestRecommendationApi).toHaveBeenCalledOnce();
         expect(getRecommendationApi).toHaveBeenCalledTimes(2);
     });
+
+    it("POST 충돌 후 추천 생성 중이면 조회를 이어간다", async () => {
+        vi.mocked(getRecommendationApi)
+            .mockResolvedValueOnce({ status: "DIAGNOSED", rankings: null })
+            .mockResolvedValueOnce({ status: "RECOMMENDING", rankings: null })
+            .mockResolvedValueOnce({
+                status: "RECOMMENDED",
+                rankings: recommendationRankingsFixture,
+            });
+        vi.mocked(requestRecommendationApi).mockRejectedValueOnce(
+            new Error("TASK400")
+        );
+        renderPage();
+        const user = userEvent.setup();
+
+        await user.click(
+            screen.getByRole("button", { name: "추천 결과 보기" })
+        );
+
+        expect(
+            await screen.findByRole("heading", {
+                name: "AI 추천 결과",
+                level: 1,
+            })
+        ).toBeInTheDocument();
+        expect(getRecommendationApi).toHaveBeenCalledTimes(3);
+    });
+
+    it("추천 완료 응답에 결과가 없으면 오류를 표시한다", async () => {
+        vi.mocked(getRecommendationApi).mockResolvedValue({
+            status: "RECOMMENDED",
+            rankings: null,
+        });
+        renderPage();
+        const user = userEvent.setup();
+
+        await user.click(
+            screen.getByRole("button", { name: "추천 결과 보기" })
+        );
+
+        expect(
+            await screen.findByText("AI 추천 결과를 확인할 수 없습니다.")
+        ).toBeInTheDocument();
+        expect(requestRecommendationApi).not.toHaveBeenCalled();
+    });
+
+    it("POST 실패 후에도 진단 상태라면 원래 서버 오류를 표시한다", async () => {
+        vi.mocked(getRecommendationApi).mockResolvedValue({
+            status: "DIAGNOSED",
+            rankings: null,
+        });
+        vi.mocked(requestRecommendationApi).mockRejectedValueOnce(
+            new Error("추천 요청을 처리할 수 없습니다.")
+        );
+        renderPage();
+        const user = userEvent.setup();
+
+        await user.click(
+            screen.getByRole("button", { name: "추천 결과 보기" })
+        );
+
+        expect(
+            await screen.findByText("추천 요청을 처리할 수 없습니다.")
+        ).toBeInTheDocument();
+        expect(getRecommendationApi).toHaveBeenCalledTimes(2);
+    });
 });

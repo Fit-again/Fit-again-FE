@@ -1,4 +1,10 @@
-export type DiagnosisStatus = "PENDING" | "DIAGNOSING" | "DIAGNOSED" | "FAILED";
+export type DiagnosisStatus =
+    | "PENDING"
+    | "DIAGNOSING"
+    | "DIAGNOSED"
+    | "RECOMMENDING"
+    | "RECOMMENDED"
+    | "FAILED";
 
 export type DiagnosisResult = {
     allImages: string[];
