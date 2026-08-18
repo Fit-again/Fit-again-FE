@@ -1,25 +1,17 @@
 import AnalysisPhotoCarousel from "@/components/analysis/AnalysisPhotoCarousel";
 import Card from "@/components/common/Card";
 import Tag from "@/components/common/Tag";
-import { MOCK_ANALYSIS } from "@/constants/analysis";
-import type { AnalysisPhoto } from "@/types/analysis";
+import type { AnalysisPhoto, DiagnosisResult } from "@/types/analysis";
 import type { ReactNode } from "react";
 
 type TagTone = "primary" | "danger" | "soft";
 
 type AnalysisResultProps = {
-    productTypeLabel: string;
-    painPointCauses: string[];
     photos: AnalysisPhoto[];
-    canInferUsagePurpose: boolean;
+    result: DiagnosisResult;
 };
 
-const AnalysisResult = ({
-    productTypeLabel,
-    painPointCauses,
-    photos,
-    canInferUsagePurpose,
-}: AnalysisResultProps) => (
+const AnalysisResult = ({ photos, result }: AnalysisResultProps) => (
     <div className="grid gap-10 lg:grid-cols-2">
         <section>
             <AnalysisPhotoCarousel photos={photos} />
@@ -41,20 +33,17 @@ const AnalysisResult = ({
                     <dl>
                         <InfoRow label="제품 유형">
                             <span className="text-[18px]">
-                                {productTypeLabel}
+                                {result.productType}
                             </span>
                         </InfoRow>
                         <InfoRow label="외부 구조">
                             <TagList
                                 tone="primary"
-                                items={MOCK_ANALYSIS.externalStructure}
+                                items={result.externalStructure}
                             />
                         </InfoRow>
                         <InfoRow label="손상 상태">
-                            <TagList
-                                tone="danger"
-                                items={MOCK_ANALYSIS.damageStatus}
-                            />
+                            <TagList tone="danger" items={result.damageState} />
                         </InfoRow>
                     </dl>
                 </Card>
@@ -68,17 +57,15 @@ const AnalysisResult = ({
                     <dl>
                         <InfoRow label="현재 사용 목적">
                             <span
-                                className={`text-[18px] ${canInferUsagePurpose ? "" : "text-danger font-medium"}`}
+                                className={`text-[18px] ${result.currentPurpose === "확인할 수 없음" ? "text-danger font-medium" : ""}`}
                             >
-                                {canInferUsagePurpose
-                                    ? MOCK_ANALYSIS.usagePurpose
-                                    : "확인할 수 없음"}
+                                {result.currentPurpose}
                             </span>
                         </InfoRow>
                         <InfoRow label="주요 불편 원인">
-                            {painPointCauses.length > 0 ? (
+                            {result.mainInconvenience.length > 0 ? (
                                 <ul className="text-[18px]">
-                                    {painPointCauses.map((cause) => (
+                                    {result.mainInconvenience.map((cause) => (
                                         <li key={cause}>- {cause}</li>
                                     ))}
                                 </ul>
@@ -91,7 +78,7 @@ const AnalysisResult = ({
                         <InfoRow label="개선 필요 부분">
                             <TagList
                                 tone="soft"
-                                items={MOCK_ANALYSIS.improvementSuggestions}
+                                items={result.areasForImprovement}
                             />
                         </InfoRow>
                     </dl>

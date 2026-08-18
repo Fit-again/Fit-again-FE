@@ -2,11 +2,17 @@ import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { MemoryRouter, Route, Routes } from "react-router-dom";
 import { beforeEach, describe, expect, it, vi } from "vitest";
+import { createConsultationApi } from "@/api/consultationApi";
 import HomePage from "@/pages/Home/HomePage";
 import ReformSimulationPage from "@/pages/ReformSimulation/ReformSimulationPage";
 import ResultConfirmPage from "@/pages/ResultConfirm/ResultConfirmPage";
 import { ROUTES } from "@/routes/paths";
 import { useReformFlowStore } from "@/stores/useReformFlowStore";
+import { seedApiFlowStore } from "@/test/apiFixtures";
+
+vi.mock("@/api/consultationApi", () => ({
+    createConsultationApi: vi.fn(),
+}));
 
 vi.mock("html2canvas-pro", () => ({
     default: vi.fn().mockResolvedValue({
@@ -49,6 +55,10 @@ const renderPage = () =>
 describe("ResultConfirmPage", () => {
     beforeEach(() => {
         useReformFlowStore.getState().resetFlow();
+        useReformFlowStore.setState(seedApiFlowStore());
+        vi.mocked(createConsultationApi).mockResolvedValue({
+            consultationId: 1,
+        });
     });
 
     it("AI 리폼 리포트와 공식 상담 신청 폼을 보여준다", () => {
@@ -98,8 +108,18 @@ describe("ResultConfirmPage", () => {
         await user.click(screen.getByRole("button", { name: "상담 신청하기" }));
 
         expect(
-            screen.getByRole("dialog", { name: "공식 상담 신청 완료" })
+            await screen.findByRole("dialog", {
+                name: "공식 상담 신청 완료",
+            })
         ).toBeInTheDocument();
+        expect(createConsultationApi).toHaveBeenCalledWith(
+            1,
+            expect.objectContaining({
+                userName: "홍길동",
+                phoneNumber: "010-1234-5678",
+                privacyAgreed: true,
+            })
+        );
     });
 
     it("개인정보 수집 및 이용 내용을 모달로 보여준다", async () => {
@@ -117,7 +137,7 @@ describe("ResultConfirmPage", () => {
     it("업사이클링 결과와 업사이클링 상담 항목을 보여준다", () => {
         useReformFlowStore.setState({
             selectedSolution: "upcycle",
-            selectedUpcycleProduct: "mini-crossbag",
+            selectedUpcycleProduct: "미니 크로스백",
         });
         renderPage();
 

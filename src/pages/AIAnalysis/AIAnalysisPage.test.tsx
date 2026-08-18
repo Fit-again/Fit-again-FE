@@ -1,25 +1,26 @@
-import { act, fireEvent, render, screen } from "@testing-library/react";
+import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { MemoryRouter, Route, Routes } from "react-router-dom";
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
+import {
+    getRecommendationApi,
+    requestRecommendationApi,
+} from "@/api/recommendationApi";
 import AIAnalysisPage from "@/pages/AIAnalysis/AIAnalysisPage";
 import PainPointPage from "@/pages/PainPoint/PainPointPage";
 import SolutionRecommendPage from "@/pages/SolutionRecommend/SolutionRecommendPage";
 import { ROUTES } from "@/routes/paths";
 import { useReformFlowStore } from "@/stores/useReformFlowStore";
+import {
+    diagnosisFixture,
+    recommendationRankingsFixture,
+    seedApiFlowStore,
+} from "@/test/apiFixtures";
 
-const createImageFile = (name = "photo.png") =>
-    new File(["dummy"], name, { type: "image/png" });
-
-const seedReformFlowStore = () => {
-    useReformFlowStore.setState({
-        productType: "shoulder",
-        frontPhoto: createImageFile("front.png"),
-        wearPhotos: [createImageFile("wear-1.png")],
-        painPointKeywordIds: ["shoulder-pain", "strap-slip"],
-        description: "스트랩이 자주 흘러내려요.",
-    });
-};
+vi.mock("@/api/recommendationApi", () => ({
+    requestRecommendationApi: vi.fn(),
+    getRecommendationApi: vi.fn(),
+}));
 
 const renderPage = () =>
     render(
@@ -37,11 +38,16 @@ const renderPage = () =>
 
 describe("AIAnalysisPage", () => {
     beforeEach(() => {
-        seedReformFlowStore();
-    });
-
-    afterEach(() => {
-        vi.useRealTimers();
+        useReformFlowStore.getState().resetFlow();
+        useReformFlowStore.setState({
+            ...seedApiFlowStore(),
+            recommendationRankings: [],
+        });
+        vi.mocked(requestRecommendationApi).mockResolvedValue({ taskId: 1 });
+        vi.mocked(getRecommendationApi).mockResolvedValue({
+            status: "RECOMMENDED",
+            rankings: recommendationRankingsFixture,
+        });
     });
 
     it("이전 단계 입력을 반영한 분석 결과를 보여준다", () => {
@@ -68,7 +74,12 @@ describe("AIAnalysisPage", () => {
     });
 
     it("사용 목적을 추론할 수 없으면 오류 문구와 사진 슬라이드를 보여준다", () => {
-        useReformFlowStore.setState({ description: "" });
+        useReformFlowStore.setState({
+            diagnosisResult: {
+                ...diagnosisFixture,
+                currentPurpose: "확인할 수 없음",
+            },
+        });
         renderPage();
 
         expect(screen.getByText("확인할 수 없음")).toBeInTheDocument();
@@ -89,18 +100,23 @@ describe("AIAnalysisPage", () => {
     });
 
     it("추천 결과 보기를 누르면 추천 화면으로 이동한다", async () => {
-        vi.useFakeTimers();
         renderPage();
-        fireEvent.click(screen.getByRole("button", { name: "추천 결과 보기" }));
+        const user = userEvent.setup();
+        await user.click(
+            screen.getByRole("button", { name: "추천 결과 보기" })
+        );
 
-        expect(screen.getByText("AI 추천 결과 로딩 중")).toBeInTheDocument();
-
-        await act(async () => {
-            await vi.advanceTimersByTimeAsync(1200);
-        });
-
-        expect(
-            screen.getByRole("heading", { name: "AI 추천 결과", level: 1 })
-        ).toBeInTheDocument();
+        await waitFor(() =>
+            expect(
+                screen.getByRole("heading", {
+                    name: "AI 추천 결과",
+                    level: 1,
+                })
+            ).toBeInTheDocument()
+        );
+        expect(requestRecommendationApi).toHaveBeenCalledWith(
+            1,
+            expect.any(AbortSignal)
+        );
     });
 });

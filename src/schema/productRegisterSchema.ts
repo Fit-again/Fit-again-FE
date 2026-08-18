@@ -10,6 +10,7 @@ import z from "zod";
 
 export const DETAIL_PHOTO_MAX = 4;
 export const WEAR_PHOTO_MAX = 5;
+export const IMAGE_FILE_SIZE_MAX = 20 * 1024 * 1024;
 
 const imageFileSchema = z
     .custom<File>((value) => value instanceof File, {
@@ -17,7 +18,22 @@ const imageFileSchema = z
     })
     .refine((file) => file instanceof File && file.type.startsWith("image/"), {
         message: "올바른 제품이 아닙니다",
-    });
+    })
+    .refine(
+        (file) => file instanceof File && file.size <= IMAGE_FILE_SIZE_MAX,
+        {
+            message: "사진은 장당 20MB 이하로 업로드해주세요",
+        }
+    );
+
+const optionalImageFilesSchema = z.array(
+    z
+        .instanceof(File)
+        .refine((file) => file.type.startsWith("image/"))
+        .refine((file) => file.size <= IMAGE_FILE_SIZE_MAX, {
+            message: "사진은 장당 20MB 이하로 업로드해주세요",
+        })
+);
 
 export const productRegisterSchema = z.object({
     productType: z.custom<ProductType>(
@@ -25,8 +41,8 @@ export const productRegisterSchema = z.object({
         { error: "제품 유형을 선택해주세요" }
     ),
     frontPhoto: imageFileSchema,
-    detailPhotos: z.array(z.instanceof(File)).max(DETAIL_PHOTO_MAX),
-    wearPhotos: z.array(z.instanceof(File)).max(WEAR_PHOTO_MAX),
+    detailPhotos: optionalImageFilesSchema.max(DETAIL_PHOTO_MAX),
+    wearPhotos: optionalImageFilesSchema.max(WEAR_PHOTO_MAX),
 });
 
 export type ProductRegisterFormType = z.infer<typeof productRegisterSchema>;

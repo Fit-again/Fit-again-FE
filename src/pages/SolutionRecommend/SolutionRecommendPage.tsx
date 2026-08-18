@@ -9,6 +9,7 @@ import {
 import { useTransitionNavigation } from "@/hooks/useTransitionNavigation";
 import { ROUTES } from "@/routes/paths";
 import { useReformFlowStore } from "@/stores/useReformFlowStore";
+import { toRecommendationType } from "@/types/recommendation";
 import { useNavigate } from "react-router-dom";
 
 function SolutionRecommendPage() {
@@ -35,6 +36,15 @@ function SolutionRecommendPage() {
     const { isTransitioning, startTransition } =
         useTransitionNavigation(previewRoute);
     const frontPhoto = useReformFlowStore((state) => state.frontPhoto);
+    const recommendationRankings = useReformFlowStore(
+        (state) => state.recommendationRankings
+    );
+    const recommendation = recommendationRankings.find(
+        (item) =>
+            item.recommendationType === toRecommendationType(selectedSolution)
+    );
+
+    if (!recommendation) return null;
 
     return (
         <>
@@ -56,6 +66,7 @@ function SolutionRecommendPage() {
             >
                 <RecommendationResult
                     frontPhoto={frontPhoto}
+                    recommendation={recommendation}
                     recommendedSolution={recommendedSolution}
                     selectedSolution={selectedSolution}
                     onSelectSolution={setSelectedSolution}

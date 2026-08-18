@@ -6,7 +6,9 @@ const AnalysisPhotoCarousel = ({ photos }: { photos: AnalysisPhoto[] }) => {
     const [index, setIndex] = useState(0);
     const currentIndex = Math.min(index, Math.max(photos.length - 1, 0));
     const current = photos[currentIndex];
-    const imgRef = useObjectUrlImage(current?.file ?? null);
+    const imgRef = useObjectUrlImage(
+        current?.file instanceof File ? current.file : null
+    );
 
     if (!current) {
         return (
@@ -25,6 +27,11 @@ const AnalysisPhotoCarousel = ({ photos }: { photos: AnalysisPhoto[] }) => {
             <div className="border-line bg-ground relative aspect-square overflow-hidden rounded-[5px] border">
                 <img
                     ref={imgRef}
+                    src={
+                        typeof current.file === "string"
+                            ? current.file
+                            : undefined
+                    }
                     alt={current.label}
                     className="h-full w-full object-contain"
                 />

@@ -12,15 +12,18 @@ import {
     UPCYCLE_IMPORTANT_PARTS,
     type ConsultationFormType,
 } from "@/schema/consultationSchema";
-import type { SolutionType, UpcycleProductType } from "@/types/recommendation";
+import type { SolutionType } from "@/types/recommendation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Controller, useForm, useWatch } from "react-hook-form";
 
 type ConsultationFormCardProps = {
     onViewAgreement: () => void;
-    onSubmit: (values: ConsultationFormType) => void;
+    onSubmit: (values: ConsultationFormType) => void | Promise<void>;
     solutionType: SolutionType;
-    selectedUpcycleProduct: UpcycleProductType;
+    selectedUpcycleProduct: string;
+    upcycleProductOptions: string[];
+    submitting?: boolean;
+    submitError?: string | null;
 };
 
 const ConsultationFormCard = ({
@@ -28,6 +31,9 @@ const ConsultationFormCard = ({
     onSubmit,
     solutionType,
     selectedUpcycleProduct,
+    upcycleProductOptions,
+    submitting = false,
+    submitError,
 }: ConsultationFormCardProps) => {
     const {
         control,
@@ -42,13 +48,13 @@ const ConsultationFormCard = ({
             message: "",
             upcycleProducts:
                 solutionType === "upcycle" ? [selectedUpcycleProduct] : [],
-            importantParts: [],
+            importantPart: undefined,
             agreed: false,
         },
     });
-    const [upcycleProducts, importantParts] = useWatch({
+    const [upcycleProducts, importantPart] = useWatch({
         control,
-        name: ["upcycleProducts", "importantParts"],
+        name: ["upcycleProducts", "importantPart"],
     });
     const messageLabel =
         solutionType === "resell" ? "문의사항" : "추가 요청사항";
@@ -125,15 +131,15 @@ const ConsultationFormCard = ({
                                         )}
                                     </legend>
                                     <div className="mt-2 flex flex-wrap gap-3">
-                                        {UPCYCLE_PRODUCT_OPTIONS.map(
-                                            ({ id, label }) => {
+                                        {upcycleProductOptions.map(
+                                            (product) => {
                                                 const selected =
                                                     upcycleProducts.includes(
-                                                        id
+                                                        product
                                                     );
                                                 return (
                                                     <button
-                                                        key={id}
+                                                        key={product}
                                                         type="button"
                                                         className={`min-h-10 rounded-[5px] border px-4 text-[15px] ${selected ? "border-primary bg-secondary text-primary font-medium" : "border-line text-text-secondary bg-white"}`}
                                                         aria-pressed={selected}
@@ -145,16 +151,16 @@ const ConsultationFormCard = ({
                                                                               item
                                                                           ) =>
                                                                               item !==
-                                                                              id
+                                                                              product
                                                                       )
                                                                     : [
                                                                           ...upcycleProducts,
-                                                                          id,
+                                                                          product,
                                                                       ]
                                                             )
                                                         }
                                                     >
-                                                        {label}
+                                                        {product}
                                                     </button>
                                                 );
                                             }
@@ -166,7 +172,7 @@ const ConsultationFormCard = ({
 
                         <Controller
                             control={control}
-                            name="importantParts"
+                            name="importantPart"
                             render={({ field }) => (
                                 <fieldset>
                                     <legend className="text-[18px] font-medium">
@@ -181,23 +187,12 @@ const ConsultationFormCard = ({
                                                 key={part}
                                                 id={`important-${part}`}
                                                 label={part}
-                                                checked={importantParts.includes(
-                                                    part
-                                                )}
+                                                checked={importantPart === part}
                                                 onChange={() =>
                                                     field.onChange(
-                                                        importantParts.includes(
-                                                            part
-                                                        )
-                                                            ? importantParts.filter(
-                                                                  (item) =>
-                                                                      item !==
-                                                                      part
-                                                              )
-                                                            : [
-                                                                  ...importantParts,
-                                                                  part,
-                                                              ]
+                                                        importantPart === part
+                                                            ? undefined
+                                                            : part
                                                     )
                                                 }
                                             />
@@ -261,22 +256,23 @@ const ConsultationFormCard = ({
                 </div>
 
                 <div>
-                    <Button type="submit" variant="soft" fullWidth>
-                        상담 신청하기
+                    {submitError && (
+                        <div className="mb-2">
+                            <ErrorMessage>{submitError}</ErrorMessage>
+                        </div>
+                    )}
+                    <Button
+                        type="submit"
+                        variant="soft"
+                        fullWidth
+                        disabled={submitting}
+                    >
+                        {submitting ? "신청 중..." : "상담 신청하기"}
                     </Button>
                 </div>
             </form>
         </Card>
     );
 };
-
-const UPCYCLE_PRODUCT_OPTIONS: Array<{
-    id: UpcycleProductType;
-    label: string;
-}> = [
-    { id: "mini-crossbag", label: "미니 크로스백" },
-    { id: "card-wallet", label: "카드지갑" },
-    { id: "pouch", label: "파우치" },
-];
 
 export default ConsultationFormCard;

@@ -124,8 +124,6 @@ describe("App 라우팅", () => {
         expect(useReformFlowStore.getState().detailPhotos).toEqual([]);
         expect(useReformFlowStore.getState().painPointKeywordIds).toEqual([]);
         expect(useReformFlowStore.getState().selectedSolution).toBe("reform");
-        expect(useReformFlowStore.getState().selectedUpcycleProduct).toBe(
-            "mini-crossbag"
-        );
+        expect(useReformFlowStore.getState().selectedUpcycleProduct).toBe("");
     });
 });

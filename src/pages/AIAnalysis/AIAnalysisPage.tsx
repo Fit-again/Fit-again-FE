@@ -1,44 +1,81 @@
+import {
+    getRecommendationApi,
+    requestRecommendationApi,
+} from "@/api/recommendationApi";
 import AnalysisResult from "@/components/analysis/AnalysisResult";
+import { ErrorMessage } from "@/components/common/form/FormControls";
 import PageActions from "@/components/common/PageActions";
 import PageLayout from "@/components/common/PageLayout";
 import TransitionLoadingOverlay from "@/components/common/TransitionLoadingOverlay";
-import { PAIN_POINT_CAUSE_TEXT } from "@/constants/painPointKeywords";
-import { PRODUCT_TYPES } from "@/constants/productTypes";
-import { useTransitionNavigation } from "@/hooks/useTransitionNavigation";
 import { ROUTES } from "@/routes/paths";
 import { useReformFlowStore } from "@/stores/useReformFlowStore";
+import { ApiError } from "@/types/api";
 import type { AnalysisPhoto } from "@/types/analysis";
+import { getApiErrorMessage } from "@/utils/apiError";
+import { pollUntil } from "@/utils/polling";
+import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 function AIAnalysisPage() {
     const navigate = useNavigate();
-    const { isTransitioning, startTransition } = useTransitionNavigation(
-        ROUTES.solutionRecommend
+    const [isTransitioning, setIsTransitioning] = useState(false);
+    const [requestError, setRequestError] = useState<string | null>(null);
+    const abortControllerRef = useRef<AbortController | null>(null);
+    const taskId = useReformFlowStore((state) => state.taskId);
+    const diagnosisResult = useReformFlowStore(
+        (state) => state.diagnosisResult
     );
-    const productType = useReformFlowStore((state) => state.productType);
-    const frontPhoto = useReformFlowStore((state) => state.frontPhoto);
-    const detailPhotos = useReformFlowStore((state) => state.detailPhotos);
-    const wearPhotos = useReformFlowStore((state) => state.wearPhotos);
-    const painPointKeywordIds = useReformFlowStore(
-        (state) => state.painPointKeywordIds
+    const imageAnalysis = useReformFlowStore((state) => state.imageAnalysis);
+    const setRecommendationRankings = useReformFlowStore(
+        (state) => state.setRecommendationRankings
     );
-    const description = useReformFlowStore((state) => state.description);
-    const productTypeLabel =
-        PRODUCT_TYPES.find((type) => type.id === productType)?.label ?? "-";
-    const painPointCauses = painPointKeywordIds.map(
-        (id) => PAIN_POINT_CAUSE_TEXT[id] ?? id
-    );
-    const photos: AnalysisPhoto[] = [
-        ...(frontPhoto ? [{ file: frontPhoto, label: "정면 사진" }] : []),
-        ...detailPhotos.map((file, index) => ({
+    const photos: AnalysisPhoto[] =
+        diagnosisResult?.allImages.map((file, index) => ({
             file,
-            label: `디테일 사진 ${index + 1}`,
-        })),
-        ...wearPhotos.map((file, index) => ({
-            file,
-            label: `마모 부위 사진 ${index + 1}`,
-        })),
-    ];
+            label:
+                index === 0
+                    ? "정면 사진"
+                    : index <= (imageAnalysis?.detailImageUrls.length ?? 0)
+                      ? `디테일 사진 ${index}`
+                      : `마모 사진 ${index - (imageAnalysis?.detailImageUrls.length ?? 0)}`,
+        })) ?? [];
+
+    useEffect(
+        () => () => {
+            abortControllerRef.current?.abort();
+        },
+        []
+    );
+
+    const handleRecommendation = async () => {
+        if (!taskId || isTransitioning) return;
+
+        setRequestError(null);
+        setIsTransitioning(true);
+        const controller = new AbortController();
+        abortControllerRef.current = controller;
+
+        try {
+            await requestRecommendationApi(taskId, controller.signal);
+            const result = await pollUntil({
+                load: () => getRecommendationApi(taskId, controller.signal),
+                isComplete: (value) => value.status === "RECOMMENDED",
+                isFailed: (value) => value.status === "FAILED",
+                signal: controller.signal,
+            });
+            if (!result.rankings?.length) {
+                throw new ApiError("AI 추천 결과를 확인할 수 없습니다.");
+            }
+            setRecommendationRankings(result.rankings);
+            navigate(ROUTES.solutionRecommend);
+        } catch (error) {
+            if (controller.signal.aborted) return;
+            setRequestError(getApiErrorMessage(error));
+            setIsTransitioning(false);
+        }
+    };
+
+    if (!diagnosisResult) return null;
 
     return (
         <>
@@ -50,17 +87,17 @@ function AIAnalysisPage() {
                     <PageActions
                         nextLabel="추천 결과 보기"
                         onPrevious={() => navigate(ROUTES.painPoint)}
-                        onNext={startTransition}
+                        onNext={() => void handleRecommendation()}
                         nextDisabled={isTransitioning}
                     />
                 }
             >
-                <AnalysisResult
-                    productTypeLabel={productTypeLabel}
-                    painPointCauses={painPointCauses}
-                    photos={photos}
-                    canInferUsagePurpose={description.trim().length > 0}
-                />
+                {requestError && (
+                    <div className="mb-5">
+                        <ErrorMessage>{requestError}</ErrorMessage>
+                    </div>
+                )}
+                <AnalysisResult photos={photos} result={diagnosisResult} />
             </PageLayout>
             {isTransitioning && (
                 <TransitionLoadingOverlay title="AI 추천 결과 로딩 중" />

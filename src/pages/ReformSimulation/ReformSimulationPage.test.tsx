@@ -1,15 +1,13 @@
 import { act, fireEvent, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { MemoryRouter, Route, Routes } from "react-router-dom";
-import { afterEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import ReformSimulationPage from "@/pages/ReformSimulation/ReformSimulationPage";
 import ResultConfirmPage from "@/pages/ResultConfirm/ResultConfirmPage";
 import SolutionRecommendPage from "@/pages/SolutionRecommend/SolutionRecommendPage";
 import { ROUTES } from "@/routes/paths";
 import { useReformFlowStore } from "@/stores/useReformFlowStore";
-
-const createImageFile = (name = "front.png") =>
-    new File(["dummy"], name, { type: "image/png" });
+import { seedApiFlowStore } from "@/test/apiFixtures";
 
 const renderPage = () =>
     render(
@@ -32,20 +30,17 @@ const renderPage = () =>
     );
 
 describe("ReformSimulationPage", () => {
+    beforeEach(() => {
+        useReformFlowStore.getState().resetFlow();
+        useReformFlowStore.setState(seedApiFlowStore());
+    });
+
     afterEach(() => {
         vi.useRealTimers();
-        useReformFlowStore.setState({
-            frontPhoto: null,
-            wearPhotos: [],
-            painPointKeywordIds: [],
-        });
+        useReformFlowStore.getState().resetFlow();
     });
 
     it("단계별 결과와 Before/After 비교를 보여준다", () => {
-        useReformFlowStore.setState({
-            frontPhoto: createImageFile(),
-            painPointKeywordIds: ["strap-slip", "shoulder-pain"],
-        });
         renderPage();
 
         expect(
@@ -61,12 +56,10 @@ describe("ReformSimulationPage", () => {
         ).toBeInTheDocument();
     });
 
-    it("불편 키워드가 없으면 기본 Before/After 문구를 보여준다", () => {
+    it("서버가 제공한 Before/After 문구를 보여준다", () => {
         renderPage();
 
-        expect(
-            screen.getByText("모서리 마모로 외관이 손상됨")
-        ).toBeInTheDocument();
+        expect(screen.getByText("모서리 마모")).toBeInTheDocument();
         expect(
             screen.getByText("기존 디자인을 유지하면서 사용성 향상")
         ).toBeInTheDocument();
