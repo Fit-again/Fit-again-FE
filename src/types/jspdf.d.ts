@@ -19,7 +19,9 @@ declare module "jspdf" {
             x: number,
             y: number,
             width: number,
-            height: number
+            height: number,
+            alias?: string,
+            compression?: "NONE" | "FAST" | "MEDIUM" | "SLOW"
         ) => void;
         addPage: () => void;
         save: (fileName: string) => void;

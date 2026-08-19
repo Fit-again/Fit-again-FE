@@ -38,7 +38,10 @@ const ResultReportCard = ({
                 </p>
             </div>
 
-            <div className="mt-6 grid flex-1 gap-6 sm:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)]">
+            <div
+                className="mt-6 grid flex-1 gap-6 sm:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)]"
+                data-pdf-layout="content"
+            >
                 <div className="flex flex-col items-start justify-center">
                     <h3 className="text-primary text-[16px] font-bold">
                         최종 리폼 결과

@@ -9,6 +9,13 @@ import ResultConfirmPage from "@/pages/ResultConfirm/ResultConfirmPage";
 import { ROUTES } from "@/routes/paths";
 import { useReformFlowStore } from "@/stores/useReformFlowStore";
 import { seedApiFlowStore } from "@/test/apiFixtures";
+import html2canvas from "html2canvas-pro";
+import jsPDF from "jspdf";
+
+const { canvasToDataUrlMock, pdfSaveMock } = vi.hoisted(() => ({
+    canvasToDataUrlMock: vi.fn(() => "data:image/jpeg;base64,mock"),
+    pdfSaveMock: vi.fn(),
+}));
 
 vi.mock("@/api/consultationApi", () => ({
     createConsultationApi: vi.fn(),
@@ -16,9 +23,9 @@ vi.mock("@/api/consultationApi", () => ({
 
 vi.mock("html2canvas-pro", () => ({
     default: vi.fn().mockResolvedValue({
-        width: 800,
-        height: 600,
-        toDataURL: () => "data:image/png;base64,mock",
+        width: 2_240,
+        height: 1_300,
+        toDataURL: canvasToDataUrlMock,
     }),
 }));
 
@@ -30,7 +37,7 @@ vi.mock("jspdf", () => ({
             },
             addImage: vi.fn(),
             addPage: vi.fn(),
-            save: vi.fn(),
+            save: pdfSaveMock,
         };
     }),
 }));
@@ -213,6 +220,12 @@ describe("ResultConfirmPage", () => {
 
     it("리포트 저장 버튼을 누르면 PDF를 생성하고 저장 완료 메시지를 보여준다", async () => {
         const user = userEvent.setup();
+        const completeSpy = vi
+            .spyOn(HTMLImageElement.prototype, "complete", "get")
+            .mockReturnValue(true);
+        const naturalWidthSpy = vi
+            .spyOn(HTMLImageElement.prototype, "naturalWidth", "get")
+            .mockReturnValue(800);
         renderPage();
 
         await user.click(
@@ -222,6 +235,57 @@ describe("ResultConfirmPage", () => {
         expect(
             await screen.findByText("PDF로 저장되었습니다.")
         ).toBeInTheDocument();
+        expect(html2canvas).toHaveBeenCalledWith(
+            expect.any(HTMLElement),
+            expect.objectContaining({
+                allowTaint: false,
+                scale: 2,
+                useCORS: true,
+                windowWidth: 1_120,
+            })
+        );
+        expect(canvasToDataUrlMock).toHaveBeenCalledWith("image/jpeg", 0.9);
+        expect(jsPDF).toHaveBeenCalledWith(
+            expect.objectContaining({ orientation: "landscape" })
+        );
+        expect(pdfSaveMock).toHaveBeenCalledWith("AI-리폼-리포트.pdf");
+        expect(
+            document.querySelector('[data-pdf-export-clone="true"]')
+        ).not.toBeInTheDocument();
+
+        completeSpy.mockRestore();
+        naturalWidthSpy.mockRestore();
+    });
+
+    it("리포트 이미지를 불러오지 못하면 저장 성공으로 표시하지 않는다", async () => {
+        const user = userEvent.setup();
+        const completeSpy = vi
+            .spyOn(HTMLImageElement.prototype, "complete", "get")
+            .mockReturnValue(true);
+        const naturalWidthSpy = vi
+            .spyOn(HTMLImageElement.prototype, "naturalWidth", "get")
+            .mockReturnValue(0);
+        renderPage();
+
+        await user.click(
+            screen.getByRole("button", { name: "AI 리폼 리포트 저장" })
+        );
+
+        expect(
+            await screen.findByText(
+                "리포트를 저장하지 못했습니다. 다시 시도해주세요."
+            )
+        ).toBeInTheDocument();
+        expect(
+            screen.queryByText("PDF로 저장되었습니다.")
+        ).not.toBeInTheDocument();
+        expect(pdfSaveMock).not.toHaveBeenCalled();
+        expect(
+            document.querySelector('[data-pdf-export-clone="true"]')
+        ).not.toBeInTheDocument();
+
+        completeSpy.mockRestore();
+        naturalWidthSpy.mockRestore();
     });
 
     it("홈으로 버튼을 누르면 홈 화면으로 이동한다", async () => {

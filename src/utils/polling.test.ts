@@ -1,6 +1,9 @@
 import { ApiError } from "@/types/api";
 import {
-    POLLING_INTERVAL_MS,
+    getPollingIntervalMs,
+    POLLING_FAST_INTERVAL_MS,
+    POLLING_NORMAL_INTERVAL_MS,
+    POLLING_SLOW_INTERVAL_MS,
     POLLING_TIMEOUT_MS,
     pollUntil,
 } from "@/utils/polling";
@@ -9,8 +12,12 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 afterEach(() => vi.useRealTimers());
 
 describe("pollUntil", () => {
-    it("2초 간격과 최대 3분 정책을 사용한다", () => {
-        expect(POLLING_INTERVAL_MS).toBe(2_000);
+    it("경과 시간에 따라 2초, 5초, 10초 간격을 사용한다", () => {
+        expect(getPollingIntervalMs(0)).toBe(POLLING_FAST_INTERVAL_MS);
+        expect(getPollingIntervalMs(19_999)).toBe(POLLING_FAST_INTERVAL_MS);
+        expect(getPollingIntervalMs(20_000)).toBe(POLLING_NORMAL_INTERVAL_MS);
+        expect(getPollingIntervalMs(59_999)).toBe(POLLING_NORMAL_INTERVAL_MS);
+        expect(getPollingIntervalMs(60_000)).toBe(POLLING_SLOW_INTERVAL_MS);
         expect(POLLING_TIMEOUT_MS).toBe(180_000);
     });
 
@@ -57,9 +64,7 @@ describe("pollUntil", () => {
         await vi.advanceTimersByTimeAsync(POLLING_TIMEOUT_MS);
 
         await assertion;
-        expect(load).toHaveBeenCalledTimes(
-            POLLING_TIMEOUT_MS / POLLING_INTERVAL_MS
-        );
+        expect(load).toHaveBeenCalledTimes(30);
     });
 
     it("대기 중 취소되면 다음 조회 없이 AbortError를 전달한다", async () => {
