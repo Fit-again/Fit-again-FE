@@ -4,7 +4,7 @@ import PageLayout from "@/components/common/PageLayout";
 import { ROUTES } from "@/routes/paths";
 import { useReformFlowStore } from "@/stores/useReformFlowStore";
 import type { UpcyclingCandidate } from "@/types/recommendation";
-import { useNavigate } from "react-router-dom";
+import { Navigate, useNavigate } from "react-router-dom";
 
 function UpcyclePreviewPage() {
     const navigate = useNavigate();
@@ -27,7 +27,9 @@ function UpcyclePreviewPage() {
         products.find((product) => product.itemName === selectedProductId) ??
         products[0];
 
-    if (!selectedProduct) return null;
+    if (!selectedProduct) {
+        return <Navigate to={ROUTES.solutionRecommend} replace />;
+    }
 
     return (
         <PageLayout

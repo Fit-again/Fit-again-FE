@@ -9,10 +9,17 @@ import { useReformFlowStore } from "@/stores/useReformFlowStore";
 import type { ReactNode } from "react";
 import { Navigate } from "react-router-dom";
 
-type FlowRequirement = "product" | "painPoint";
+export type ReformFlowRequirement =
+    | "product"
+    | "painPoint"
+    | "diagnosis"
+    | "recommendation"
+    | "reformSimulation"
+    | "resellPreview"
+    | "upcyclePreview";
 
 type ReformFlowRouteProps = {
-    requirement: FlowRequirement;
+    requirement: ReformFlowRequirement;
     children: ReactNode;
 };
 
@@ -22,14 +29,77 @@ const ReformFlowRoute = ({ requirement, children }: ReformFlowRouteProps) => {
     const painPointKeywordIds = useReformFlowStore(
         (state) => state.painPointKeywordIds
     );
+    const diagnosisResult = useReformFlowStore(
+        (state) => state.diagnosisResult
+    );
+    const recommendationRankings = useReformFlowStore(
+        (state) => state.recommendationRankings
+    );
+    const selectedUpcycleProduct = useReformFlowStore(
+        (state) => state.selectedUpcycleProduct
+    );
     const hasProductInfo = productType !== null && frontPhoto !== null;
+    const reformRecommendation = recommendationRankings.find(
+        (item) => item.recommendationType === "REFORM"
+    );
+    const resellRecommendation = recommendationRankings.find(
+        (item) => item.recommendationType === "RESELL"
+    );
+    const upcycleRecommendation = recommendationRankings.find(
+        (item) => item.recommendationType === "UPCYCLING"
+    );
 
     if (!hasProductInfo) {
         return <Navigate to={ROUTES.productRegister} replace />;
     }
 
-    if (requirement === "painPoint" && painPointKeywordIds.length === 0) {
+    if (requirement !== "product" && painPointKeywordIds.length === 0) {
         return <Navigate to={ROUTES.painPoint} replace />;
+    }
+
+    if (
+        requirement !== "product" &&
+        requirement !== "painPoint" &&
+        diagnosisResult === null
+    ) {
+        return <Navigate to={ROUTES.painPoint} replace />;
+    }
+
+    if (
+        requirement !== "product" &&
+        requirement !== "painPoint" &&
+        requirement !== "diagnosis" &&
+        recommendationRankings.length === 0
+    ) {
+        return <Navigate to={ROUTES.aiAnalysis} replace />;
+    }
+
+    if (
+        requirement === "reformSimulation" &&
+        (reformRecommendation?.recommendationType !== "REFORM" ||
+            !reformRecommendation.simulation ||
+            reformRecommendation.simulation.steps.length < 4)
+    ) {
+        return <Navigate to={ROUTES.solutionRecommend} replace />;
+    }
+
+    if (
+        requirement === "resellPreview" &&
+        (resellRecommendation?.recommendationType !== "RESELL" ||
+            resellRecommendation.alternativeProducts.length === 0)
+    ) {
+        return <Navigate to={ROUTES.solutionRecommend} replace />;
+    }
+
+    if (
+        requirement === "upcyclePreview" &&
+        (upcycleRecommendation?.recommendationType !== "UPCYCLING" ||
+            upcycleRecommendation.upcyclingCandidates.length === 0 ||
+            !upcycleRecommendation.upcyclingCandidates.some(
+                (candidate) => candidate.itemName === selectedUpcycleProduct
+            ))
+    ) {
+        return <Navigate to={ROUTES.solutionRecommend} replace />;
     }
 
     return children;

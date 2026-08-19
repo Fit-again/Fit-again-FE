@@ -13,7 +13,7 @@ import { useTransitionNavigation } from "@/hooks/useTransitionNavigation";
 import { ROUTES } from "@/routes/paths";
 import { useReformFlowStore } from "@/stores/useReformFlowStore";
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Navigate, useNavigate } from "react-router-dom";
 
 function ReformSimulationPage() {
     const navigate = useNavigate();
@@ -41,7 +41,9 @@ function ReformSimulationPage() {
     const beforeBullets = simulation?.beforeAfter.before.points ?? [];
     const afterBullets = simulation?.beforeAfter.after.points ?? [];
 
-    if (!simulation || steps.length === 0) return null;
+    if (!simulation || steps.length < 4) {
+        return <Navigate to={ROUTES.solutionRecommend} replace />;
+    }
 
     return (
         <>
@@ -65,7 +67,6 @@ function ReformSimulationPage() {
                     </h2>
 
                     <div className="mt-5 flex flex-col lg:flex-row lg:items-stretch">
-                        {/* TODO: 백엔드 부위 인식 API 연동 시 교체 대상 부위 마커 재구현 */}
                         <StepCardShell
                             step={steps[0]}
                             onOpen={() => setOpenedStepIndex(0)}

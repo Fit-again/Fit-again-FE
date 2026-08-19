@@ -4,7 +4,8 @@ Fit Again Front-end 레포지토리입니다. Vite 기반의 React + TypeScript 
 
 ## 📍 프로젝트 현황
 
-현재 프론트엔드 개발 환경과 기본 화면 구성을 완료한 단계입니다.
+Fit Again v1.0.0 정식 배포 버전입니다. 사용자가 등록한 제품 사진과 불편
+정보를 AI가 분석하고, 리폼·리셀·업사이클링 활용 방법을 추천합니다.
 
 - React + Vite + TypeScript 개발 환경
 - React Hook Form + Zod 폼 검증 환경
@@ -19,8 +20,24 @@ Fit Again Front-end 레포지토리입니다. Vite 기반의 React + TypeScript 
 - Vercel Production 및 Preview 배포 환경
 - `@/` 절대 경로 별칭
 - 환경변수 기반 로컬 API 프록시
+- 이미지 분석·AI 추천 비동기 작업 및 단계별 폴링
+- 리폼 시뮬레이션, 리셀·업사이클링 미리보기
+- 공식 상담 신청 API 및 리폼 리포트 PDF 저장
+- Open Graph, 검색 엔진 메타데이터와 사이트맵
 
-라우팅과 상세 페이지 구성은 Fit Again 서비스 기획에 맞춰 추후 확정합니다.
+### 주요 사용자 흐름
+
+| 경로                  | 화면                             |
+| --------------------- | -------------------------------- |
+| `/`                   | 서비스 소개 및 시작              |
+| `/product-register`   | 제품 유형과 제품 사진 등록       |
+| `/pain-point`         | 불편 키워드와 추가 설명 입력     |
+| `/ai-analysis`        | AI 제품 분석 결과 및 추천 요청   |
+| `/solution-recommend` | 리폼·리셀·업사이클링 추천 결과   |
+| `/reform-simulation`  | 단계별 리폼 시뮬레이션           |
+| `/resell-preview`     | 리셀 미리보기                    |
+| `/upcycle-preview`    | 업사이클링 후보 미리보기         |
+| `/result-confirm`     | 최종 결과, PDF 저장 및 상담 신청 |
 
 ## 🛠️ 기술 스택
 
@@ -30,7 +47,6 @@ Fit Again Front-end 레포지토리입니다. Vite 기반의 React + TypeScript 
 - **Styling**: Tailwind CSS
 - **Forms**: react-hook-form, Zod, @hookform/resolvers
 - **HTTP Client**: axios
-- **Cookie**: js-cookie
 - **Testing**: Vitest, React Testing Library
 - **CI**: GitHub Actions
 - **Deployment**: Vercel
@@ -86,7 +102,9 @@ npm run preview
 - 클라이언트에서 사용할 환경변수 이름은 `VITE_`로 시작합니다.
 - `.env`와 실제 비밀 값은 Git에 커밋하지 않습니다.
 - `VITE_API_URL`에는 `/api` 경로를 제외한 백엔드 서버 Origin을 입력합니다.
-- `VITE_API_URL`이 설정되면 개발 서버의 `/api` 요청이 해당 백엔드 서버로 전달됩니다.
+- 로컬에서는 `VITE_API_URL`을 대상으로 Vite의 `/api` 프록시를 사용합니다.
+- 배포 환경에서는 Vercel의 `/api` rewrite 또는 `VITE_API_URL`을 통해 HTTPS
+  백엔드에 연결합니다.
 
 ## 💻 개발 환경 설정 (필수!)
 
@@ -127,6 +145,9 @@ CI는 다음 항목을 순서대로 검사합니다.
 
 Vercel을 통해 Production 및 Preview 환경을 배포합니다.
 
+- Production: <https://fit-again-fe.vercel.app>
+- API: <https://api.smu-likelion14th-be.shop>
+
 - `main` 브랜치는 Production 환경으로 배포합니다.
 - `develop`과 기능 브랜치는 Preview 환경으로 배포합니다.
 - Pull Request에서는 Vercel이 제공하는 Preview URL로 변경 사항을 확인합니다.
@@ -155,18 +176,17 @@ chore/[작업내용]: 설정 및 환경 구성 브랜치 (예: chore/setup-eslin
 ### 배포 및 릴리스 규칙
 
 1. 배포할 기능이 `develop`에서 검증되면 `develop`에서 `main`으로 릴리스 PR을 생성합니다.
-2. 릴리스 PR 제목은 `chore(release): Fit Again 프로토타입 v0.1.0 배포` 형식을 사용합니다.
+2. 릴리스 PR 제목은 `chore(release): Fit Again v1.0.0 배포` 형식을 사용합니다.
 3. 장기 브랜치의 커밋 관계를 유지하기 위해 `develop`에서 `main`으로 병합할 때는 **Create a merge commit**을 사용합니다.
-4. Production 배포가 완료되면 같은 버전으로 Git 태그를 생성합니다. (예: `v0.1.0`)
+4. Production 배포가 완료되면 같은 버전으로 Git 태그를 생성합니다. (예: `v1.0.0`)
 5. Vercel에서 `main`은 Production, `develop`과 기능 브랜치는 Preview 환경으로 배포합니다.
 
 ### 버전 규칙
 
 1. [Semantic Versioning](https://semver.org/)의 `MAJOR.MINOR.PATCH` 형식을 사용합니다.
-2. 정식 출시 전 개발 단계는 `0.x.x` 버전을 사용합니다.
-3. 최초 기능 프로토타입은 `v0.1.0`부터 시작합니다.
-4. 하위 호환 기능 추가는 MINOR, 버그 수정은 PATCH 버전을 올립니다.
-5. 시험 배포가 필요하면 `v0.2.0-beta.1`처럼 pre-release 식별자를 사용합니다.
+2. 최초 정식 배포 버전은 `v1.0.0`입니다.
+3. 하위 호환 기능 추가는 MINOR, 버그 수정은 PATCH 버전을 올립니다.
+4. 시험 배포가 필요하면 `v1.1.0-beta.1`처럼 pre-release 식별자를 사용합니다.
 
 ### 커밋 메시지 컨벤션
 

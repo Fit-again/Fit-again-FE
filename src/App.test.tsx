@@ -5,6 +5,12 @@ import { appRoutes } from "@/router";
 import { ROUTES } from "@/routes/paths";
 import { createMemoryRouter, RouterProvider } from "react-router-dom";
 import { useReformFlowStore } from "@/stores/useReformFlowStore";
+import {
+    diagnosisFixture,
+    recommendationRankingsFixture,
+    seedApiFlowStore,
+} from "@/test/apiFixtures";
+import type { RankedRecommendation } from "@/types/recommendation";
 
 const renderPath = (path: string) => {
     const router = createMemoryRouter(appRoutes, {
@@ -70,6 +76,84 @@ describe("App 라우팅", () => {
         expect(
             await screen.findByRole("heading", {
                 name: "불편 입력",
+                level: 1,
+            })
+        ).toBeInTheDocument();
+    });
+
+    it("진단 결과 없이 분석 단계에 접근하면 불편 입력으로 이동한다", async () => {
+        useReformFlowStore.setState({
+            productType: "tote",
+            frontPhoto: new File(["dummy"], "front.png", {
+                type: "image/png",
+            }),
+            painPointKeywordIds: ["heavy"],
+        });
+
+        renderPath(ROUTES.aiAnalysis);
+
+        expect(
+            await screen.findByRole("heading", {
+                name: "불편 입력",
+                level: 1,
+            })
+        ).toBeInTheDocument();
+    });
+
+    it("추천 결과 없이 추천 화면에 접근하면 분석 화면으로 이동한다", async () => {
+        useReformFlowStore.setState({
+            productType: "tote",
+            frontPhoto: new File(["dummy"], "front.png", {
+                type: "image/png",
+            }),
+            painPointKeywordIds: ["heavy"],
+            diagnosisResult: diagnosisFixture,
+        });
+
+        renderPath(ROUTES.solutionRecommend);
+
+        expect(
+            await screen.findByRole("heading", {
+                name: "AI 분석 결과",
+                level: 1,
+            })
+        ).toBeInTheDocument();
+    });
+
+    it("리폼 시뮬레이션 데이터가 없으면 추천 화면으로 이동한다", async () => {
+        const rankings =
+            recommendationRankingsFixture.map<RankedRecommendation>((item) =>
+                item.recommendationType === "REFORM"
+                    ? { ...item, simulation: null }
+                    : item
+            );
+        useReformFlowStore.setState({
+            ...seedApiFlowStore(),
+            recommendationRankings: rankings,
+        });
+
+        renderPath(ROUTES.reformSimulation);
+
+        expect(
+            await screen.findByRole("heading", {
+                name: "AI 추천 결과",
+                level: 1,
+            })
+        ).toBeInTheDocument();
+    });
+
+    it("선택한 업사이클링 후보가 없으면 추천 화면으로 이동한다", async () => {
+        useReformFlowStore.setState({
+            ...seedApiFlowStore(),
+            selectedSolution: "upcycle",
+            selectedUpcycleProduct: "존재하지 않는 후보",
+        });
+
+        renderPath(ROUTES.upcyclePreview);
+
+        expect(
+            await screen.findByRole("heading", {
+                name: "AI 추천 결과",
                 level: 1,
             })
         ).toBeInTheDocument();

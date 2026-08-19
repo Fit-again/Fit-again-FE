@@ -5,7 +5,7 @@ import Tag from "@/components/common/Tag";
 import { useObjectUrlImage } from "@/hooks/useObjectUrlImage";
 import { ROUTES } from "@/routes/paths";
 import { useReformFlowStore } from "@/stores/useReformFlowStore";
-import { useNavigate } from "react-router-dom";
+import { Navigate, useNavigate } from "react-router-dom";
 
 function ResellPreviewPage() {
     const navigate = useNavigate();
@@ -18,7 +18,7 @@ function ResellPreviewPage() {
     );
 
     if (!recommendation || recommendation.recommendationType !== "RESELL") {
-        return null;
+        return <Navigate to={ROUTES.solutionRecommend} replace />;
     }
 
     return (

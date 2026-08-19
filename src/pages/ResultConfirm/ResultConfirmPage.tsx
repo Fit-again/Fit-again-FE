@@ -13,7 +13,7 @@ import { toRecommendationType } from "@/types/recommendation";
 import { getApiErrorMessage } from "@/utils/apiError";
 import { downloadReportPdf } from "@/utils/downloadReportPdf";
 import { useRef, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Navigate, useNavigate } from "react-router-dom";
 
 function ResultConfirmPage() {
     const navigate = useNavigate();
@@ -106,7 +106,9 @@ function ResultConfirmPage() {
         }
     };
 
-    if (!selectedRecommendation) return null;
+    if (!selectedRecommendation) {
+        return <Navigate to={ROUTES.solutionRecommend} replace />;
+    }
 
     return (
         <>

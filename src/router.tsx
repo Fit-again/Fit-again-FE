@@ -6,6 +6,7 @@
 
 import App from "@/App";
 import ReformFlowRoute from "@/components/route/ReformFlowRoute";
+import type { ReformFlowRequirement } from "@/components/route/ReformFlowRoute";
 import RouteLoading from "@/components/route/RouteLoading";
 import {
     AIAnalysisPage,
@@ -28,7 +29,7 @@ const lazyPage = (page: ReactNode) => (
     <Suspense fallback={<RouteLoading />}>{page}</Suspense>
 );
 
-const guardedPage = (page: ReactNode, requirement: "product" | "painPoint") => (
+const guardedPage = (page: ReactNode, requirement: ReformFlowRequirement) => (
     <ReformFlowRoute requirement={requirement}>
         {lazyPage(page)}
     </ReformFlowRoute>
@@ -51,27 +52,33 @@ export const appRoutes: RouteObject[] = [
             },
             {
                 path: ROUTES.aiAnalysis.slice(1),
-                element: guardedPage(<AIAnalysisPage />, "painPoint"),
+                element: guardedPage(<AIAnalysisPage />, "diagnosis"),
             },
             {
                 path: ROUTES.solutionRecommend.slice(1),
-                element: guardedPage(<SolutionRecommendPage />, "painPoint"),
+                element: guardedPage(
+                    <SolutionRecommendPage />,
+                    "recommendation"
+                ),
             },
             {
                 path: ROUTES.reformSimulation.slice(1),
-                element: guardedPage(<ReformSimulationPage />, "painPoint"),
+                element: guardedPage(
+                    <ReformSimulationPage />,
+                    "reformSimulation"
+                ),
             },
             {
                 path: ROUTES.resellPreview.slice(1),
-                element: guardedPage(<ResellPreviewPage />, "painPoint"),
+                element: guardedPage(<ResellPreviewPage />, "resellPreview"),
             },
             {
                 path: ROUTES.upcyclePreview.slice(1),
-                element: guardedPage(<UpcyclePreviewPage />, "painPoint"),
+                element: guardedPage(<UpcyclePreviewPage />, "upcyclePreview"),
             },
             {
                 path: ROUTES.resultConfirm.slice(1),
-                element: guardedPage(<ResultConfirmPage />, "painPoint"),
+                element: guardedPage(<ResultConfirmPage />, "recommendation"),
             },
             { path: "*", element: lazyPage(<NotFoundPage />) },
         ],

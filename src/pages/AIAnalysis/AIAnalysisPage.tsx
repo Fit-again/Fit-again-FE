@@ -14,7 +14,7 @@ import type { AnalysisPhoto } from "@/types/analysis";
 import { getApiErrorMessage } from "@/utils/apiError";
 import { pollUntil } from "@/utils/polling";
 import { useEffect, useRef, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Navigate, useNavigate } from "react-router-dom";
 
 function AIAnalysisPage() {
     const navigate = useNavigate();
@@ -107,7 +107,9 @@ function AIAnalysisPage() {
         }
     };
 
-    if (!diagnosisResult) return null;
+    if (!diagnosisResult) {
+        return <Navigate to={ROUTES.painPoint} replace />;
+    }
 
     return (
         <>
