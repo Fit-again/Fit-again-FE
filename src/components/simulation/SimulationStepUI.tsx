@@ -69,10 +69,10 @@ export const StepPhoto = ({
     file,
     alt,
 }: {
-    file: File | null;
+    file: File | string | null;
     alt: string;
 }) => {
-    const imageRef = useObjectUrlImage(file);
+    const imageRef = useObjectUrlImage(file instanceof File ? file : null);
 
     if (!file) {
         return (
@@ -86,6 +86,7 @@ export const StepPhoto = ({
         <div className="border-line bg-ground aspect-4/3 overflow-hidden rounded-[5px] border">
             <img
                 ref={imageRef}
+                src={typeof file === "string" ? file : undefined}
                 alt={alt}
                 className="h-full w-full object-cover"
             />

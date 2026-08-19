@@ -4,6 +4,7 @@ import resellIcon from "@/assets/result/resell.svg";
 import Card from "@/components/common/Card";
 import ProductTypeIcon from "@/components/product/ProductTypeIcon";
 import type { ProductType } from "@/types/reformFlow";
+import type { AlternativeProduct } from "@/types/recommendation";
 
 const RESELL_STEPS = [
     {
@@ -25,38 +26,7 @@ const RESELL_STEPS = [
     },
 ] as const;
 
-const PRODUCT_RECOMMENDATIONS: Array<{
-    rank: number;
-    title: string;
-    type: ProductType;
-    tags: string[];
-}> = [
-    {
-        rank: 1,
-        title: "경량 크로스백",
-        type: "cross",
-        tags: [
-            "#무게부담 개선",
-            "#안정적인 착용",
-            "#무게부담 개선",
-            "#안정적인 착용",
-        ],
-    },
-    {
-        rank: 2,
-        title: "넉넉한 수납의 토트백",
-        type: "tote",
-        tags: ["#태그", "#태그", "#태그", "#태그"],
-    },
-    {
-        rank: 3,
-        title: "와이드 스트랩 숄더백",
-        type: "shoulder",
-        tags: ["#태그", "#태그", "#태그", "#태그"],
-    },
-];
-
-const ResellResultCard = () => (
+const ResellResultCard = ({ products }: { products: AlternativeProduct[] }) => (
     <div className="flex min-w-0 flex-col gap-[30px]">
         <section>
             <h2 className="text-primary text-[22px] leading-tight font-bold">
@@ -119,25 +89,25 @@ const ResellResultCard = () => (
             </div>
 
             <Card className="mt-4 grid h-[322px] gap-5 p-5 sm:grid-cols-3">
-                {PRODUCT_RECOMMENDATIONS.map((product, index) => (
+                {products.map((product, index) => (
                     <article
-                        key={product.rank}
+                        key={`${index}-${product.productType}`}
                         className="flex flex-col items-center border-t pt-5 first:border-0 first:pt-0 sm:border-t-0 sm:border-l sm:pt-0 sm:pl-5 sm:first:border-l-0 sm:first:pl-0"
                     >
                         <div className="w-full text-left">
                             <p className="text-text-secondary text-[14px]">
-                                추천 {product.rank}
+                                추천 {index + 1}
                             </p>
                             <h3 className="mt-1 text-[17px] font-medium">
-                                {product.title}
+                                {product.productType}
                             </h3>
                         </div>
                         <ProductTypeIcon
-                            type={product.type}
+                            type={toProductType(product.productType)}
                             className="mt-4 h-32 w-32"
                         />
                         <div className="mt-auto flex flex-wrap justify-center gap-2 pt-4">
-                            {product.tags.map((tag, tagIndex) => (
+                            {product.hashtags.map((tag, tagIndex) => (
                                 <span
                                     key={`${index}-${tagIndex}`}
                                     className="bg-secondary text-text-secondary rounded-full px-2.5 py-1 text-[12px]"
@@ -154,3 +124,15 @@ const ResellResultCard = () => (
 );
 
 export default ResellResultCard;
+
+const toProductType = (label: string): ProductType =>
+    (
+        ({
+            토트백: "tote",
+            숄더백: "shoulder",
+            크로스백: "cross",
+            백팩: "backpack",
+            파우치: "pouch",
+            기타: "other",
+        }) as Record<string, ProductType>
+    )[label] ?? "other";

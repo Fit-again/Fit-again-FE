@@ -1,3 +1,5 @@
+import { analyzeImagesApi } from "@/api/imageApi";
+import { createTaskApi, getDiagnosisApi } from "@/api/taskApi";
 import Card from "@/components/common/Card";
 import { ErrorMessage, Textarea } from "@/components/common/form/FormControls";
 import PageActions from "@/components/common/PageActions";
@@ -5,7 +7,6 @@ import PageLayout from "@/components/common/PageLayout";
 import SectionHeading from "@/components/common/SectionHeading";
 import TransitionLoadingOverlay from "@/components/common/TransitionLoadingOverlay";
 import { PAIN_POINT_KEYWORDS } from "@/constants/painPointKeywords";
-import { useTransitionNavigation } from "@/hooks/useTransitionNavigation";
 import { ROUTES } from "@/routes/paths";
 import {
     DESCRIPTION_MAX,
@@ -13,25 +14,37 @@ import {
     type PainPointFormType,
 } from "@/schema/painPointSchema";
 import { useReformFlowStore } from "@/stores/useReformFlowStore";
+import { ApiError } from "@/types/api";
+import { getApiErrorMessage } from "@/utils/apiError";
+import { pollUntil } from "@/utils/polling";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Controller, useForm, useWatch } from "react-hook-form";
+import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 function PainPointPage() {
     const navigate = useNavigate();
-    const { isTransitioning, startTransition } = useTransitionNavigation(
-        ROUTES.aiAnalysis
-    );
+    const [isTransitioning, setIsTransitioning] = useState(false);
+    const abortControllerRef = useRef<AbortController | null>(null);
+    const productType = useReformFlowStore((state) => state.productType);
+    const frontPhoto = useReformFlowStore((state) => state.frontPhoto);
+    const detailPhotos = useReformFlowStore((state) => state.detailPhotos);
+    const wearPhotos = useReformFlowStore((state) => state.wearPhotos);
     const savedKeywordIds = useReformFlowStore(
         (state) => state.painPointKeywordIds
     );
     const savedDescription = useReformFlowStore((state) => state.description);
     const setPainPoint = useReformFlowStore((state) => state.setPainPoint);
+    const setAnalysisResult = useReformFlowStore(
+        (state) => state.setAnalysisResult
+    );
     const {
         control,
         handleSubmit,
         register,
         formState: { errors },
+        setError,
+        clearErrors,
     } = useForm<PainPointFormType>({
         resolver: zodResolver(painPointSchema),
         defaultValues: {
@@ -44,9 +57,74 @@ function PainPointPage() {
         name: ["painPointKeywordIds", "description"],
     });
 
-    const onSubmit = (values: PainPointFormType) => {
+    useEffect(
+        () => () => {
+            abortControllerRef.current?.abort();
+        },
+        []
+    );
+
+    const onSubmit = async (values: PainPointFormType) => {
+        if (!productType || !frontPhoto || isTransitioning) return;
+
         setPainPoint(values);
-        startTransition();
+        clearErrors("root");
+        setIsTransitioning(true);
+        const controller = new AbortController();
+        abortControllerRef.current = controller;
+
+        try {
+            const imageAnalysis = await analyzeImagesApi(
+                frontPhoto,
+                detailPhotos,
+                controller.signal
+            );
+            if (!imageAnalysis.isValid) {
+                throw new ApiError(imageAnalysis.message);
+            }
+
+            const productTypeLabel =
+                PRODUCT_TYPE_LABELS[productType] ?? productType;
+            const keywords = values.painPointKeywordIds.map(
+                (id) =>
+                    PAIN_POINT_KEYWORDS.find((keyword) => keyword.id === id)
+                        ?.label ?? id
+            );
+            const { taskId } = await createTaskApi(
+                {
+                    productType: productTypeLabel,
+                    frontImageUrl: imageAnalysis.frontImageUrl,
+                    detailImageUrls: imageAnalysis.detailImageUrls,
+                    damageImages: wearPhotos,
+                    keywords,
+                    description: values.description,
+                },
+                controller.signal
+            );
+            const diagnosis = await pollUntil({
+                load: () => getDiagnosisApi(taskId, controller.signal),
+                isComplete: (value) => value.diagnosisResult !== null,
+                isFailed: (value) =>
+                    value.status === "FAILED" && value.diagnosisResult === null,
+                getFailureMessage: (value) => value.errorMessage,
+                signal: controller.signal,
+            });
+
+            if (!diagnosis.diagnosisResult) {
+                throw new ApiError("AI 진단 결과를 확인할 수 없습니다.");
+            }
+
+            setAnalysisResult({
+                taskId,
+                imageAnalysis,
+                diagnosisResult: diagnosis.diagnosisResult,
+            });
+            navigate(ROUTES.aiAnalysis);
+        } catch (error) {
+            if (controller.signal.aborted) return;
+            setError("root", { message: getApiErrorMessage(error) });
+            setIsTransitioning(false);
+        }
     };
 
     return (
@@ -64,6 +142,11 @@ function PainPointPage() {
                     />
                 }
             >
+                {errors.root?.message && (
+                    <div className="mb-5">
+                        <ErrorMessage>{errors.root.message}</ErrorMessage>
+                    </div>
+                )}
                 <div className="grid gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.45fr)] lg:gap-7">
                     <section className="lg:border-line flex flex-col lg:min-h-[628px] lg:border-r lg:pr-7">
                         <SectionHeading
@@ -185,3 +268,12 @@ const KeywordToggle = ({
 );
 
 export default PainPointPage;
+
+const PRODUCT_TYPE_LABELS = {
+    tote: "토트백",
+    shoulder: "숄더백",
+    cross: "크로스백",
+    backpack: "백팩",
+    pouch: "파우치",
+    other: "기타",
+} as const;

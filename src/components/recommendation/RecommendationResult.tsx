@@ -7,9 +7,11 @@ import {
 } from "@/constants/recommendation";
 import { useObjectUrlImage } from "@/hooks/useObjectUrlImage";
 import type { AlternativeOption, SolutionType } from "@/types/recommendation";
+import type { RankedRecommendation } from "@/types/recommendation";
 
 type RecommendationResultProps = {
     frontPhoto: File | null;
+    recommendation: RankedRecommendation;
     recommendedSolution: SolutionType;
     selectedSolution: SolutionType;
     onSelectSolution: (solution: SolutionType) => void;
@@ -17,11 +19,39 @@ type RecommendationResultProps = {
 
 const RecommendationResult = ({
     frontPhoto,
+    recommendation,
     recommendedSolution,
     selectedSolution,
     onSelectSolution,
 }: RecommendationResultProps) => {
-    const content = RECOMMENDATION_CONTENT[selectedSolution];
+    const staticContent = RECOMMENDATION_CONTENT[selectedSolution];
+    const tasks =
+        recommendation.recommendationType === "REFORM"
+            ? recommendation.recommendedWorks.map((work, index) => ({
+                  id: `${index}-${work.title}`,
+                  title: work.title,
+                  description: work.description,
+              }))
+            : recommendation.recommendationType === "RESELL"
+              ? recommendation.alternativeProducts.map((product, index) => ({
+                    id: `${index}-${product.productType}`,
+                    title: product.productType,
+                    description: product.hashtags.join(" "),
+                }))
+              : recommendation.upcyclingCandidates.map((candidate, index) => ({
+                    id: `${index}-${candidate.itemName}`,
+                    title: candidate.itemName,
+                    description: candidate.description,
+                }));
+    const content = {
+        ...staticContent,
+        reasons: recommendation.reasons,
+        tasks,
+        description:
+            recommendation.recommendationType === "REFORM"
+                ? recommendation.summaryComment
+                : staticContent.description,
+    };
     const alternatives = ALTERNATIVE_OPTIONS.filter(
         (option) => option.id !== selectedSolution
     );
@@ -30,7 +60,10 @@ const RecommendationResult = ({
         <div>
             <Card className="p-5 sm:p-6">
                 <div className="grid gap-7 lg:grid-cols-[minmax(0,0.95fr)_minmax(0,1.25fr)_minmax(0,0.75fr)]">
-                    <ProductPhoto file={frontPhoto} />
+                    <ProductPhoto
+                        file={frontPhoto}
+                        url={recommendation.frontImageUrl}
+                    />
 
                     <div>
                         {selectedSolution === recommendedSolution && (
@@ -160,10 +193,10 @@ const AlternativeCard = ({
     </button>
 );
 
-const ProductPhoto = ({ file }: { file: File | null }) => {
-    const imageRef = useObjectUrlImage(file);
+const ProductPhoto = ({ file, url }: { file: File | null; url: string }) => {
+    const imageRef = useObjectUrlImage(url ? null : file);
 
-    if (!file) {
+    if (!file && !url) {
         return (
             <div className="border-line bg-placeholder text-text-secondary flex aspect-square items-center justify-center rounded-[5px] border">
                 <span className="text-[14px]">사진 없음</span>
@@ -175,6 +208,7 @@ const ProductPhoto = ({ file }: { file: File | null }) => {
         <div className="border-line bg-ground aspect-square overflow-hidden rounded-[5px] border">
             <img
                 ref={imageRef}
+                src={url || undefined}
                 alt="추천 제품 사진"
                 className="h-full w-full object-cover"
             />

@@ -1,12 +1,21 @@
-import { act, fireEvent, render, screen } from "@testing-library/react";
+import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { MemoryRouter, Route, Routes } from "react-router-dom";
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
+import { analyzeImagesApi } from "@/api/imageApi";
+import { createTaskApi, getDiagnosisApi } from "@/api/taskApi";
 import AIAnalysisPage from "@/pages/AIAnalysis/AIAnalysisPage";
 import PainPointPage from "@/pages/PainPoint/PainPointPage";
 import ProductRegisterPage from "@/pages/ProductRegister/ProductRegisterPage";
 import { ROUTES } from "@/routes/paths";
 import { useReformFlowStore } from "@/stores/useReformFlowStore";
+import { diagnosisFixture } from "@/test/apiFixtures";
+
+vi.mock("@/api/imageApi", () => ({ analyzeImagesApi: vi.fn() }));
+vi.mock("@/api/taskApi", () => ({
+    createTaskApi: vi.fn(),
+    getDiagnosisApi: vi.fn(),
+}));
 
 const renderPage = () =>
     render(
@@ -25,10 +34,26 @@ const renderPage = () =>
 describe("PainPointPage", () => {
     beforeEach(() => {
         useReformFlowStore.getState().resetFlow();
-    });
-
-    afterEach(() => {
-        vi.useRealTimers();
+        useReformFlowStore.setState({
+            productType: "shoulder",
+            frontPhoto: new File(["dummy"], "front.png", {
+                type: "image/png",
+            }),
+            wearPhotos: [
+                new File(["dummy"], "wear.png", { type: "image/png" }),
+            ],
+        });
+        vi.mocked(analyzeImagesApi).mockResolvedValue({
+            frontImageUrl: "https://example.com/front.png",
+            detailImageUrls: [],
+            isValid: true,
+            message: "분석 가능한 이미지입니다.",
+        });
+        vi.mocked(createTaskApi).mockResolvedValue({ taskId: 1 });
+        vi.mocked(getDiagnosisApi).mockResolvedValue({
+            status: "DIAGNOSED",
+            diagnosisResult: diagnosisFixture,
+        });
     });
 
     it("불편 입력 공통 레이아웃을 보여준다", () => {
@@ -106,25 +131,87 @@ describe("PainPointPage", () => {
     });
 
     it("키워드를 선택하고 다음 단계를 누르면 AI 분석 화면으로 이동한다", async () => {
-        vi.useFakeTimers();
         renderPage();
+        const user = userEvent.setup();
 
-        await act(async () => {
-            fireEvent.click(screen.getByRole("button", { name: "무거움" }));
-            fireEvent.click(
-                screen.getByRole("button", { name: "AI 분석 시작" })
-            );
-        });
+        await user.click(screen.getByRole("button", { name: "무거움" }));
+        await user.click(screen.getByRole("button", { name: "AI 분석 시작" }));
 
         expect(screen.getByText("AI 분석 결과 로딩 중")).toBeInTheDocument();
+        await waitFor(() =>
+            expect(
+                screen.getByRole("heading", { name: "AI 분석 결과" })
+            ).toBeInTheDocument()
+        );
+        expect(createTaskApi).toHaveBeenCalledWith(
+            expect.objectContaining({
+                productType: "숄더백",
+                keywords: ["무거움"],
+            }),
+            expect.any(AbortSignal)
+        );
+    });
 
-        await act(async () => {
-            await vi.advanceTimersByTimeAsync(1200);
+    it.each(["RECOMMENDING", "RECOMMENDED"] as const)(
+        "진단 결과가 있으면 추천 상태가 %s여도 AI 분석 화면으로 이동한다",
+        async (status) => {
+            vi.mocked(getDiagnosisApi).mockResolvedValue({
+                status,
+                diagnosisResult: diagnosisFixture,
+            });
+            renderPage();
+            const user = userEvent.setup();
+
+            await user.click(screen.getByRole("button", { name: "무거움" }));
+            await user.click(
+                screen.getByRole("button", { name: "AI 분석 시작" })
+            );
+
+            await waitFor(() =>
+                expect(
+                    screen.getByRole("heading", { name: "AI 분석 결과" })
+                ).toBeInTheDocument()
+            );
+        }
+    );
+
+    it("추천 생성만 실패하고 진단 결과가 남아 있으면 AI 분석 화면으로 이동한다", async () => {
+        vi.mocked(getDiagnosisApi).mockResolvedValue({
+            status: "FAILED",
+            diagnosisResult: diagnosisFixture,
+            errorMessage: "추천 생성에 실패했습니다.",
         });
+        renderPage();
+        const user = userEvent.setup();
+
+        await user.click(screen.getByRole("button", { name: "무거움" }));
+        await user.click(screen.getByRole("button", { name: "AI 분석 시작" }));
+
+        await waitFor(() =>
+            expect(
+                screen.getByRole("heading", { name: "AI 분석 결과" })
+            ).toBeInTheDocument()
+        );
+    });
+
+    it("진단 결과 없이 작업이 실패하면 서버 오류를 표시한다", async () => {
+        vi.mocked(getDiagnosisApi).mockResolvedValue({
+            status: "FAILED",
+            diagnosisResult: null,
+            errorMessage: "진단 생성에 실패했습니다.",
+        });
+        renderPage();
+        const user = userEvent.setup();
+
+        await user.click(screen.getByRole("button", { name: "무거움" }));
+        await user.click(screen.getByRole("button", { name: "AI 분석 시작" }));
 
         expect(
-            screen.getByRole("heading", { name: "AI 분석 결과" })
+            await screen.findByText("진단 생성에 실패했습니다.")
         ).toBeInTheDocument();
+        expect(
+            screen.queryByRole("heading", { name: "AI 분석 결과" })
+        ).not.toBeInTheDocument();
     });
 
     it("추가 설명을 자유롭게 입력할 수 있다", async () => {

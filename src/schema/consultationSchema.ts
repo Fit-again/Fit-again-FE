@@ -1,7 +1,7 @@
 /** 공식 상담 신청 폼 검증 스키마입니다. */
 
 import { CONTACT_REGEX } from "@/constants/result";
-import type { SolutionType, UpcycleProductType } from "@/types/recommendation";
+import type { SolutionType } from "@/types/recommendation";
 import z from "zod";
 
 export const UPCYCLE_IMPORTANT_PARTS = [
@@ -20,8 +20,8 @@ const consultationBaseSchema = z.object({
         .min(1, "연락처를 입력해주세요")
         .regex(CONTACT_REGEX, "올바른 연락처 형식이 아닙니다"),
     message: z.string(),
-    upcycleProducts: z.array(z.enum(["mini-crossbag", "card-wallet", "pouch"])),
-    importantParts: z.array(z.enum(UPCYCLE_IMPORTANT_PARTS)),
+    upcycleProducts: z.array(z.string()),
+    importantPart: z.enum(UPCYCLE_IMPORTANT_PARTS).optional(),
     agreed: z.boolean().refine((value) => value, {
         message: "개인정보 수집 및 이용에 동의해주세요",
     }),
@@ -41,4 +41,3 @@ export const createConsultationSchema = (solutionType: SolutionType) =>
 export const consultationSchema = createConsultationSchema("reform");
 
 export type ConsultationFormType = z.infer<typeof consultationSchema>;
-export type UpcycleConsultationProduct = UpcycleProductType;

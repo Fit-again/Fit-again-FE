@@ -1,4 +1,9 @@
-import type { SolutionType, UpcycleProductType } from "@/types/recommendation";
+import type { DiagnosisResult, ImageAnalysisResult } from "@/types/analysis";
+import type {
+    RankedRecommendation,
+    SolutionType,
+    UpcycleProductType,
+} from "@/types/recommendation";
 
 export type ProductType =
     "tote" | "shoulder" | "cross" | "backpack" | "pouch" | "other";
@@ -22,11 +27,21 @@ export type ReformFlowState = {
     wearPhotos: File[];
     painPointKeywordIds: string[];
     description: string;
+    taskId: number | null;
+    imageAnalysis: ImageAnalysisResult | null;
+    diagnosisResult: DiagnosisResult | null;
+    recommendationRankings: RankedRecommendation[];
     recommendedSolution: SolutionType;
     selectedSolution: SolutionType;
     selectedUpcycleProduct: UpcycleProductType;
     setProductInfo: (info: ProductInfo) => void;
     setPainPoint: (info: PainPointInfo) => void;
+    setAnalysisResult: (result: {
+        taskId: number;
+        imageAnalysis: ImageAnalysisResult;
+        diagnosisResult: DiagnosisResult;
+    }) => void;
+    setRecommendationRankings: (rankings: RankedRecommendation[]) => void;
     setRecommendedSolution: (solution: SolutionType) => void;
     setSelectedSolution: (solution: SolutionType) => void;
     setSelectedUpcycleProduct: (product: UpcycleProductType) => void;

@@ -1,3 +1,4 @@
+import { createConsultationApi } from "@/api/consultationApi";
 import PageActions from "@/components/common/PageActions";
 import PageLayout from "@/components/common/PageLayout";
 import Modal from "@/components/common/Modal";
@@ -6,10 +7,10 @@ import ResellResultCard from "@/components/result/ResellResultCard";
 import ResultReportCard from "@/components/result/ResultReportCard";
 import UpcycleResultCard from "@/components/result/UpcycleResultCard";
 import { RESELL_RESULT_STEPS } from "@/constants/serviceSteps";
-import { PAIN_POINT_CAUSE_TEXT } from "@/constants/painPointKeywords";
-import { DEFAULT_RESOLVED_ISSUES } from "@/constants/result";
 import { ROUTES } from "@/routes/paths";
 import { useReformFlowStore } from "@/stores/useReformFlowStore";
+import { toRecommendationType } from "@/types/recommendation";
+import { getApiErrorMessage } from "@/utils/apiError";
 import { downloadReportPdf } from "@/utils/downloadReportPdf";
 import { useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -20,8 +21,9 @@ function ResultConfirmPage() {
     const selectedSolution = useReformFlowStore(
         (state) => state.selectedSolution
     );
-    const painPointKeywordIds = useReformFlowStore(
-        (state) => state.painPointKeywordIds
+    const taskId = useReformFlowStore((state) => state.taskId);
+    const recommendationRankings = useReformFlowStore(
+        (state) => state.recommendationRankings
     );
     const selectedUpcycleProduct = useReformFlowStore(
         (state) => state.selectedUpcycleProduct
@@ -35,10 +37,15 @@ function ResultConfirmPage() {
     const [reportSaveError, setReportSaveError] = useState(false);
     const [agreementOpen, setAgreementOpen] = useState(false);
     const [submittedAt, setSubmittedAt] = useState<Date | null>(null);
-    const resolvedIssues =
-        painPointKeywordIds.length > 0
-            ? painPointKeywordIds.map((id) => PAIN_POINT_CAUSE_TEXT[id] ?? id)
-            : DEFAULT_RESOLVED_ISSUES;
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const [submitError, setSubmitError] = useState<string | null>(null);
+    const selectedRecommendation = recommendationRankings.find(
+        (item) =>
+            item.recommendationType === toRecommendationType(selectedSolution)
+    );
+    const upcyclingRecommendation = recommendationRankings.find(
+        (item) => item.recommendationType === "UPCYCLING"
+    );
     const previousRoute = {
         reform: ROUTES.reformSimulation,
         resell: ROUTES.resellPreview,
@@ -69,6 +76,38 @@ function ResultConfirmPage() {
         }
     };
 
+    const handleConsultation = async (
+        values: import("@/schema/consultationSchema").ConsultationFormType
+    ) => {
+        if (!taskId || isSubmitting) return;
+
+        setIsSubmitting(true);
+        setSubmitError(null);
+        try {
+            await createConsultationApi(taskId, {
+                userName: values.name,
+                phoneNumber: values.contact,
+                desiredUpcyclingProducts:
+                    selectedSolution === "upcycle"
+                        ? values.upcycleProducts
+                        : undefined,
+                importantAspect:
+                    selectedSolution === "upcycle"
+                        ? values.importantPart
+                        : undefined,
+                additionalRequest: values.message.trim() || undefined,
+                privacyAgreed: values.agreed,
+            });
+            setSubmittedAt(new Date());
+        } catch (error) {
+            setSubmitError(getApiErrorMessage(error));
+        } finally {
+            setIsSubmitting(false);
+        }
+    };
+
+    if (!selectedRecommendation) return null;
+
     return (
         <>
             <PageLayout
@@ -92,16 +131,44 @@ function ResultConfirmPage() {
                 <div className="grid gap-[30px] lg:grid-cols-[minmax(0,1.83fr)_minmax(0,1fr)] xl:min-h-[686px]">
                     {selectedSolution === "upcycle" ? (
                         <UpcycleResultCard
+                            products={
+                                selectedRecommendation.recommendationType ===
+                                "UPCYCLING"
+                                    ? selectedRecommendation.upcyclingCandidates
+                                    : []
+                            }
+                            featureTags={
+                                selectedRecommendation.recommendationType ===
+                                "UPCYCLING"
+                                    ? selectedRecommendation.existingFeatureTags
+                                    : []
+                            }
                             selectedProductId={selectedUpcycleProduct}
                             onSelectProduct={setSelectedUpcycleProduct}
                         />
                     ) : selectedSolution === "resell" ? (
-                        <ResellResultCard />
+                        <ResellResultCard
+                            products={
+                                selectedRecommendation.recommendationType ===
+                                "RESELL"
+                                    ? selectedRecommendation.alternativeProducts
+                                    : []
+                            }
+                        />
                     ) : (
                         <ResultReportCard
                             reportRef={reportRef}
                             frontPhoto={frontPhoto}
-                            resolvedIssues={resolvedIssues}
+                            recommendation={
+                                selectedRecommendation.recommendationType ===
+                                "REFORM"
+                                    ? selectedRecommendation
+                                    : recommendationRankings.find(
+                                          (item) =>
+                                              item.recommendationType ===
+                                              "REFORM"
+                                      )!
+                            }
                             isSaving={isSavingReport}
                             saved={reportSaved}
                             saveError={reportSaveError}
@@ -111,8 +178,18 @@ function ResultConfirmPage() {
                     <ConsultationFormCard
                         solutionType={selectedSolution}
                         selectedUpcycleProduct={selectedUpcycleProduct}
+                        upcycleProductOptions={
+                            upcyclingRecommendation?.recommendationType ===
+                            "UPCYCLING"
+                                ? upcyclingRecommendation.upcyclingCandidates.map(
+                                      (candidate) => candidate.itemName
+                                  )
+                                : []
+                        }
+                        submitting={isSubmitting}
+                        submitError={submitError}
                         onViewAgreement={() => setAgreementOpen(true)}
-                        onSubmit={() => setSubmittedAt(new Date())}
+                        onSubmit={handleConsultation}
                     />
                 </div>
             </PageLayout>

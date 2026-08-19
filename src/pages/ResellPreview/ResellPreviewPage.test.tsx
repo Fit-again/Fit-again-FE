@@ -1,11 +1,12 @@
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { MemoryRouter, Route, Routes } from "react-router-dom";
-import { afterEach, describe, expect, it } from "vitest";
+import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import ResellPreviewPage from "@/pages/ResellPreview/ResellPreviewPage";
 import SolutionRecommendPage from "@/pages/SolutionRecommend/SolutionRecommendPage";
 import { ROUTES } from "@/routes/paths";
 import { useReformFlowStore } from "@/stores/useReformFlowStore";
+import { seedApiFlowStore } from "@/test/apiFixtures";
 
 const renderPage = () =>
     render(
@@ -24,6 +25,14 @@ const renderPage = () =>
     );
 
 describe("ResellPreviewPage", () => {
+    beforeEach(() => {
+        useReformFlowStore.getState().resetFlow();
+        useReformFlowStore.setState({
+            ...seedApiFlowStore(),
+            selectedSolution: "resell",
+        });
+    });
+
     afterEach(() => useReformFlowStore.getState().resetFlow());
 
     it("리셀 대상 사용자와 가치 요소를 보여준다", () => {

@@ -1,14 +1,9 @@
 import Card from "@/components/common/Card";
-import miniCrossbagImage from "@/assets/upcycle/mini-crossbag.png";
 import PageActions from "@/components/common/PageActions";
 import PageLayout from "@/components/common/PageLayout";
-import {
-    UPCYCLE_PRODUCTS,
-    UPCYCLE_REASONING,
-} from "@/constants/recommendation";
 import { ROUTES } from "@/routes/paths";
 import { useReformFlowStore } from "@/stores/useReformFlowStore";
-import type { UpcycleProduct } from "@/types/recommendation";
+import type { UpcyclingCandidate } from "@/types/recommendation";
 import { useNavigate } from "react-router-dom";
 
 function UpcyclePreviewPage() {
@@ -19,9 +14,20 @@ function UpcyclePreviewPage() {
     const setSelectedProduct = useReformFlowStore(
         (state) => state.setSelectedUpcycleProduct
     );
+    const recommendation = useReformFlowStore((state) =>
+        state.recommendationRankings.find(
+            (item) => item.recommendationType === "UPCYCLING"
+        )
+    );
+    const products =
+        recommendation?.recommendationType === "UPCYCLING"
+            ? recommendation.upcyclingCandidates
+            : [];
     const selectedProduct =
-        UPCYCLE_PRODUCTS.find((product) => product.id === selectedProductId) ??
-        UPCYCLE_PRODUCTS[0];
+        products.find((product) => product.itemName === selectedProductId) ??
+        products[0];
+
+    if (!selectedProduct) return null;
 
     return (
         <PageLayout
@@ -38,12 +44,12 @@ function UpcyclePreviewPage() {
             }
         >
             <section className="grid gap-4 lg:grid-cols-3">
-                {UPCYCLE_PRODUCTS.map((product) => (
+                {products.map((product) => (
                     <UpcycleOptionCard
-                        key={product.id}
+                        key={product.itemName}
                         product={product}
-                        selected={product.id === selectedProductId}
-                        onClick={() => setSelectedProduct(product.id)}
+                        selected={product.itemName === selectedProductId}
+                        onClick={() => setSelectedProduct(product.itemName)}
                     />
                 ))}
             </section>
@@ -65,14 +71,14 @@ function UpcyclePreviewPage() {
                             입력하신 불편과 사용 환경을 분석했어요.
                         </p>
                         <div className="mt-4 flex flex-col gap-4">
-                            {UPCYCLE_REASONING.map(
-                                ({ painPoint, direction }) => (
-                                    <div key={painPoint}>
+                            {selectedProduct.reasonPairs.map(
+                                ({ problem, solution }) => (
+                                    <div key={problem}>
                                         <h4 className="text-primary text-[16px] font-medium">
-                                            {painPoint}
+                                            {problem}
                                         </h4>
                                         <p className="bg-secondary text-text-strong mt-2 px-3 py-1 text-[14px] leading-relaxed">
-                                            {direction}
+                                            {solution}
                                         </p>
                                     </div>
                                 )
@@ -85,20 +91,25 @@ function UpcyclePreviewPage() {
                             현재 제품과 달라지는 변화를 확인해보세요.
                         </p>
                         <div className="mt-4 flex flex-col gap-2.5">
-                            {UPCYCLE_CHANGES.map(({ before, after }) => (
-                                <div
-                                    key={before}
-                                    className="grid grid-cols-[1fr_auto_1fr] items-center gap-3 text-center text-[15px]"
-                                >
-                                    <span className="bg-danger/10 text-danger px-3 py-1">
-                                        {before}
-                                    </span>
-                                    <span aria-hidden="true">→</span>
-                                    <span className="bg-after/10 text-after px-3 py-1">
-                                        {after}
-                                    </span>
-                                </div>
-                            ))}
+                            {selectedProduct.expectedChanges.map((change) => {
+                                const [before, after] = change
+                                    .split("->")
+                                    .map((value) => value.trim());
+                                return (
+                                    <div
+                                        key={change}
+                                        className="grid grid-cols-[1fr_auto_1fr] items-center gap-3 text-center text-[15px]"
+                                    >
+                                        <span className="bg-danger/10 text-danger px-3 py-1">
+                                            {before}
+                                        </span>
+                                        <span aria-hidden="true">→</span>
+                                        <span className="bg-after/10 text-after px-3 py-1">
+                                            {after ?? "-"}
+                                        </span>
+                                    </div>
+                                );
+                            })}
                         </div>
                     </PreviewSection>
                 </div>
@@ -112,7 +123,7 @@ const UpcycleOptionCard = ({
     selected,
     onClick,
 }: {
-    product: UpcycleProduct;
+    product: UpcyclingCandidate;
     selected: boolean;
     onClick: () => void;
 }) => (
@@ -123,7 +134,7 @@ const UpcycleOptionCard = ({
         onClick={onClick}
     >
         <span className="text-primary absolute top-4 left-5 text-[18px] font-bold">
-            {product.label}
+            {product.itemName}
         </span>
         {selected && (
             <span className="bg-primary absolute top-4 right-4 flex size-5 items-center justify-center rounded-full text-xs text-white">
@@ -154,29 +165,20 @@ const PreviewSection = ({
     </section>
 );
 
-const UPCYCLE_CHANGES = [
-    { before: "큰 토트백", after: "미니 크로스백" },
-    { before: "큰 사이즈", after: "컴팩트한 사이즈" },
-    { before: "숄더 착용", after: "크로스바디 착용" },
-    { before: "출퇴근 중심", after: "가벼운 외출/일상" },
-    { before: "높은 휴대 부담", after: "휴대 부담 감소" },
-    { before: "큰 수납공간", after: "필수 수납 위주" },
-] as const;
-
 const GeneratedProductPlaceholder = ({
     product,
 }: {
-    product: UpcycleProduct;
+    product: UpcyclingCandidate;
 }) => (
     <div className="bg-secondary text-text-secondary flex aspect-4/3 items-center justify-center overflow-hidden rounded-[5px] px-5 text-center text-[15px]">
-        {product.id === "mini-crossbag" ? (
+        {product.imageUrl ? (
             <img
-                src={miniCrossbagImage}
-                alt="미니 크로스백 예상 모습"
+                src={product.imageUrl}
+                alt={`${product.itemName} 예상 모습`}
                 className="h-full w-full object-contain"
             />
         ) : (
-            `${product.label} 예상 이미지`
+            `${product.itemName} 예상 이미지`
         )}
     </div>
 );

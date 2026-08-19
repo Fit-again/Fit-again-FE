@@ -1,9 +1,10 @@
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { MemoryRouter } from "react-router-dom";
-import { afterEach, describe, expect, it } from "vitest";
+import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import UpcyclePreviewPage from "@/pages/UpcyclePreview/UpcyclePreviewPage";
 import { useReformFlowStore } from "@/stores/useReformFlowStore";
+import { seedApiFlowStore } from "@/test/apiFixtures";
 
 const renderPage = () =>
     render(
@@ -13,6 +14,14 @@ const renderPage = () =>
     );
 
 describe("UpcyclePreviewPage", () => {
+    beforeEach(() => {
+        useReformFlowStore.getState().resetFlow();
+        useReformFlowStore.setState({
+            ...seedApiFlowStore(),
+            selectedSolution: "upcycle",
+        });
+    });
+
     afterEach(() => useReformFlowStore.getState().resetFlow());
 
     it("업사이클링 제품 선택지와 제안 이유를 보여준다", () => {

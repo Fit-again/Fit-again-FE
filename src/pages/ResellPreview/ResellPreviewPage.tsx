@@ -7,45 +7,19 @@ import { ROUTES } from "@/routes/paths";
 import { useReformFlowStore } from "@/stores/useReformFlowStore";
 import { useNavigate } from "react-router-dom";
 
-const MATCHING_USERS = [
-    {
-        title: "가볍게 외출하는 간결한 스타일의 사용자",
-        description:
-            "출퇴근용으로 사용하면서 발생한 어깨 부담과 외관 마모를 개선하기 위해 기능 개선 중심의 리폼을 추천합니다.",
-        tags: ["#간결한 소지품", "#짧은 외출"],
-    },
-    {
-        title: "토트백을 주로 사용하는 사용자",
-        description:
-            "장시간 어깨에 메기보다 손이나 팔에 들고 이동하는 방식을 선호해요.",
-        tags: ["#토트백 사용", "#더블 핸들 활용"],
-    },
-    {
-        title: "이동 시간이 짧거나 차량 이동이 많은 사용자",
-        description:
-            "장시간 가방을 메고 이동하기보다 차량 이동이나 짧은 외출이 많아 무게 부담이 상대적으로 적어요.",
-        tags: ["#차량 이동", "#짧은 이동"],
-    },
-];
-
-const VALUE_FACTORS = {
-    negative: [
-        "핸들 / 가죽 마모",
-        "수납 공간 부족",
-        "무게감",
-        "스트랩 흘러내림",
-    ],
-    positive: [
-        "더블 핸들 디자인",
-        "탈부착 스트랩",
-        "사이드 포켓 구조",
-        "유연한 가죽 소재",
-    ],
-};
-
 function ResellPreviewPage() {
     const navigate = useNavigate();
     const frontPhoto = useReformFlowStore((state) => state.frontPhoto);
+    const diagnosis = useReformFlowStore((state) => state.diagnosisResult);
+    const recommendation = useReformFlowStore((state) =>
+        state.recommendationRankings.find(
+            (item) => item.recommendationType === "RESELL"
+        )
+    );
+
+    if (!recommendation || recommendation.recommendationType !== "RESELL") {
+        return null;
+    }
 
     return (
         <PageLayout
@@ -67,7 +41,10 @@ function ResellPreviewPage() {
                         분석한 제품
                     </h2>
                     <Card className="mt-4 p-5">
-                        <AnnotatedProductPhoto file={frontPhoto} />
+                        <AnnotatedProductPhoto
+                            file={frontPhoto}
+                            url={recommendation.frontImageUrl}
+                        />
                         <div className="mt-4 flex flex-col gap-3 text-[15px]">
                             <p className="text-danger flex items-center gap-2">
                                 <FactorBadge tone="danger" />
@@ -90,16 +67,16 @@ function ResellPreviewPage() {
                         이 제품과 잘 맞을 수 있는 사용자
                     </h2>
                     <div className="mt-4 flex flex-col gap-3">
-                        {MATCHING_USERS.map((user) => (
-                            <Card key={user.title} className="p-3">
+                        {recommendation.alternativeProducts.map((product) => (
+                            <Card key={product.productType} className="p-3">
                                 <h3 className="text-primary text-[17px] font-bold">
-                                    {user.title}
+                                    {product.productType}을 선호하는 사용자
                                 </h3>
                                 <p className="mt-1 text-[15px] leading-relaxed">
-                                    {user.description}
+                                    {product.hashtags.join(" · ")}
                                 </p>
                                 <div className="mt-2 flex flex-wrap gap-2">
-                                    {user.tags.map((tag) => (
+                                    {product.hashtags.map((tag) => (
                                         <Tag key={tag} tone="soft">
                                             {tag}
                                         </Tag>
@@ -116,12 +93,15 @@ function ResellPreviewPage() {
                         <ValueFactorList
                             title="가치에 영향을 줄 수 있는 요소"
                             tone="danger"
-                            items={VALUE_FACTORS.negative}
+                            items={[
+                                ...(diagnosis?.damageState ?? []),
+                                ...(diagnosis?.mainInconvenience ?? []),
+                            ]}
                         />
                         <ValueFactorList
                             title="가치를 유지하는 요소"
                             tone="after"
-                            items={VALUE_FACTORS.positive}
+                            items={diagnosis?.externalStructure ?? []}
                         />
                     </Card>
                 </section>
@@ -130,14 +110,21 @@ function ResellPreviewPage() {
     );
 }
 
-const AnnotatedProductPhoto = ({ file }: { file: File | null }) => {
-    const imageRef = useObjectUrlImage(file);
+const AnnotatedProductPhoto = ({
+    file,
+    url,
+}: {
+    file: File | null;
+    url: string;
+}) => {
+    const imageRef = useObjectUrlImage(url ? null : file);
 
     return (
         <div className="border-line bg-ground relative aspect-square overflow-hidden rounded-[5px] border">
             {file ? (
                 <img
                     ref={imageRef}
+                    src={url || undefined}
                     alt="리셀 분석 제품"
                     className="h-full w-full object-cover"
                 />

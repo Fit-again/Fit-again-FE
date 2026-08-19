@@ -2,14 +2,15 @@ import Button from "@/components/common/Button";
 import Card from "@/components/common/Card";
 import CheckBadge from "@/components/common/CheckBadge";
 import Tag from "@/components/common/Tag";
-import { DIFFICULTY_LEVELS, MOCK_REPORT } from "@/constants/result";
+import { DIFFICULTY_LEVELS } from "@/constants/result";
 import { useObjectUrlImage } from "@/hooks/useObjectUrlImage";
+import type { ReformRecommendation } from "@/types/recommendation";
 import type { RefObject } from "react";
 
 type ResultReportCardProps = {
     reportRef: RefObject<HTMLDivElement | null>;
     frontPhoto: File | null;
-    resolvedIssues: string[];
+    recommendation: ReformRecommendation;
     isSaving: boolean;
     saved: boolean;
     saveError: boolean;
@@ -19,7 +20,7 @@ type ResultReportCardProps = {
 const ResultReportCard = ({
     reportRef,
     frontPhoto,
-    resolvedIssues,
+    recommendation,
     isSaving,
     saved,
     saveError,
@@ -43,20 +44,23 @@ const ResultReportCard = ({
                         최종 리폼 결과
                     </h3>
                     <div className="mt-3 w-full">
-                        <ReportPhoto file={frontPhoto} />
+                        <ReportPhoto
+                            file={frontPhoto}
+                            url={recommendation.resultImageUrl}
+                        />
                     </div>
                 </div>
 
                 <div className="flex flex-col justify-between gap-6">
                     <ReportSection title="AI 추천">
                         <p className="mt-3 text-[16px] leading-relaxed">
-                            {MOCK_REPORT.recommendation}
+                            {recommendation.summaryComment}
                         </p>
                     </ReportSection>
 
                     <ReportSection title="해결되는 불편">
                         <ul className="mt-3 flex flex-col gap-2">
-                            {resolvedIssues.map((issue) => (
+                            {recommendation.resolvedPains.map((issue) => (
                                 <li
                                     key={issue}
                                     className="flex items-start gap-2.5"
@@ -72,9 +76,9 @@ const ResultReportCard = ({
 
                     <ReportSection title="추천 리폼 작업">
                         <div className="mt-3 flex flex-wrap gap-2">
-                            {MOCK_REPORT.tasks.map((task) => (
-                                <Tag key={task} tone="primary">
-                                    {task}
+                            {recommendation.recommendedWorks.map((task) => (
+                                <Tag key={task.title} tone="primary">
+                                    {task.title}
                                 </Tag>
                             ))}
                         </div>
@@ -83,7 +87,12 @@ const ResultReportCard = ({
                     <ReportSection title="예상 난이도">
                         <div className="mt-4">
                             <DifficultyGauge
-                                level={MOCK_REPORT.difficultyIndex}
+                                level={Math.max(
+                                    DIFFICULTY_LEVELS.indexOf(
+                                        recommendation.difficulty
+                                    ),
+                                    0
+                                )}
                             />
                         </div>
                     </ReportSection>
@@ -168,10 +177,10 @@ const DifficultyGauge = ({ level }: { level: number }) => {
     );
 };
 
-const ReportPhoto = ({ file }: { file: File | null }) => {
-    const imageRef = useObjectUrlImage(file);
+const ReportPhoto = ({ file, url }: { file: File | null; url: string }) => {
+    const imageRef = useObjectUrlImage(url ? null : file);
 
-    if (!file) {
+    if (!file && !url) {
         return (
             <div className="border-line bg-placeholder text-text-secondary flex aspect-square items-center justify-center rounded-[5px] border">
                 <span className="text-[14px]">사진 없음</span>
@@ -183,6 +192,7 @@ const ReportPhoto = ({ file }: { file: File | null }) => {
         <div className="border-line bg-ground aspect-square overflow-hidden rounded-[5px] border">
             <img
                 ref={imageRef}
+                src={url || undefined}
                 alt="최종 리폼 결과 사진"
                 className="h-full w-full object-cover"
             />

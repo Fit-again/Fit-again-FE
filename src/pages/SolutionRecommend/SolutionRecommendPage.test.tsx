@@ -1,7 +1,7 @@
 import { act, fireEvent, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { MemoryRouter, Route, Routes } from "react-router-dom";
-import { afterEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import AIAnalysisPage from "@/pages/AIAnalysis/AIAnalysisPage";
 import ReformSimulationPage from "@/pages/ReformSimulation/ReformSimulationPage";
 import ResellPreviewPage from "@/pages/ResellPreview/ResellPreviewPage";
@@ -9,9 +9,7 @@ import SolutionRecommendPage from "@/pages/SolutionRecommend/SolutionRecommendPa
 import UpcyclePreviewPage from "@/pages/UpcyclePreview/UpcyclePreviewPage";
 import { ROUTES } from "@/routes/paths";
 import { useReformFlowStore } from "@/stores/useReformFlowStore";
-
-const createImageFile = (name = "front.png") =>
-    new File(["dummy"], name, { type: "image/png" });
+import { seedApiFlowStore } from "@/test/apiFixtures";
 
 const renderPage = () =>
     render(
@@ -39,13 +37,17 @@ const renderPage = () =>
     );
 
 describe("SolutionRecommendPage", () => {
+    beforeEach(() => {
+        useReformFlowStore.getState().resetFlow();
+        useReformFlowStore.setState(seedApiFlowStore());
+    });
+
     afterEach(() => {
         vi.useRealTimers();
         useReformFlowStore.getState().resetFlow();
     });
 
     it("AI 추천 결과 레이아웃을 보여준다", () => {
-        useReformFlowStore.setState({ frontPhoto: createImageFile() });
         renderPage();
 
         expect(

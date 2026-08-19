@@ -9,13 +9,6 @@ import {
     StepCardShell,
     StepPhoto,
 } from "@/components/simulation/SimulationStepUI";
-import { PAIN_POINT_CAUSE_TEXT } from "@/constants/painPointKeywords";
-import {
-    AFTER_EFFECT_TEXT,
-    DEFAULT_AFTER_BULLETS,
-    DEFAULT_BEFORE_BULLETS,
-    SIMULATION_STEPS,
-} from "@/constants/simulation";
 import { useTransitionNavigation } from "@/hooks/useTransitionNavigation";
 import { ROUTES } from "@/routes/paths";
 import { useReformFlowStore } from "@/stores/useReformFlowStore";
@@ -28,25 +21,27 @@ function ReformSimulationPage() {
         ROUTES.resultConfirm
     );
     const frontPhoto = useReformFlowStore((state) => state.frontPhoto);
-    const wearPhotos = useReformFlowStore((state) => state.wearPhotos);
-    const painPointKeywordIds = useReformFlowStore(
-        (state) => state.painPointKeywordIds
+    const recommendation = useReformFlowStore((state) =>
+        state.recommendationRankings.find(
+            (item) => item.recommendationType === "REFORM"
+        )
     );
     const [openedStepIndex, setOpenedStepIndex] = useState<number | null>(null);
-    const beforeBullets =
-        painPointKeywordIds.length > 0
-            ? painPointKeywordIds.map((id) => PAIN_POINT_CAUSE_TEXT[id] ?? id)
-            : DEFAULT_BEFORE_BULLETS;
+    const simulation =
+        recommendation?.recommendationType === "REFORM"
+            ? recommendation.simulation
+            : null;
+    const steps =
+        simulation?.steps.map((step) => ({
+            id: String(step.step),
+            stepNumber: step.step,
+            title: step.title,
+            bullets: step.description,
+        })) ?? [];
+    const beforeBullets = simulation?.beforeAfter.before.points ?? [];
+    const afterBullets = simulation?.beforeAfter.after.points ?? [];
 
-    const afterBullets =
-        painPointKeywordIds.length > 0
-            ? [
-                  ...painPointKeywordIds.map(
-                      (id) => AFTER_EFFECT_TEXT[id] ?? "선택한 불편 사항 개선"
-                  ),
-                  "기존 디자인을 유지하면서 사용성 향상",
-              ]
-            : DEFAULT_AFTER_BULLETS;
+    if (!simulation || steps.length === 0) return null;
 
     return (
         <>
@@ -72,44 +67,52 @@ function ReformSimulationPage() {
                     <div className="mt-5 flex flex-col gap-4 lg:flex-row lg:items-stretch">
                         {/* TODO: 백엔드 부위 인식 API 연동 시 교체 대상 부위 마커 재구현 */}
                         <StepCardShell
-                            step={SIMULATION_STEPS[0]}
+                            step={steps[0]}
                             onOpen={() => setOpenedStepIndex(0)}
                         >
                             <StepPhoto
-                                file={frontPhoto}
+                                file={
+                                    simulation.steps[0]?.imageUrl ?? frontPhoto
+                                }
                                 alt="해체 전 정면 사진"
                             />
                         </StepCardShell>
                         <StepArrow />
 
                         <StepCardShell
-                            step={SIMULATION_STEPS[1]}
+                            step={steps[1]}
                             onOpen={() => setOpenedStepIndex(1)}
                         >
                             <StepPhoto
-                                file={wearPhotos[0] ?? frontPhoto}
+                                file={
+                                    simulation.steps[1]?.imageUrl ?? frontPhoto
+                                }
                                 alt="교체할 부품 사진"
                             />
                         </StepCardShell>
                         <StepArrow />
 
                         <StepCardShell
-                            step={SIMULATION_STEPS[2]}
+                            step={steps[2]}
                             onOpen={() => setOpenedStepIndex(2)}
                         >
                             <StepPhoto
-                                file={wearPhotos[0] ?? frontPhoto}
+                                file={
+                                    simulation.steps[2]?.imageUrl ?? frontPhoto
+                                }
                                 alt="보강 부위 상세 사진"
                             />
                         </StepCardShell>
                         <StepArrow />
 
                         <StepCardShell
-                            step={SIMULATION_STEPS[3]}
+                            step={steps[3]}
                             onOpen={() => setOpenedStepIndex(3)}
                         >
                             <StepPhoto
-                                file={frontPhoto}
+                                file={
+                                    simulation.steps[3]?.imageUrl ?? frontPhoto
+                                }
                                 alt="리폼 완성 예상 사진"
                             />
                         </StepCardShell>
@@ -128,7 +131,10 @@ function ReformSimulationPage() {
                             <Card className="mt-4 p-5">
                                 <div className="grid gap-5 sm:grid-cols-[minmax(0,0.8fr)_minmax(0,1.2fr)] sm:items-center">
                                     <StepPhoto
-                                        file={frontPhoto}
+                                        file={
+                                            simulation.beforeAfter.before
+                                                .imageUrl
+                                        }
                                         alt="현재 제품 사진"
                                     />
                                     <ul className="flex flex-col gap-2.5">
@@ -165,7 +171,10 @@ function ReformSimulationPage() {
                             <Card className="mt-4 p-5">
                                 <div className="grid gap-5 sm:grid-cols-[minmax(0,0.8fr)_minmax(0,1.2fr)] sm:items-center">
                                     <StepPhoto
-                                        file={frontPhoto}
+                                        file={
+                                            simulation.beforeAfter.after
+                                                .imageUrl
+                                        }
                                         alt="리폼 후 기대 제품 사진"
                                     />
                                     <ul className="flex flex-col gap-2.5">
@@ -193,8 +202,8 @@ function ReformSimulationPage() {
             {openedStepIndex !== null && (
                 <StepDetailModal
                     stepIndex={openedStepIndex}
-                    frontPhoto={frontPhoto}
-                    wearPhotos={wearPhotos}
+                    steps={steps}
+                    stepImages={simulation.steps.map((step) => step.imageUrl)}
                     onClose={() => setOpenedStepIndex(null)}
                 />
             )}
@@ -204,18 +213,17 @@ function ReformSimulationPage() {
 
 const StepDetailModal = ({
     stepIndex,
-    frontPhoto,
-    wearPhotos,
+    steps,
+    stepImages,
     onClose,
 }: {
     stepIndex: number;
-    frontPhoto: File | null;
-    wearPhotos: File[];
+    steps: import("@/types/simulation").SimulationStep[];
+    stepImages: string[];
     onClose: () => void;
 }) => {
-    const step = SIMULATION_STEPS[stepIndex] ?? SIMULATION_STEPS[0];
-    const photo =
-        stepIndex === 1 || stepIndex === 2 ? wearPhotos[0] : frontPhoto;
+    const step = steps[stepIndex] ?? steps[0];
+    const photo = stepImages[stepIndex] ?? null;
 
     return (
         <Modal
@@ -225,10 +233,7 @@ const StepDetailModal = ({
             footer={false}
             onClose={onClose}
         >
-            <StepPhoto
-                file={photo ?? frontPhoto}
-                alt={`${step.title} 단계 상세 사진`}
-            />
+            <StepPhoto file={photo} alt={`${step.title} 단계 상세 사진`} />
         </Modal>
     );
 };
