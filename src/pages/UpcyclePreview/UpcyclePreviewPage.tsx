@@ -43,7 +43,7 @@ function UpcyclePreviewPage() {
                 />
             }
         >
-            <section className="grid gap-4 lg:grid-cols-3">
+            <section className="grid gap-4 lg:grid-cols-3 xl:relative xl:left-1/2 xl:w-[1336px] xl:-translate-x-1/2 xl:gap-[47px]">
                 {products.map((product) => (
                     <UpcycleOptionCard
                         key={product.itemName}
@@ -54,8 +54,11 @@ function UpcyclePreviewPage() {
                 ))}
             </section>
 
-            <Card className="mt-[30px] p-5 lg:min-h-[393px]">
-                <div className="grid gap-5 lg:grid-cols-[minmax(0,0.72fr)_minmax(0,1.32fr)_minmax(0,1fr)]">
+            <Card className="mt-5 p-5 lg:min-h-[468px] xl:relative xl:left-1/2 xl:w-[1336px] xl:-translate-x-1/2">
+                <h2 className="text-primary text-[20px] font-medium">
+                    {selectedProduct.itemName}으로 재탄생한다면?
+                </h2>
+                <div className="mt-[15px] grid gap-[14px] lg:grid-cols-3 xl:grid-cols-[425px_373px_439px]">
                     <PreviewSection title="예상 모습">
                         <GeneratedProductPlaceholder
                             product={selectedProduct}
@@ -129,7 +132,7 @@ const UpcycleOptionCard = ({
 }) => (
     <button
         type="button"
-        className={`focus-visible:outline-primary relative grid min-h-[186px] cursor-pointer grid-cols-[110px_1fr] items-center gap-4 rounded-[5px] border bg-white p-5 text-left transition-[border-color,box-shadow] focus-visible:outline-3 focus-visible:outline-offset-2 ${selected ? "border-primary shadow-[0_3px_7px_rgba(91,58,41,0.15)]" : "border-line hover:border-primary/60"}`}
+        className={`focus-visible:outline-primary relative grid min-h-[190px] cursor-pointer grid-cols-[154px_1fr] items-center gap-[23px] rounded-none border bg-white p-5 text-left transition-[border-color,box-shadow] focus-visible:outline-3 focus-visible:outline-offset-2 ${selected ? "border-black" : "hover:border-primary/60 border-transparent"}`}
         aria-pressed={selected}
         onClick={onClick}
     >
@@ -141,10 +144,10 @@ const UpcycleOptionCard = ({
                 ✓
             </span>
         )}
-        <span className="bg-placeholder text-text-secondary mt-8 flex aspect-square items-center justify-center text-center text-[12px]">
+        <span className="bg-placeholder text-text-secondary mt-10 flex h-[114px] items-center justify-center text-center text-[12px]">
             예상 이미지
         </span>
-        <span className="text-text-secondary mt-8 text-[15px] leading-snug">
+        <span className="text-text-secondary mt-10 text-[15px] leading-snug">
             {product.description}
         </span>
     </button>
@@ -157,10 +160,8 @@ const PreviewSection = ({
     title: string;
     children: React.ReactNode;
 }) => (
-    <section className="border-line border-t pt-5 first:border-0 first:pt-0 lg:border-t-0 lg:border-l lg:pl-5 lg:first:pl-0">
-        <h2 className="text-primary text-[22px] font-bold sm:text-[25px]">
-            {title}
-        </h2>
+    <section className="bg-secondary p-[13px] lg:min-h-[393px]">
+        <h2 className="text-primary text-[20px] font-medium">{title}</h2>
         <div className="mt-4">{children}</div>
     </section>
 );

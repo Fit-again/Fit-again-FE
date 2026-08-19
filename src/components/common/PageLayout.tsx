@@ -26,7 +26,7 @@ const PageLayout = ({
         <ProgressHeader currentStep={currentStep} steps={steps} />
         <PageIntro title={title} description={description} />
         <main
-            className={`mx-auto flex w-full max-w-[1240px] flex-1 flex-col px-5 pt-8 pb-6 sm:px-8 xl:px-0 ${contentSpacing === "compact" ? "lg:pt-8" : "lg:pt-12"}`}
+            className={`mx-auto flex w-full max-w-[1240px] flex-1 flex-col px-5 pt-8 pb-[25px] sm:px-8 xl:px-0 ${contentSpacing === "compact" ? "lg:pt-[30px]" : "lg:pt-[50px]"}`}
         >
             {children}
             {actions && <div className="mt-auto pt-7">{actions}</div>}

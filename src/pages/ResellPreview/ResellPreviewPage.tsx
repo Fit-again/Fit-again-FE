@@ -35,17 +35,17 @@ function ResellPreviewPage() {
                 />
             }
         >
-            <div className="-mt-4 grid gap-7 lg:grid-cols-[minmax(0,490px)_minmax(0,1fr)] lg:gap-[30px]">
+            <div className="mt-[21px] grid gap-7 lg:grid-cols-[493px_minmax(0,1fr)] lg:gap-[30px]">
                 <section>
                     <h2 className="text-primary text-[23px] font-bold sm:text-[25px]">
                         분석한 제품
                     </h2>
-                    <Card className="mt-4 p-5">
+                    <Card className="border-primary mt-5 p-5">
                         <AnnotatedProductPhoto
                             file={frontPhoto}
                             url={recommendation.frontImageUrl}
                         />
-                        <div className="mt-4 flex flex-col gap-3 text-[15px]">
+                        <div className="mt-5 flex flex-wrap gap-5 text-[15px]">
                             <p className="text-danger flex items-center gap-2">
                                 <FactorBadge tone="danger" />
                                 단점으로 작용할 수 있는 요소
@@ -56,7 +56,7 @@ function ResellPreviewPage() {
                             </p>
                         </div>
                     </Card>
-                    <p className="text-text-secondary mt-4 text-[14px] leading-relaxed">
+                    <p className="text-text-secondary mt-5 text-[15px] leading-relaxed">
                         ※ AI 분석은 등록하신 사진을 기반으로 한 참고 정보이며,
                         실제 제품 상태와 다를 수 있습니다.
                     </p>
@@ -66,9 +66,12 @@ function ResellPreviewPage() {
                     <h2 className="text-primary text-[23px] font-bold sm:text-[25px]">
                         이 제품과 잘 맞을 수 있는 사용자
                     </h2>
-                    <div className="mt-4 flex flex-col gap-3">
+                    <div className="mt-5 flex flex-col gap-[15px]">
                         {recommendation.alternativeProducts.map((product) => (
-                            <Card key={product.productType} className="p-3">
+                            <Card
+                                key={product.productType}
+                                className="px-[15px] py-[10px]"
+                            >
                                 <h3 className="text-primary text-[17px] font-bold">
                                     {product.productType}을 선호하는 사용자
                                 </h3>
@@ -86,10 +89,10 @@ function ResellPreviewPage() {
                         ))}
                     </div>
 
-                    <h2 className="text-primary mt-7 text-[23px] font-bold sm:text-[25px]">
+                    <h2 className="text-primary mt-[30px] text-[23px] font-bold sm:text-[25px]">
                         리셀 가치에 영향을 주는 요소
                     </h2>
-                    <Card className="mt-4 grid gap-6 p-5 sm:grid-cols-2">
+                    <Card className="mt-5 grid gap-6 p-5 sm:grid-cols-2">
                         <ValueFactorList
                             title="가치에 영향을 줄 수 있는 요소"
                             tone="danger"

@@ -147,8 +147,8 @@ function PainPointPage() {
                         <ErrorMessage>{errors.root.message}</ErrorMessage>
                     </div>
                 )}
-                <div className="grid gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.45fr)] lg:gap-7">
-                    <section className="lg:border-line flex flex-col lg:min-h-[628px] lg:border-r lg:pr-7">
+                <div className="grid gap-10 lg:grid-cols-[520px_690px] lg:gap-[30px]">
+                    <section className="lg:border-line flex flex-col lg:min-h-[645px] lg:border-r lg:pr-[30px]">
                         <SectionHeading
                             number={1}
                             title="불편 키워드 선택"
@@ -158,7 +158,7 @@ function PainPointPage() {
                         <p className="text-text-secondary mt-1 text-[18px]">
                             현재 느끼는 불편함을 선택해주세요.
                         </p>
-                        <div className="mt-5 flex flex-wrap gap-4">
+                        <div className="mt-5 flex flex-wrap gap-x-5 gap-y-[18px]">
                             <Controller
                                 control={control}
                                 name="painPointKeywordIds"
@@ -208,11 +208,14 @@ function PainPointPage() {
                             </div>
                         )}
 
-                        <Card variant="soft" className="mt-10 p-3 lg:mt-auto">
+                        <Card
+                            variant="soft"
+                            className="mt-10 p-3 lg:mt-auto lg:h-[116px] lg:p-[10px]"
+                        >
                             <h3 className="border-line text-text-secondary border-b pb-1 text-center text-[15px] font-medium">
                                 작성 TIP
                             </h3>
-                            <p className="text-text-secondary mt-3 text-[15px] leading-relaxed">
+                            <p className="text-text-secondary mt-[10px] text-[15px] leading-[20px]">
                                 제품을 어떤 상황에서 사용하는지, 어떤 점이
                                 불편한지, 앞으로 어떻게 사용하고 싶은지 함께
                                 작성하면 AI가 사용 목적과 니즈를 더 정확하게
@@ -230,7 +233,7 @@ function PainPointPage() {
                         <div className="mt-5">
                             <Textarea
                                 aria-label="추가 설명 입력"
-                                className="min-h-[360px] resize-none lg:!min-h-[550px]"
+                                className="min-h-[360px] resize-none lg:!min-h-[554px]"
                                 placeholder="예) 출퇴근할 때 자주 사용하는데 스트랩이 짧아서 어깨가 아파요. 노트북을 넣고 다녀도 부담이 적도록 더 편하게 사용하고 싶어요."
                                 maxLength={DESCRIPTION_MAX}
                                 showCount
@@ -259,7 +262,7 @@ const KeywordToggle = ({
 }) => (
     <button
         type="button"
-        className={`focus-visible:outline-primary min-h-[42px] cursor-pointer rounded-[5px] border px-7 py-1.5 text-[18px] transition-colors focus-visible:outline-3 focus-visible:outline-offset-2 ${selected ? "border-primary bg-secondary text-primary font-medium" : "border-primary text-primary hover:bg-secondary/40 bg-white"}`}
+        className={`focus-visible:outline-primary min-h-[42px] cursor-pointer rounded-[5px] px-[31px] py-1.5 text-[18px] transition-colors focus-visible:outline-3 focus-visible:outline-offset-2 ${selected ? "border-primary bg-secondary text-primary border-2 font-medium" : "border-primary text-primary hover:bg-secondary/40 border bg-white"}`}
         aria-pressed={selected}
         onClick={onClick}
     >

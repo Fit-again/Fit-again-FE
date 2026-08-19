@@ -46,7 +46,7 @@ export const StepCardShell = ({
 
 export const StepArrow = ({ size = "sm" }: { size?: "sm" | "lg" }) => (
     <div
-        className="hidden shrink-0 items-center justify-center lg:flex"
+        className="hidden w-10 shrink-0 items-center justify-center lg:flex"
         aria-hidden="true"
     >
         <svg

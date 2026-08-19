@@ -26,7 +26,7 @@ const ResultReportCard = ({
     saveError,
     onSave,
 }: ResultReportCardProps) => (
-    <Card className="flex h-full flex-col p-6 sm:p-8">
+    <Card className="flex h-full flex-col p-5">
         <div ref={reportRef} className="flex flex-1 flex-col bg-white">
             <div className="border-line flex flex-wrap items-baseline justify-between gap-x-4 gap-y-2 border-b pb-4">
                 <h2 className="text-primary text-[22px] font-bold sm:text-[23px]">
@@ -39,7 +39,7 @@ const ResultReportCard = ({
             </div>
 
             <div
-                className="mt-6 grid flex-1 gap-6 sm:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)]"
+                className="mt-5 grid flex-1 gap-10 sm:grid-cols-[308px_minmax(0,1fr)]"
                 data-pdf-layout="content"
             >
                 <div className="flex flex-col items-start justify-center">

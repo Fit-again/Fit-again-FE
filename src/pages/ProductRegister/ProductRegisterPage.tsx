@@ -30,7 +30,7 @@ function ProductRegisterPage() {
     const {
         control,
         handleSubmit,
-        formState: { errors },
+        formState: { errors, isSubmitted },
     } = useForm<ProductRegisterFormType>({
         resolver: zodResolver(productRegisterSchema),
         defaultValues: {
@@ -59,6 +59,7 @@ function ProductRegisterPage() {
                 <PageActions
                     nextLabel="다음 단계"
                     onNext={() => void handleSubmit(onSubmit)()}
+                    nextDisabled={isSubmitted && Object.keys(errors).length > 0}
                 />
             }
         >
@@ -73,7 +74,7 @@ function ProductRegisterPage() {
                     <p className="text-text-secondary mt-1 text-[18px]">
                         제품 유형을 선택해주세요.
                     </p>
-                    <div className="mt-3 grid grid-cols-2 gap-4 sm:grid-cols-3">
+                    <div className="mt-3 grid grid-cols-2 gap-5 sm:grid-cols-3">
                         <Controller
                             control={control}
                             name="productType"

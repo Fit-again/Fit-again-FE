@@ -25,7 +25,7 @@ const ProgressHeader = ({
         <header className="border-line border-b bg-white">
             <div className="mx-auto flex min-h-[87px] w-full max-w-[1320px] items-center gap-5 px-5 py-4 sm:gap-10 sm:px-8 xl:gap-16 xl:px-0">
                 <Link
-                    className="font-logo text-primary focus-visible:outline-primary shrink-0 text-[34px] leading-none font-normal focus-visible:rounded focus-visible:outline-3 focus-visible:outline-offset-2 sm:text-[40px]"
+                    className="font-brand text-primary focus-visible:outline-primary shrink-0 text-[34px] leading-none font-extrabold focus-visible:rounded focus-visible:outline-3 focus-visible:outline-offset-2 sm:text-[40px]"
                     to={ROUTES.home}
                     aria-label="Fit Again 홈"
                 >

@@ -219,7 +219,7 @@ function ResultConfirmPage() {
 }
 
 const AgreementContent = () => (
-    <div className="space-y-5 text-[15px] leading-relaxed sm:text-[16px]">
+    <div className="space-y-[10px] text-[15px] leading-[18px]">
         <p>원활한 상담 진행을 위해 아래와 같이 개인정보를 수집·이용합니다.</p>
         <section>
             <h3 className="font-medium">1. 수집 및 이용 목적</h3>

@@ -23,13 +23,13 @@ const HomePage = () => {
         <div className="bg-ground flex min-h-dvh w-full flex-col lg:h-dvh lg:overflow-hidden">
             <section className="mx-auto flex w-full max-w-[1240px] flex-col items-center gap-12 px-5 py-16 sm:px-8 lg:h-[60.55dvh] lg:min-h-0 lg:flex-row lg:gap-[70px] lg:py-[clamp(36px,6vh,64px)] xl:px-0">
                 <div className="w-full max-w-[598px] text-center lg:text-left">
-                    <p className="text-text-strong text-[20px] sm:text-[25px]">
+                    <p className="text-text-strong text-[20px] leading-[30px] sm:text-[25px]">
                         나에게 맞게, 다시 사용하다
                     </p>
-                    <h1 className="font-logo text-primary mt-5 text-[60px] leading-none font-normal tracking-[0.07em] sm:text-[80px]">
+                    <h1 className="font-logo text-primary mt-[10px] text-[60px] leading-[100px] font-normal tracking-[0.07em] sm:text-[80px]">
                         Fit:again
                     </h1>
-                    <p className="text-primary mt-6 text-[24px] leading-[1.28] font-bold sm:text-[30px]">
+                    <p className="text-primary mt-[10px] text-[24px] leading-[36px] font-medium sm:text-[30px]">
                         <span className="sm:block">
                             변화된 라이프스타일에 맞는
                         </span>{" "}
@@ -37,11 +37,11 @@ const HomePage = () => {
                             가장 적합한 활용 방안을 제안해주는 서비스
                         </span>
                     </p>
-                    <p className="text-text-secondary mt-7 text-[17px] sm:text-[18px]">
+                    <p className="text-text-secondary mt-[30px] text-[17px] leading-[21px] sm:text-[18px]">
                         지금 바로 나의 제품을 분석해보세요.
                     </p>
                     <Button
-                        className="mx-auto mt-2 w-full max-w-[598px] lg:mx-0"
+                        className="mx-auto mt-[10px] w-full max-w-[598px] lg:mx-0"
                         size="lg"
                         onClick={handleStart}
                     >
@@ -56,31 +56,34 @@ const HomePage = () => {
                 />
             </section>
 
-            <section className="bg-primary flex flex-1 flex-col items-center justify-center px-5 py-16 sm:px-8 lg:h-[39.45dvh] lg:min-h-0 lg:flex-none lg:py-[clamp(32px,5vh,50px)]">
-                <div className="mx-auto flex w-full max-w-[1160px] flex-col items-center text-center">
-                    <h2 className="text-[25px] leading-snug font-bold text-white">
+            <section className="bg-primary flex flex-1 flex-col items-center justify-center px-5 py-16 sm:px-8 lg:h-[39.45dvh] lg:min-h-0 lg:flex-none lg:py-0">
+                <div className="mx-auto flex w-full max-w-[1199px] flex-col items-center gap-[50px] text-center">
+                    <h2 className="w-full max-w-[604px] text-[25px] leading-[40px] font-medium text-white">
                         아직 사용할 수 있지만,
                         <br />
                         지금은 손이 가지 않는 럭셔리 제품이 있으신가요?
                     </h2>
 
-                    <div className="mt-8 flex flex-wrap items-center justify-center gap-[30px]">
-                        {painPoints.map((point) => (
+                    <div className="flex flex-wrap items-center justify-center gap-[30px]">
+                        {painPoints.map((point, index) => (
                             <span
                                 key={point}
-                                className="bg-ground/20 inline-flex min-h-[50px] items-center rounded-[5px] px-5 py-2 text-[18px] text-white/90 shadow-[0_0_12.2px_0_rgba(250,248,243,0.5)] sm:text-[24px]"
+                                className={`bg-ground/20 inline-flex h-[50px] items-center justify-center rounded-[5px] px-[15px] py-[10px] text-[18px] leading-[30px] font-medium text-white sm:text-[25px] ${index === 0 ? "lg:w-[374px]" : index === 1 ? "lg:w-[345px]" : "lg:w-[420px]"}`}
                             >
                                 {point}
                             </span>
                         ))}
                     </div>
 
-                    <p className="mt-10 text-[16px] leading-relaxed text-white/80 sm:text-[18px]">
-                        제품 상태와 현재 사용 목적을 분석하여 가장 적합한 활용
-                        방안을 제안합니다.
-                        <br />
-                        추천된 활용 방안을 시뮬레이션으로 미리 확인해보세요.
-                    </p>
+                    <div className="flex flex-col gap-[10px] text-[16px] leading-[21px] text-white sm:text-[18px]">
+                        <p>
+                            제품 상태와 현재 사용 목적을 분석하여 가장 적합한
+                            활용 방안을 제안합니다.
+                        </p>
+                        <p>
+                            추천된 활용 방안을 시뮬레이션으로 미리 확인해보세요.
+                        </p>
+                    </div>
                 </div>
             </section>
         </div>

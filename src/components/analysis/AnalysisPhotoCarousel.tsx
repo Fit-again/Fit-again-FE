@@ -24,37 +24,42 @@ const AnalysisPhotoCarousel = ({ photos }: { photos: AnalysisPhoto[] }) => {
 
     return (
         <div>
-            <div className="border-line bg-ground relative aspect-square overflow-hidden rounded-[5px] border">
-                <img
-                    ref={imgRef}
-                    src={
-                        typeof current.file === "string"
-                            ? current.file
-                            : undefined
-                    }
-                    alt={current.label}
-                    className="h-full w-full object-contain"
-                />
+            <div className="flex items-center gap-[5px]">
                 {photos.length > 1 && (
-                    <>
-                        <CarouselButton
-                            direction="left"
-                            label="이전 사진"
-                            onClick={goPrevious}
-                        />
-                        <CarouselButton
-                            direction="right"
-                            label="다음 사진"
-                            onClick={goNext}
-                        />
-                        <span className="bg-secondary text-text-strong absolute right-1/2 -bottom-11 translate-x-1/2 rounded-full px-3 py-1 text-sm">
-                            {currentIndex + 1}/{photos.length}
-                        </span>
-                    </>
+                    <CarouselButton
+                        direction="left"
+                        label="이전 사진"
+                        onClick={goPrevious}
+                    />
+                )}
+                <div className="border-line bg-ground relative aspect-square min-w-0 flex-1 overflow-hidden rounded-[5px] border">
+                    <img
+                        ref={imgRef}
+                        src={
+                            typeof current.file === "string"
+                                ? current.file
+                                : undefined
+                        }
+                        alt={current.label}
+                        className="h-full w-full object-contain"
+                    />
+                </div>
+                {photos.length > 1 && (
+                    <CarouselButton
+                        direction="right"
+                        label="다음 사진"
+                        onClick={goNext}
+                    />
                 )}
             </div>
 
-            {photos.length > 1 && <div className="h-11" aria-hidden="true" />}
+            {photos.length > 1 && (
+                <div className="mt-5 flex justify-center">
+                    <span className="bg-secondary text-text-strong rounded-full px-3 py-1 text-sm">
+                        {currentIndex + 1}/{photos.length}
+                    </span>
+                </div>
+            )}
         </div>
     );
 };
@@ -72,10 +77,10 @@ const CarouselButton = ({
         type="button"
         onClick={onClick}
         aria-label={label}
-        className={`text-text-strong focus-visible:outline-primary absolute top-1/2 flex size-9 -translate-y-1/2 cursor-pointer items-center justify-center rounded-full bg-white/85 shadow hover:bg-white focus-visible:outline-3 focus-visible:outline-offset-2 ${direction === "left" ? "left-3" : "right-3"}`}
+        className="text-line focus-visible:outline-primary flex size-[30px] shrink-0 cursor-pointer items-center justify-center focus-visible:outline-3 focus-visible:outline-offset-2"
     >
         <svg
-            className="size-4"
+            className="size-[30px]"
             viewBox="0 0 16 16"
             fill="none"
             aria-hidden="true"

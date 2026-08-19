@@ -1,5 +1,6 @@
 @import url("https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard-dynamic-subset.min.css");
 @import url("https://fonts.googleapis.com/css2?family=Scada:wght@400;700&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Abhaya+Libre:wght@800&display=swap");
 @import "tailwindcss";
 
 :root {
@@ -15,6 +16,7 @@
     --font-sans:
         "Pretendard", "Noto Sans KR", "Apple SD Gothic Neo", sans-serif;
     --font-logo: "Scada", sans-serif;
+    --font-brand: "Abhaya Libre", serif;
 
     /* Fit Again 메인 팔레트 */
     --color-primary: #5b3a29;
