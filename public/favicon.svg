@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Fit Again">
+    <rect width="64" height="64" rx="16" fill="#5b3a29" />
+    <path
+        d="M16 15h24v7H24v8h14v7H24v13h-8V15Z"
+        fill="#faf8f3"
+    />
+    <circle cx="47" cy="19" r="4" fill="#d8b38a" />
+    <path
+        d="M43 31c0-5 3-8 8-8 2 0 4 .5 5 1.5V23h6v27h-6v-2c-1.5 1.7-3.5 2.5-6 2.5-4.5 0-7-3.5-7-9.5V31Zm7 9.5c0 3 1 4.5 3 4.5s3-1.5 3-4.5v-8c0-2.5-1-4-3-4s-3 1.5-3 4v8Z"
+        fill="#d8b38a"
+    />
+</svg>
