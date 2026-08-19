@@ -56,17 +56,30 @@ function AIAnalysisPage() {
         abortControllerRef.current = controller;
 
         try {
-            const loadRecommendation = () =>
-                getRecommendationApi(taskId, controller.signal);
+            let recommendationRequestError: unknown;
+            const loadRecommendation = async () => {
+                const latest = await getRecommendationApi(
+                    taskId,
+                    controller.signal
+                );
+
+                if (
+                    latest.status === "DIAGNOSED" &&
+                    recommendationRequestError
+                ) {
+                    throw recommendationRequestError;
+                }
+
+                return latest;
+            };
             let result = await loadRecommendation();
 
             if (result.status === "DIAGNOSED") {
-                try {
-                    await requestRecommendationApi(taskId, controller.signal);
-                } catch (error) {
-                    result = await loadRecommendation();
-                    if (result.status === "DIAGNOSED") throw error;
-                }
+                void requestRecommendationApi(taskId, controller.signal).catch(
+                    (error: unknown) => {
+                        recommendationRequestError = error;
+                    }
+                );
             }
 
             if (result.status === "FAILED") {

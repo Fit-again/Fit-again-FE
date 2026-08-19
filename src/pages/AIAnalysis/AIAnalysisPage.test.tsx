@@ -144,6 +144,33 @@ describe("AIAnalysisPage", () => {
         );
     });
 
+    it("추천 POST 응답이 지연되어도 완료 결과 조회를 이어간다", async () => {
+        vi.mocked(getRecommendationApi)
+            .mockResolvedValueOnce({ status: "DIAGNOSED", rankings: null })
+            .mockResolvedValueOnce({
+                status: "RECOMMENDED",
+                rankings: recommendationRankingsFixture,
+            });
+        vi.mocked(requestRecommendationApi).mockReturnValue(
+            new Promise(() => undefined)
+        );
+        renderPage();
+        const user = userEvent.setup();
+
+        await user.click(
+            screen.getByRole("button", { name: "추천 결과 보기" })
+        );
+
+        expect(
+            await screen.findByRole("heading", {
+                name: "AI 추천 결과",
+                level: 1,
+            })
+        ).toBeInTheDocument();
+        expect(requestRecommendationApi).toHaveBeenCalledOnce();
+        expect(getRecommendationApi).toHaveBeenCalledTimes(2);
+    });
+
     it("추천 생성 중이면 POST 없이 결과 조회를 이어간다", async () => {
         vi.mocked(getRecommendationApi)
             .mockResolvedValueOnce({ status: "RECOMMENDING", rankings: null })
@@ -230,10 +257,14 @@ describe("AIAnalysisPage", () => {
         );
 
         expect(
-            await screen.findByRole("heading", {
-                name: "AI 추천 결과",
-                level: 1,
-            })
+            await screen.findByRole(
+                "heading",
+                {
+                    name: "AI 추천 결과",
+                    level: 1,
+                },
+                { timeout: 3_000 }
+            )
         ).toBeInTheDocument();
         expect(getRecommendationApi).toHaveBeenCalledTimes(3);
     });
