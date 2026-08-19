@@ -3,9 +3,9 @@ type TransitionLoadingOverlayProps = {
 };
 
 const TransitionLoadingOverlay = ({ title }: TransitionLoadingOverlayProps) => (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/35 px-5">
+    <div className="bg-ground/85 fixed inset-0 z-50 flex items-center justify-center px-5">
         <div
-            className="border-line flex min-h-[268px] w-full max-w-180 flex-col items-center justify-center rounded-[5px] border bg-white px-6 py-10 shadow-[5px_7px_2px_rgba(231,226,216,0.85)]"
+            className="border-line flex w-full max-w-180 flex-col items-center justify-center gap-[30px] rounded-[5px] border-2 bg-white p-[50px] shadow-[4px_4px_4px_#e7e2d8]"
             role="status"
             aria-live="polite"
         >
@@ -13,7 +13,7 @@ const TransitionLoadingOverlay = ({ title }: TransitionLoadingOverlayProps) => (
                 {title}
             </p>
             <span
-                className="border-secondary border-t-primary mt-9 size-20 animate-spin rounded-full border-10"
+                className="border-secondary border-t-primary size-[100px] animate-spin rounded-full border-10"
                 aria-hidden="true"
             />
         </div>

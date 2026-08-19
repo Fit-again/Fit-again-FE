@@ -60,7 +60,7 @@ export const Input = ({
     ...rest
 }: InputProps) => (
     <input
-        className={`focus:border-primary focus-visible:outline-primary placeholder:text-text-secondary/70 disabled:bg-secondary h-11 w-full rounded-[5px] border bg-white px-[15px] text-[18px] outline-none focus-visible:outline-2 focus-visible:outline-offset-1 disabled:cursor-not-allowed ${invalid ? "border-danger" : "border-line"} ${className}`}
+        className={`placeholder:text-text-secondary/70 disabled:bg-secondary h-11 w-full rounded-[5px] border bg-white px-[15px] text-[18px] outline-none focus-visible:outline-2 focus-visible:outline-offset-1 disabled:cursor-not-allowed ${invalid ? "border-danger focus:border-danger focus-visible:outline-danger" : "border-line focus:border-primary focus-visible:outline-primary"} ${className}`}
         aria-invalid={invalid || undefined}
         {...rest}
     />
@@ -84,7 +84,7 @@ export const Textarea = ({
     return (
         <div className="relative">
             <textarea
-                className={`focus:border-primary focus-visible:outline-primary placeholder:text-text-secondary/70 disabled:bg-secondary block min-h-[180px] w-full resize-y rounded-[5px] border bg-white px-[15px] py-[10px] text-[18px] outline-none focus-visible:outline-2 focus-visible:outline-offset-1 disabled:cursor-not-allowed ${showCount ? "pb-8" : ""} ${invalid ? "border-danger" : "border-line"} ${className}`}
+                className={`placeholder:text-text-secondary/70 disabled:bg-secondary block min-h-[180px] w-full resize-y rounded-[5px] border bg-white px-[15px] py-[10px] text-[18px] outline-none focus-visible:outline-2 focus-visible:outline-offset-1 disabled:cursor-not-allowed ${showCount ? "pb-8" : ""} ${invalid ? "border-danger focus:border-danger focus-visible:outline-danger" : "border-line focus:border-primary focus-visible:outline-primary"} ${className}`}
                 aria-invalid={invalid || undefined}
                 value={value}
                 maxLength={maxLength}

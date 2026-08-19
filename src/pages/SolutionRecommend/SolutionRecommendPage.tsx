@@ -10,7 +10,7 @@ import { useTransitionNavigation } from "@/hooks/useTransitionNavigation";
 import { ROUTES } from "@/routes/paths";
 import { useReformFlowStore } from "@/stores/useReformFlowStore";
 import { toRecommendationType } from "@/types/recommendation";
-import { useNavigate } from "react-router-dom";
+import { Navigate, useNavigate } from "react-router-dom";
 
 function SolutionRecommendPage() {
     const navigate = useNavigate();
@@ -44,7 +44,9 @@ function SolutionRecommendPage() {
             item.recommendationType === toRecommendationType(selectedSolution)
     );
 
-    if (!recommendation) return null;
+    if (!recommendation) {
+        return <Navigate to={ROUTES.aiAnalysis} replace />;
+    }
 
     return (
         <>

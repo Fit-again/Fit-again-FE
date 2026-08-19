@@ -13,7 +13,7 @@ import { toRecommendationType } from "@/types/recommendation";
 import { getApiErrorMessage } from "@/utils/apiError";
 import { downloadReportPdf } from "@/utils/downloadReportPdf";
 import { useRef, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Navigate, useNavigate } from "react-router-dom";
 
 function ResultConfirmPage() {
     const navigate = useNavigate();
@@ -106,7 +106,9 @@ function ResultConfirmPage() {
         }
     };
 
-    if (!selectedRecommendation) return null;
+    if (!selectedRecommendation) {
+        return <Navigate to={ROUTES.solutionRecommend} replace />;
+    }
 
     return (
         <>
@@ -219,7 +221,7 @@ function ResultConfirmPage() {
 }
 
 const AgreementContent = () => (
-    <div className="space-y-5 text-[15px] leading-relaxed sm:text-[16px]">
+    <div className="space-y-[10px] text-[15px] leading-[18px]">
         <p>원활한 상담 진행을 위해 아래와 같이 개인정보를 수집·이용합니다.</p>
         <section>
             <h3 className="font-medium">1. 수집 및 이용 목적</h3>

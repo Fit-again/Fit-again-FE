@@ -13,7 +13,7 @@ import { useTransitionNavigation } from "@/hooks/useTransitionNavigation";
 import { ROUTES } from "@/routes/paths";
 import { useReformFlowStore } from "@/stores/useReformFlowStore";
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Navigate, useNavigate } from "react-router-dom";
 
 function ReformSimulationPage() {
     const navigate = useNavigate();
@@ -41,7 +41,9 @@ function ReformSimulationPage() {
     const beforeBullets = simulation?.beforeAfter.before.points ?? [];
     const afterBullets = simulation?.beforeAfter.after.points ?? [];
 
-    if (!simulation || steps.length === 0) return null;
+    if (!simulation || steps.length < 4) {
+        return <Navigate to={ROUTES.solutionRecommend} replace />;
+    }
 
     return (
         <>
@@ -64,8 +66,7 @@ function ReformSimulationPage() {
                         리폼 추천 과정
                     </h2>
 
-                    <div className="mt-5 flex flex-col gap-4 lg:flex-row lg:items-stretch">
-                        {/* TODO: 백엔드 부위 인식 API 연동 시 교체 대상 부위 마커 재구현 */}
+                    <div className="mt-5 flex flex-col lg:flex-row lg:items-stretch">
                         <StepCardShell
                             step={steps[0]}
                             onOpen={() => setOpenedStepIndex(0)}
@@ -120,7 +121,7 @@ function ReformSimulationPage() {
                 </section>
 
                 <section className="mt-10">
-                    <div className="grid gap-6 lg:grid-cols-[1fr_auto_1fr] lg:items-center">
+                    <div className="grid lg:grid-cols-[1fr_auto_1fr] lg:items-center">
                         <div>
                             <h3 className="flex items-center gap-2 text-[19px] font-bold">
                                 <span className="text-danger">Before</span>

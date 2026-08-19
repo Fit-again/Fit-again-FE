@@ -25,7 +25,7 @@ const normalizeIconColor = (svg: string) =>
 
 const ProductTypeIcon = ({
     type,
-    className = "h-16 w-20",
+    className = "h-24 w-28",
 }: {
     type: ProductType;
     className?: string;

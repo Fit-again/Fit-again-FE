@@ -58,7 +58,7 @@ const Modal = ({
                 onClick={onClose}
             />
             <div
-                className={`border-line relative max-h-[calc(100vh-40px)] w-full overflow-y-auto rounded-[5px] border bg-white p-5 shadow-[5px_7px_4px_rgba(91,58,41,0.14)] sm:p-6 ${sizeStyles[size]}`}
+                className={`border-line relative max-h-[calc(100vh-40px)] w-full overflow-y-auto rounded-[5px] border bg-white p-5 shadow-[5px_7px_4px_rgba(91,58,41,0.14)] ${sizeStyles[size]}`}
                 ref={dialogRef}
                 role="dialog"
                 aria-modal="true"

@@ -58,8 +58,8 @@ const RecommendationResult = ({
 
     return (
         <div>
-            <Card className="p-5 sm:p-6">
-                <div className="grid gap-7 lg:grid-cols-[minmax(0,0.95fr)_minmax(0,1.25fr)_minmax(0,0.75fr)]">
+            <Card className="p-5">
+                <div className="grid gap-5 lg:grid-cols-[minmax(0,0.95fr)_minmax(0,1.25fr)_minmax(0,0.75fr)] xl:grid-cols-[384px_462px_minmax(0,1fr)]">
                     <ProductPhoto
                         file={frontPhoto}
                         url={recommendation.frontImageUrl}
@@ -162,7 +162,7 @@ const AlternativeCard = ({
 }) => (
     <button
         type="button"
-        className="border-line hover:border-primary focus-visible:outline-primary flex w-full cursor-pointer items-center justify-between gap-4 rounded-[5px] border bg-white p-5 text-left transition-[border-color,box-shadow] hover:shadow-[0_3px_7px_rgba(91,58,41,0.12)] focus-visible:outline-3 focus-visible:outline-offset-2"
+        className="border-line hover:border-primary focus-visible:outline-primary flex min-h-[157px] w-full cursor-pointer items-center justify-between gap-4 rounded-[5px] border bg-white p-5 text-left transition-[border-color,box-shadow] hover:shadow-[0_3px_7px_rgba(91,58,41,0.12)] focus-visible:outline-3 focus-visible:outline-offset-2"
         onClick={onClick}
     >
         <div>
