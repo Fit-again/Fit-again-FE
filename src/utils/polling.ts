@@ -1,7 +1,21 @@
 import { ApiError } from "@/types/api";
 
-export const POLLING_INTERVAL_MS = 2_000;
 export const POLLING_TIMEOUT_MS = 180_000;
+export const POLLING_FAST_DURATION_MS = 20_000;
+export const POLLING_NORMAL_DURATION_MS = 60_000;
+export const POLLING_FAST_INTERVAL_MS = 2_000;
+export const POLLING_NORMAL_INTERVAL_MS = 5_000;
+export const POLLING_SLOW_INTERVAL_MS = 10_000;
+
+export const getPollingIntervalMs = (elapsedMs: number) => {
+    if (elapsedMs < POLLING_FAST_DURATION_MS) {
+        return POLLING_FAST_INTERVAL_MS;
+    }
+    if (elapsedMs < POLLING_NORMAL_DURATION_MS) {
+        return POLLING_NORMAL_INTERVAL_MS;
+    }
+    return POLLING_SLOW_INTERVAL_MS;
+};
 
 const wait = (duration: number, signal?: AbortSignal) =>
     new Promise<void>((resolve, reject) => {
@@ -44,7 +58,14 @@ export const pollUntil = async <T>({
             );
         }
 
-        await wait(POLLING_INTERVAL_MS, signal);
+        const elapsedMs = Date.now() - startedAt;
+        const remainingMs = POLLING_TIMEOUT_MS - elapsedMs;
+        if (remainingMs <= 0) break;
+
+        await wait(
+            Math.min(getPollingIntervalMs(elapsedMs), remainingMs),
+            signal
+        );
     }
 
     throw new ApiError(
