@@ -1,19 +1,28 @@
+import { ROUTES } from "@/routes/paths";
+import { useEffect } from "react";
+import { Outlet, useLocation } from "react-router-dom";
+
+const PAGE_TITLES: Record<string, string> = {
+    [ROUTES.home]: "홈 | Fit Again",
+    [ROUTES.productRegister]: "제품 등록 | Fit Again",
+    [ROUTES.painPoint]: "불편 입력 | Fit Again",
+    [ROUTES.aiAnalysis]: "AI 분석 | Fit Again",
+    [ROUTES.solutionRecommend]: "AI 추천 | Fit Again",
+    [ROUTES.reformSimulation]: "리폼 시뮬레이션 | Fit Again",
+    [ROUTES.resellPreview]: "리셀 미리보기 | Fit Again",
+    [ROUTES.upcyclePreview]: "업사이클링 미리보기 | Fit Again",
+    [ROUTES.resultConfirm]: "결과 확인 | Fit Again",
+};
+
 function App() {
-    return (
-        <main className="flex min-h-screen items-center justify-center bg-slate-950 px-6 text-white">
-            <section className="text-center">
-                <p className="mb-3 text-sm font-semibold tracking-[0.3em] text-emerald-400 uppercase">
-                    Fit Again
-                </p>
-                <h1 className="text-4xl font-bold sm:text-5xl">
-                    프로젝트 준비 완료
-                </h1>
-                <p className="mt-4 text-slate-300">
-                    React, Vite, TypeScript와 Tailwind CSS로 시작합니다.
-                </p>
-            </section>
-        </main>
-    );
+    const { pathname } = useLocation();
+
+    useEffect(() => {
+        document.title = PAGE_TITLES[pathname] ?? "Fit Again";
+        window.scrollTo({ top: 0, left: 0, behavior: "auto" });
+    }, [pathname]);
+
+    return <Outlet />;
 }
 
 export default App;

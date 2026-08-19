@@ -14,6 +14,9 @@ Fit Again Front-end 레포지토리입니다. Vite 기반의 React + TypeScript 
 - Tailwind CSS 스타일링 환경
 - ESLint + Prettier 코드 품질 관리
 - Husky + lint-staged 커밋 전 자동 검사
+- Vitest + React Testing Library 테스트 환경
+- GitHub Actions CI 자동 검증
+- Vercel Production 및 Preview 배포 환경
 - `@/` 절대 경로 별칭
 - 환경변수 기반 로컬 API 프록시
 
@@ -28,6 +31,9 @@ Fit Again Front-end 레포지토리입니다. Vite 기반의 React + TypeScript 
 - **Forms**: react-hook-form, Zod, @hookform/resolvers
 - **HTTP Client**: axios
 - **Cookie**: js-cookie
+- **Testing**: Vitest, React Testing Library
+- **CI**: GitHub Actions
+- **Deployment**: Vercel
 - **Linting & Formatting**: ESLint, Prettier, Husky, lint-staged
 
 인증 방식과 추가 UI 라이브러리는 실제 기능 구현 시 프로젝트 요구사항에 맞춰 도입합니다.
@@ -36,7 +42,7 @@ Fit Again Front-end 레포지토리입니다. Vite 기반의 React + TypeScript 
 
 **사전 요구사항**
 
-- Node.js 20.19 이상 또는 22.12 이상
+- Node.js 24 (`.nvmrc`, `.node-version` 기준)
 - npm 설치 및 실행
 
 ```bash
@@ -49,6 +55,9 @@ npm run dev
 # TypeScript 타입 체크 + 프로덕션 빌드
 npm run build
 
+# TypeScript 타입 검사
+npm run typecheck
+
 # ESLint로 코드 검사
 npm run lint
 
@@ -57,6 +66,12 @@ npm run format
 
 # Prettier 포맷 검사
 npm run format:check
+
+# 테스트 실행
+npm test
+
+# 테스트 감시 모드
+npm run test:watch
 
 # 프로덕션 빌드 미리보기
 npm run preview
@@ -89,8 +104,35 @@ npm run preview
     - `.prettierrc`: 들여쓰기, 따옴표 등 팀 코드 스타일 규칙
     - `eslint.config.js`: TypeScript, React Hooks, 접근성 등 코드 품질 규칙
     - `.husky/pre-commit`: 커밋 전 lint-staged 실행
+    - `.husky/pre-push`: push 전 테스트, 타입 검사와 ESLint 실행
     - `.vscode/settings.json`: 저장 시 Prettier 포맷과 ESLint 수정 적용
     - `.vscode/extensions.json`: 팀 공통 VS Code 확장 프로그램 추천
+    - `.editorconfig`: 에디터 공통 인코딩, 줄바꿈과 들여쓰기 설정
+    - `.nvmrc`, `.node-version`: 팀 공통 Node.js 버전
+
+## ✅ 자동 검증
+
+`main` 또는 `develop` 브랜치로 push하거나 해당 브랜치를 대상으로 Pull Request를 생성하면 GitHub Actions CI가 실행됩니다.
+
+CI는 다음 항목을 순서대로 검사합니다.
+
+1. 의존성 설치
+2. ESLint
+3. Prettier
+4. Vitest 단위 테스트
+5. TypeScript 타입 검사
+6. 프로덕션 빌드
+
+## 🚀 배포 환경
+
+Vercel을 통해 Production 및 Preview 환경을 배포합니다.
+
+- `main` 브랜치는 Production 환경으로 배포합니다.
+- `develop`과 기능 브랜치는 Preview 환경으로 배포합니다.
+- Pull Request에서는 Vercel이 제공하는 Preview URL로 변경 사항을 확인합니다.
+- React Router 경로에서 직접 접근하거나 새로고침해도 정상적으로 화면을 표시하도록 `vercel.json`에 SPA rewrite를 설정합니다.
+- 배포 환경변수는 Vercel 프로젝트 설정에서 Production, Preview, Development 환경별로 등록합니다.
+- 실제 환경변수 값과 비밀 정보는 저장소에 커밋하지 않습니다.
 
 ## 📜 프로젝트 규약 (Conventions)
 
@@ -116,7 +158,7 @@ chore/[작업내용]: 설정 및 환경 구성 브랜치 (예: chore/setup-eslin
 2. 릴리스 PR 제목은 `chore(release): Fit Again 프로토타입 v0.1.0 배포` 형식을 사용합니다.
 3. 장기 브랜치의 커밋 관계를 유지하기 위해 `develop`에서 `main`으로 병합할 때는 **Create a merge commit**을 사용합니다.
 4. Production 배포가 완료되면 같은 버전으로 Git 태그를 생성합니다. (예: `v0.1.0`)
-5. Production 및 Preview 배포 방식은 배포 환경이 확정된 후 추가합니다.
+5. Vercel에서 `main`은 Production, `develop`과 기능 브랜치는 Preview 환경으로 배포합니다.
 
 ### 버전 규칙
 
@@ -189,6 +231,13 @@ src/
 2. Prettier로 코드 포맷팅
 3. 에러가 있으면 커밋 중단
 
+`git push` 실행 시 자동으로 다음 작업을 수행합니다.
+
+1. Vitest 단위 테스트
+2. TypeScript 타입 검사
+3. ESLint 전체 검사
+4. 하나라도 실패하면 push 중단
+
 ### 커밋이 실패한다면
 
 1. 출력된 에러 메시지를 확인하고 수정합니다.
@@ -198,4 +247,4 @@ src/
 ### 주의사항
 
 - 처음 clone한 후 `npm install`을 실행하면 Husky가 자동 설치됩니다.
-- 커밋 전 자동 검사는 코드 품질 유지를 위한 필수 과정입니다.
+- 커밋 및 push 전 자동 검사는 코드 품질 유지를 위한 필수 과정입니다.
