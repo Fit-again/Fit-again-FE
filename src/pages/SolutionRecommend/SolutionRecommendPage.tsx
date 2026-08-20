@@ -6,6 +6,7 @@ import {
     RECOMMENDATION_CONTENT,
     RECOMMENDATION_DESCRIPTIONS,
 } from "@/constants/recommendation";
+import { RESELL_RESULT_STEPS } from "@/constants/serviceSteps";
 import { useTransitionNavigation } from "@/hooks/useTransitionNavigation";
 import { ROUTES } from "@/routes/paths";
 import { useReformFlowStore } from "@/stores/useReformFlowStore";
@@ -52,6 +53,11 @@ function SolutionRecommendPage() {
         <>
             <PageLayout
                 currentStep={4}
+                steps={
+                    selectedSolution === "resell"
+                        ? RESELL_RESULT_STEPS
+                        : undefined
+                }
                 title="AI 추천 결과"
                 description={RECOMMENDATION_DESCRIPTIONS[selectedSolution]}
                 actions={
