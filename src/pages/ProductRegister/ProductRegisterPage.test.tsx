@@ -41,6 +41,12 @@ describe("ProductRegisterPage", () => {
             "aria-pressed",
             "false"
         );
+        screen.getAllByLabelText(/사진/).forEach((input) => {
+            expect(input).toHaveAttribute(
+                "accept",
+                ".jpg,.jpeg,.png,image/jpeg,image/png"
+            );
+        });
     });
 
     it("제품 유형을 선택할 수 있다", async () => {
@@ -138,7 +144,7 @@ describe("ProductRegisterPage", () => {
         expect(screen.getByText("front.png")).toBeInTheDocument();
     });
 
-    it("이미지가 아닌 파일을 정면 사진으로 올리면 올바른 제품이 아니라는 에러를 보여준다", async () => {
+    it("지원하지 않는 파일을 정면 사진으로 올리면 형식 오류를 보여준다", async () => {
         const user = userEvent.setup({ applyAccept: false });
         renderPage();
 
@@ -149,7 +155,28 @@ describe("ProductRegisterPage", () => {
         );
         await user.click(screen.getByRole("button", { name: "다음 단계" }));
 
-        expect(screen.getByText("올바른 제품이 아닙니다")).toBeInTheDocument();
+        expect(
+            screen.getByText("JPG 또는 PNG 형식의 사진만 업로드해주세요")
+        ).toBeInTheDocument();
+    });
+
+    it("WebP 정면 사진은 제출하지 않는다", async () => {
+        const user = userEvent.setup({ applyAccept: false });
+        renderPage();
+
+        await user.click(screen.getByRole("button", { name: "토트백" }));
+        await user.upload(
+            screen.getByLabelText(/정면 사진을 선택해주세요/),
+            new File(["dummy"], "front.webp", { type: "image/webp" })
+        );
+        await user.click(screen.getByRole("button", { name: "다음 단계" }));
+
+        expect(
+            screen.getByText("JPG 또는 PNG 형식의 사진만 업로드해주세요")
+        ).toBeInTheDocument();
+        expect(
+            screen.queryByRole("heading", { name: "불편 입력" })
+        ).not.toBeInTheDocument();
     });
 
     it("마모 부위 사진을 업로드하고 개별 삭제할 수 있다", async () => {

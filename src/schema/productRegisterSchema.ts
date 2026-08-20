@@ -11,13 +11,23 @@ import z from "zod";
 export const DETAIL_PHOTO_MAX = 4;
 export const WEAR_PHOTO_MAX = 5;
 export const IMAGE_FILE_SIZE_MAX = 20 * 1024 * 1024;
+export const IMAGE_FILE_ACCEPT = ".jpg,.jpeg,.png,image/jpeg,image/png";
+export const IMAGE_FILE_TYPE_ERROR =
+    "JPG 또는 PNG 형식의 사진만 업로드해주세요";
+
+const SUPPORTED_IMAGE_TYPES = new Set(["image/jpeg", "image/png"]);
+const SUPPORTED_IMAGE_EXTENSION = /\.(?:jpe?g|png)$/i;
+
+const isSupportedImageFile = (file: File) =>
+    SUPPORTED_IMAGE_TYPES.has(file.type.toLowerCase()) &&
+    SUPPORTED_IMAGE_EXTENSION.test(file.name);
 
 const imageFileSchema = z
     .custom<File>((value) => value instanceof File, {
         error: "정면 사진을 업로드해주세요",
     })
-    .refine((file) => file instanceof File && file.type.startsWith("image/"), {
-        message: "올바른 제품이 아닙니다",
+    .refine((file) => file instanceof File && isSupportedImageFile(file), {
+        message: IMAGE_FILE_TYPE_ERROR,
     })
     .refine(
         (file) => file instanceof File && file.size <= IMAGE_FILE_SIZE_MAX,
@@ -29,7 +39,7 @@ const imageFileSchema = z
 const optionalImageFilesSchema = z.array(
     z
         .instanceof(File)
-        .refine((file) => file.type.startsWith("image/"))
+        .refine(isSupportedImageFile, { message: IMAGE_FILE_TYPE_ERROR })
         .refine((file) => file.size <= IMAGE_FILE_SIZE_MAX, {
             message: "사진은 장당 20MB 이하로 업로드해주세요",
         })
