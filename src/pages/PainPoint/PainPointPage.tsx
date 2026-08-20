@@ -262,7 +262,7 @@ const KeywordToggle = ({
 }) => (
     <button
         type="button"
-        className={`focus-visible:outline-primary min-h-[42px] cursor-pointer rounded-[5px] px-[31px] py-1.5 text-[18px] transition-colors focus-visible:outline-3 focus-visible:outline-offset-2 ${selected ? "border-primary bg-secondary text-primary border-2 font-medium" : "border-primary text-primary hover:bg-secondary/40 border bg-white"}`}
+        className={`border-primary text-primary focus-visible:outline-primary min-h-[42px] cursor-pointer rounded-[5px] border px-[31px] py-1.5 text-[18px] font-medium whitespace-nowrap transition-colors focus-visible:outline-3 focus-visible:outline-offset-2 ${selected ? "bg-secondary ring-primary ring-1 ring-inset" : "hover:bg-secondary/40 bg-white"}`}
         aria-pressed={selected}
         onClick={onClick}
     >
