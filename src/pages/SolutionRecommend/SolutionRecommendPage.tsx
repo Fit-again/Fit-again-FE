@@ -25,12 +25,12 @@ function SolutionRecommendPage() {
     );
     const previewRoute = {
         reform: ROUTES.reformSimulation,
-        resell: ROUTES.resellPreview,
+        resell: ROUTES.resultConfirm,
         upcycle: ROUTES.upcyclePreview,
     }[selectedSolution];
     const loadingTitle = {
         reform: "리폼 시뮬레이션 로딩 중",
-        resell: "리셀 미리보기 로딩 중",
+        resell: "결과 로딩 중",
         upcycle: "업사이클링 미리보기 로딩 중",
     }[selectedSolution];
     const { isTransitioning, startTransition } =

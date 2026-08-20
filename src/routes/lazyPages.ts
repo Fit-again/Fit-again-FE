@@ -18,9 +18,6 @@ export const ReformSimulationPage = lazy(
 export const ResultConfirmPage = lazy(
     () => import("@/pages/ResultConfirm/ResultConfirmPage")
 );
-export const ResellPreviewPage = lazy(
-    () => import("@/pages/ResellPreview/ResellPreviewPage")
-);
 export const SolutionRecommendPage = lazy(
     () => import("@/pages/SolutionRecommend/SolutionRecommendPage")
 );

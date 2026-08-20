@@ -5,7 +5,6 @@ export const ROUTES = {
     aiAnalysis: "/ai-analysis",
     solutionRecommend: "/solution-recommend",
     reformSimulation: "/reform-simulation",
-    resellPreview: "/resell-preview",
     upcyclePreview: "/upcycle-preview",
     resultConfirm: "/result-confirm",
 } as const;

@@ -15,7 +15,6 @@ export type ReformFlowRequirement =
     | "diagnosis"
     | "recommendation"
     | "reformSimulation"
-    | "resellPreview"
     | "upcyclePreview";
 
 type ReformFlowRouteProps = {
@@ -41,9 +40,6 @@ const ReformFlowRoute = ({ requirement, children }: ReformFlowRouteProps) => {
     const hasProductInfo = productType !== null && frontPhoto !== null;
     const reformRecommendation = recommendationRankings.find(
         (item) => item.recommendationType === "REFORM"
-    );
-    const resellRecommendation = recommendationRankings.find(
-        (item) => item.recommendationType === "RESELL"
     );
     const upcycleRecommendation = recommendationRankings.find(
         (item) => item.recommendationType === "UPCYCLING"
@@ -79,14 +75,6 @@ const ReformFlowRoute = ({ requirement, children }: ReformFlowRouteProps) => {
         (reformRecommendation?.recommendationType !== "REFORM" ||
             !reformRecommendation.simulation ||
             reformRecommendation.simulation.steps.length < 4)
-    ) {
-        return <Navigate to={ROUTES.solutionRecommend} replace />;
-    }
-
-    if (
-        requirement === "resellPreview" &&
-        (resellRecommendation?.recommendationType !== "RESELL" ||
-            resellRecommendation.alternativeProducts.length === 0)
     ) {
         return <Navigate to={ROUTES.solutionRecommend} replace />;
     }
