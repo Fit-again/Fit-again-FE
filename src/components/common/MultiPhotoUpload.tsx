@@ -5,6 +5,7 @@ type MultiPhotoUploadProps = {
     files: File[];
     maxCount: number;
     itemLabel: string;
+    accept?: string;
     className?: string;
     onAdd: (file: File) => void;
     onRemove: (index: number) => void;
@@ -14,6 +15,7 @@ const MultiPhotoUpload = ({
     files,
     maxCount,
     itemLabel,
+    accept = "image/*",
     className = "grid-cols-3 sm:grid-cols-5",
     onAdd,
     onRemove,
@@ -42,6 +44,7 @@ const MultiPhotoUpload = ({
                             key={index}
                             inputId={`${inputId}-${index}`}
                             label={`${itemLabel} 추가`}
+                            accept={accept}
                             onAdd={onAdd}
                         />
                     );
@@ -104,10 +107,12 @@ const PhotoThumbnail = ({
 const AddSlot = ({
     inputId,
     label,
+    accept,
     onAdd,
 }: {
     inputId: string;
     label: string;
+    accept: string;
     onAdd: (file: File) => void;
 }) => (
     <div>
@@ -115,7 +120,7 @@ const AddSlot = ({
             className="sr-only"
             id={inputId}
             type="file"
-            accept="image/*"
+            accept={accept}
             onChange={(event) => {
                 const file = event.target.files?.[0];
                 if (file) {

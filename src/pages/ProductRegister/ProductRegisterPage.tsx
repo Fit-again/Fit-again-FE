@@ -11,6 +11,7 @@ import { PRODUCT_TYPES } from "@/constants/productTypes";
 import { ROUTES } from "@/routes/paths";
 import {
     DETAIL_PHOTO_MAX,
+    IMAGE_FILE_ACCEPT,
     productRegisterSchema,
     type ProductRegisterFormType,
     WEAR_PHOTO_MAX,
@@ -139,6 +140,7 @@ function ProductRegisterPage() {
                                                     : "정면 사진을 선택해주세요"
                                             }
                                             description="PNG, JPG 파일을 업로드할 수 있습니다."
+                                            accept={IMAGE_FILE_ACCEPT}
                                             file={frontPhoto ?? null}
                                             compact
                                             className="aspect-square"
@@ -169,6 +171,7 @@ function ProductRegisterPage() {
                                             files={detailPhotos}
                                             maxCount={DETAIL_PHOTO_MAX}
                                             itemLabel="디테일 사진"
+                                            accept={IMAGE_FILE_ACCEPT}
                                             className="grid-cols-2"
                                             onAdd={(file) =>
                                                 field.onChange([
@@ -209,6 +212,7 @@ function ProductRegisterPage() {
                                         files={wearPhotos}
                                         maxCount={WEAR_PHOTO_MAX}
                                         itemLabel="마모 부위 사진"
+                                        accept={IMAGE_FILE_ACCEPT}
                                         className="grid-cols-3 sm:grid-cols-5"
                                         onAdd={(file) =>
                                             field.onChange([
