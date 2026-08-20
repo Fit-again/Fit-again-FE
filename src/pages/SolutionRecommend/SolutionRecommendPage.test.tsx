@@ -76,6 +76,9 @@ describe("SolutionRecommendPage", () => {
         expect(
             screen.getByRole("button", { name: "결과 보기" })
         ).toBeInTheDocument();
+        expect(
+            screen.getByRole("progressbar", { name: "서비스 진행률" })
+        ).toHaveAttribute("aria-valuemax", "5");
         expect(screen.getByText("가치 이어가기")).toBeInTheDocument();
         expect(screen.getByText("전문 리셀 연계")).toBeInTheDocument();
         expect(screen.getByText("새로운 제품 탐색")).toBeInTheDocument();
@@ -88,6 +91,9 @@ describe("SolutionRecommendPage", () => {
             screen.getByRole("heading", { name: "업사이클링 (Upcycling)" })
         ).toBeInTheDocument();
         expect(useReformFlowStore.getState().selectedSolution).toBe("upcycle");
+        expect(
+            screen.getByRole("progressbar", { name: "서비스 진행률" })
+        ).toHaveAttribute("aria-valuemax", "6");
     });
 
     it("리셀 결과 보기를 누르면 결과 확인 화면으로 이동한다", async () => {

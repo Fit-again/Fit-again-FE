@@ -88,6 +88,33 @@ describe("PainPointPage", () => {
         expect(heavy).toHaveAttribute("aria-pressed", "false");
     });
 
+    it("긴 키워드를 선택해도 버튼 크기 관련 스타일을 유지한다", async () => {
+        const user = userEvent.setup();
+        renderPage();
+        const strapSlip = screen.getByRole("button", {
+            name: "스트랩이 흘러내림",
+        });
+
+        expect(strapSlip).toHaveClass(
+            "border",
+            "font-medium",
+            "whitespace-nowrap"
+        );
+        expect(strapSlip).not.toHaveClass("border-2");
+
+        await user.click(strapSlip);
+
+        expect(strapSlip).toHaveAttribute("aria-pressed", "true");
+        expect(strapSlip).toHaveClass(
+            "border",
+            "font-medium",
+            "whitespace-nowrap",
+            "ring-1",
+            "ring-inset"
+        );
+        expect(strapSlip).not.toHaveClass("border-2");
+    });
+
     it("이전에 저장한 불편 정보를 다시 화면에 표시한다", () => {
         useReformFlowStore.setState({
             painPointKeywordIds: ["heavy", "shoulder-pain"],
