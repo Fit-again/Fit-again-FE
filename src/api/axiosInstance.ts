@@ -6,7 +6,7 @@ const apiOrigin = import.meta.env.PROD
 
 const axiosInstance = axios.create({
     baseURL: `${apiOrigin}/api/v1`,
-    timeout: 10_000,
+    timeout: 60_000,
 });
 
 export default axiosInstance;
