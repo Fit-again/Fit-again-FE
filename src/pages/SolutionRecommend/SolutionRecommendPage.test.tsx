@@ -4,7 +4,7 @@ import { MemoryRouter, Route, Routes } from "react-router-dom";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import AIAnalysisPage from "@/pages/AIAnalysis/AIAnalysisPage";
 import ReformSimulationPage from "@/pages/ReformSimulation/ReformSimulationPage";
-import ResellPreviewPage from "@/pages/ResellPreview/ResellPreviewPage";
+import ResultConfirmPage from "@/pages/ResultConfirm/ResultConfirmPage";
 import SolutionRecommendPage from "@/pages/SolutionRecommend/SolutionRecommendPage";
 import UpcyclePreviewPage from "@/pages/UpcyclePreview/UpcyclePreviewPage";
 import { ROUTES } from "@/routes/paths";
@@ -25,8 +25,8 @@ const renderPage = () =>
                     element={<ReformSimulationPage />}
                 />
                 <Route
-                    path={ROUTES.resellPreview}
-                    element={<ResellPreviewPage />}
+                    path={ROUTES.resultConfirm}
+                    element={<ResultConfirmPage />}
                 />
                 <Route
                     path={ROUTES.upcyclePreview}
@@ -74,8 +74,12 @@ describe("SolutionRecommendPage", () => {
             screen.getByRole("heading", { name: "리셀 (Resell)" })
         ).toBeInTheDocument();
         expect(
-            screen.getByRole("button", { name: "리셀 미리보기" })
+            screen.getByRole("button", { name: "결과 보기" })
         ).toBeInTheDocument();
+        expect(screen.getByText("가치 이어가기")).toBeInTheDocument();
+        expect(screen.getByText("전문 리셀 연계")).toBeInTheDocument();
+        expect(screen.getByText("새로운 제품 탐색")).toBeInTheDocument();
+        expect(screen.queryByText("경량 크로스백")).not.toBeInTheDocument();
         expect(useReformFlowStore.getState().selectedSolution).toBe("resell");
 
         await user.click(screen.getByRole("button", { name: /업사이클링/ }));
@@ -86,21 +90,21 @@ describe("SolutionRecommendPage", () => {
         expect(useReformFlowStore.getState().selectedSolution).toBe("upcycle");
     });
 
-    it("리셀 미리보기를 누르면 리셀 미리보기 화면으로 이동한다", async () => {
+    it("리셀 결과 보기를 누르면 결과 확인 화면으로 이동한다", async () => {
         vi.useFakeTimers();
         useReformFlowStore.setState({ selectedSolution: "resell" });
         renderPage();
 
-        fireEvent.click(screen.getByRole("button", { name: "리셀 미리보기" }));
+        fireEvent.click(screen.getByRole("button", { name: "결과 보기" }));
 
-        expect(screen.getByText("리셀 미리보기 로딩 중")).toBeInTheDocument();
+        expect(screen.getByText("결과 로딩 중")).toBeInTheDocument();
 
         await act(async () => {
             await vi.advanceTimersByTimeAsync(1200);
         });
 
         expect(
-            screen.getByRole("heading", { name: "리셀 미리보기", level: 1 })
+            screen.getByRole("heading", { name: "결과 확인", level: 1 })
         ).toBeInTheDocument();
     });
 

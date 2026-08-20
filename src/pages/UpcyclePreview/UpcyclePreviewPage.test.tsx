@@ -5,6 +5,7 @@ import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import UpcyclePreviewPage from "@/pages/UpcyclePreview/UpcyclePreviewPage";
 import { useReformFlowStore } from "@/stores/useReformFlowStore";
 import { seedApiFlowStore } from "@/test/apiFixtures";
+import type { RankedRecommendation } from "@/types/recommendation";
 
 const renderPage = () =>
     render(
@@ -59,5 +60,38 @@ describe("UpcyclePreviewPage", () => {
         ).toHaveAttribute("aria-pressed", "true");
         expect(screen.getByText("카드지갑 예상 이미지")).toBeInTheDocument();
         expect(screen.getByText("무게가 부담스러워요")).toBeInTheDocument();
+    });
+
+    it("후보 카드에 서버가 생성한 이미지를 표시한다", () => {
+        const seededStore = seedApiFlowStore();
+        const recommendationRankings =
+            seededStore.recommendationRankings.map<RankedRecommendation>(
+                (recommendation) =>
+                    recommendation.recommendationType === "UPCYCLING"
+                        ? {
+                              ...recommendation,
+                              upcyclingCandidates:
+                                  recommendation.upcyclingCandidates.map(
+                                      (candidate) => ({
+                                          ...candidate,
+                                          imageUrl: `https://example.com/${candidate.itemName}.png`,
+                                      })
+                                  ),
+                          }
+                        : recommendation
+            );
+        useReformFlowStore.setState({ recommendationRankings });
+
+        renderPage();
+
+        expect(
+            screen.getByRole("img", { name: "미니 크로스백 후보 이미지" })
+        ).toHaveAttribute("src", "https://example.com/미니 크로스백.png");
+        expect(
+            screen.getByRole("img", { name: "카드지갑 후보 이미지" })
+        ).toHaveAttribute("src", "https://example.com/카드지갑.png");
+        expect(
+            screen.getByRole("img", { name: "파우치 후보 이미지" })
+        ).toHaveAttribute("src", "https://example.com/파우치.png");
     });
 });

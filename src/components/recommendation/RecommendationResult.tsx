@@ -33,11 +33,7 @@ const RecommendationResult = ({
                   description: work.description,
               }))
             : recommendation.recommendationType === "RESELL"
-              ? recommendation.alternativeProducts.map((product, index) => ({
-                    id: `${index}-${product.productType}`,
-                    title: product.productType,
-                    description: product.hashtags.join(" "),
-                }))
+              ? staticContent.tasks
               : recommendation.upcyclingCandidates.map((candidate, index) => ({
                     id: `${index}-${candidate.itemName}`,
                     title: candidate.itemName,

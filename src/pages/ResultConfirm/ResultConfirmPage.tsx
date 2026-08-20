@@ -48,7 +48,7 @@ function ResultConfirmPage() {
     );
     const previousRoute = {
         reform: ROUTES.reformSimulation,
-        resell: ROUTES.resellPreview,
+        resell: ROUTES.solutionRecommend,
         upcycle: ROUTES.upcyclePreview,
     }[selectedSolution];
     const pageDescription = {

@@ -146,8 +146,16 @@ const UpcycleOptionCard = ({
                 ✓
             </span>
         )}
-        <span className="bg-placeholder text-text-secondary mt-10 flex h-[114px] items-center justify-center text-center text-[12px]">
-            예상 이미지
+        <span className="bg-placeholder text-text-secondary mt-10 flex h-[114px] items-center justify-center overflow-hidden text-center text-[12px]">
+            {product.imageUrl ? (
+                <img
+                    src={product.imageUrl}
+                    alt={`${product.itemName} 후보 이미지`}
+                    className="h-full w-full object-contain"
+                />
+            ) : (
+                "예상 이미지"
+            )}
         </span>
         <span className="text-text-secondary mt-10 text-[15px] leading-snug">
             {product.description}

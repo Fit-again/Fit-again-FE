@@ -52,6 +52,14 @@ describe("App 라우팅", () => {
         ).toBeInTheDocument();
     });
 
+    it("삭제된 리셀 미리보기 경로에서 404 화면을 보여준다", async () => {
+        renderPath("/resell-preview");
+
+        expect(
+            await screen.findByRole("heading", { name: "404" })
+        ).toBeInTheDocument();
+    });
+
     it("제품 정보 없이 후속 단계에 접근하면 제품 등록으로 이동한다", async () => {
         renderPath(ROUTES.aiAnalysis);
 

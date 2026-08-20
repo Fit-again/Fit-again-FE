@@ -71,7 +71,7 @@ export const RECOMMENDATION_CONTENT: Record<
                     "입력한 불편과 사용 목적에 맞는 새로운 제품을 추천해드려요.",
             },
         ],
-        previewLabel: "리셀 미리보기",
+        previewLabel: "결과 보기",
     },
     upcycle: {
         id: "upcycle",

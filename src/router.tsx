@@ -16,7 +16,6 @@ import {
     PainPointPage,
     ProductRegisterPage,
     ReformSimulationPage,
-    ResellPreviewPage,
     ResultConfirmPage,
     SolutionRecommendPage,
     UpcyclePreviewPage,
@@ -67,10 +66,6 @@ export const appRoutes: RouteObject[] = [
                     <ReformSimulationPage />,
                     "reformSimulation"
                 ),
-            },
-            {
-                path: ROUTES.resellPreview.slice(1),
-                element: guardedPage(<ResellPreviewPage />, "resellPreview"),
             },
             {
                 path: ROUTES.upcyclePreview.slice(1),

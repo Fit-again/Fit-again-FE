@@ -35,7 +35,6 @@ Fit Again v1.0.0 정식 배포 버전입니다. 사용자가 등록한 제품 �
 | `/ai-analysis`        | AI 제품 분석 결과 및 추천 요청   |
 | `/solution-recommend` | 리폼·리셀·업사이클링 추천 결과   |
 | `/reform-simulation`  | 단계별 리폼 시뮬레이션           |
-| `/resell-preview`     | 리셀 미리보기                    |
 | `/upcycle-preview`    | 업사이클링 후보 미리보기         |
 | `/result-confirm`     | 최종 결과, PDF 저장 및 상담 신청 |
 

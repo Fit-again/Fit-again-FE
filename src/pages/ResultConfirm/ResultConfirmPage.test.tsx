@@ -55,6 +55,10 @@ const renderPage = () =>
                     path={ROUTES.resultConfirm}
                     element={<ResultConfirmPage />}
                 />
+                <Route
+                    path={ROUTES.solutionRecommend}
+                    element={<div>추천 화면</div>}
+                />
             </Routes>
         </MemoryRouter>
     );
@@ -216,6 +220,16 @@ describe("ResultConfirmPage", () => {
         expect(screen.getByText("경량 크로스백")).toBeInTheDocument();
         expect(screen.getByText("문의사항")).toBeInTheDocument();
         expect(screen.queryByText("AI 리폼 리포트")).not.toBeInTheDocument();
+    });
+
+    it("리셀 결과에서 이전 단계를 누르면 추천 화면으로 이동한다", async () => {
+        useReformFlowStore.setState({ selectedSolution: "resell" });
+        renderPage();
+        const user = userEvent.setup();
+
+        await user.click(screen.getByRole("button", { name: "이전 단계" }));
+
+        expect(screen.getByText("추천 화면")).toBeInTheDocument();
     });
 
     it("리포트 저장 버튼을 누르면 PDF를 생성하고 저장 완료 메시지를 보여준다", async () => {
